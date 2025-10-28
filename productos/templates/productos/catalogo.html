@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tienda Artaud | {{ titulo_pagina }}</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f4; }
+        h1 { color: #555; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+        .producto-lista {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .producto-lista strong { color: #333; }
+        .producto-detalle { margin-left: 20px; font-size: 0.9em; color: #666; }
+        .precio { font-size: 1.2em; color: green; font-weight: bold; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; color: navy; }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="{% url 'home' %}">Inicio</a>
+        <a href="{% url 'catalogo' %}">Catálogo</a>
+        <a href="{% url 'acerca_de' %}">Sobre Artaud</a>
+        <a href="{% url 'admin:index' %}">Administración</a>
+    </nav>
+    
+    <h1>{{ titulo_pagina }}</h1>
+    
+    {% if productos %}
+        {% for producto in productos %}
+            <div class="producto-lista">
+                <h2>
+                    {{ producto.artista }} - <em>{{ producto.album }}</em>
+                    <span class="precio">${{ producto.precio|floatformat:2 }}</span>
+                </h2>
+                <div class="producto-detalle">
+                    <p>
+                        Formato: <strong>{{ producto.get_formato_display }}</strong> 
+                        | Condición: <strong>{{ producto.get_condicion_display }}</strong> 
+                        | Estado Físico: <strong>{{ producto.get_estado_display }}</strong>
+                        | País: {{ producto.pais_origen }}
+                    </p>
+                    <p>
+                        Sello: {{ producto.sello|default:"N/A" }} 
+                        | Edición: {{ producto.get_edicion_display }} 
+                        | Género: {{ producto.get_genero_1_display|default:"N/A" }}
+                    </p>
+                    <p>Descripción: {{ producto.descripcion }}</p>
+                </div>
+            </div>
+        {% endfor %}
+
+    {% else %}
+        <p>Aún no hay productos cargados en la tienda. ¡Carga algunos desde el administrador!</p>
+    {% endif %}
+
+</body>
+</html>
