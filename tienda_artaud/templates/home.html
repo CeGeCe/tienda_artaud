@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | Tienda Artaud{% endblock %}
+
+{% block content %}
+<h1>Bienvenidos a Tienda Artaud 🤘</h1>
+    <p>El lugar de encuentro para los amantes del coleccionismo</p>
+    <p>¡Acá tenés lo último que llegó!</p>
+
+<h2>Últimos Ingresos</h2>
+
+{% if productos %}
+    {% for producto in productos %}
+        <div class="card-producto" style="display: flex; gap: 15px; align-items: center;">
+            
+            {% if producto.imagen_portada %}
+                <img src="{{ producto.imagen_portada.url }}" alt="Portada" 
+                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+            {% endif %}
+            
+            <div style="flex-grow: 1;">
+                <h3>
+                    <a href="{% url 'detalle_producto' pk=producto.pk %}" style="color: var(--color-navbar); text-decoration: none;">
+                        {{ producto.artista }} - {{ producto.album }} 
+                    </a>
+                    <span class="precio">${{ producto.precio|floatformat:2 }}</span>
+                </h3>
+                </div>
+        </div>
+    {% endfor %}
+
+<p><a href="{% url 'catalogo' %}" style="color: var(--color-navbar); font-weight: bold;">Explorar el Catálogo
+        completo →</a></p>
+{% else %}
+    <p>Aún no hay productos destacados. ¡Carga algunos ítems para que aparezcan aquí!</p>
+{% endif %}
+
+{% endblock content %}

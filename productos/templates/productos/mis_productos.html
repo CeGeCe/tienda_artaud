@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Vendedor{% endblock %}
+
+{% block content %}
+    <h1>{{ titulo_pagina }}</h1>
+    <p>Ver y editar todos tus productos publicados en Tienda Artaud.</p>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'publicar_producto' %}" 
+            style="padding: 10px 15px; background-color: var(--color-navbar); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            + Publicar Nuevo Álbum
+        </a>
+    </div>
+
+    <div style="margin-top: 30px;">
+        {% if page_obj %}
+            {% for producto in page_obj %}
+            <div class="card-producto">
+                <h3>
+                        <a href="{% url 'detalle_producto' pk=producto.pk %}" style="color: var(--color-navbar); text-decoration: none;">
+                            {{ producto.artista }} - {{ producto.album }} 
+                        </a>
+                        <span class="precio">${{ producto.precio|floatformat:2 }}</span>
+                    </h3>
+
+                <div style="font-size: 0.9em; margin-top: 5px;">
+                    <p>
+                        Formato: <strong>{{ producto.get_formato_display }}</strong> 
+                        | Condición: <strong>{{ producto.get_condicion_display }}</strong> 
+                        | Estado Físico: <strong>{{ producto.get_estado_display }}</strong>
+                    </p>
+
+                    <a href="{% url 'editar_producto' pk=producto.pk %}" 
+                        style="color: var(--color-acento); font-weight: bold; margin-right: 15px;">
+                        Editar
+                    </a>
+            
+                    <a href="{% url 'eliminar_producto' pk=producto.pk %}" 
+                        style="color: red; font-weight: bold;">
+                        Eliminar
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <p>Todavía no publicaste ningún producto. ¡Ponete a vender!</p>
+        {% endif %}
+
+    </div>
+
+{% endblock content %}

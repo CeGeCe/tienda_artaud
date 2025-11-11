@@ -1,0 +1,162 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tienda Artaud{% endblock %}</title>
+    
+    <style>
+        /* Definición de Colores */
+        :root {
+            --color-fondo: #FFFFFF; /* Blanco */
+            --color-navbar: #38761D; /* Verde Oscuro */
+            --color-acento: #93C47D; /* Verde Claro */
+            --color-texto-nav: white;
+            --color-texto-principal: #333;
+        }
+
+        /* Estilos Generales */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 60px; /* Espacio para el navbar fijo */
+            background-color: var(--color-fondo); 
+            color: var(--color-texto-principal);
+        }
+
+        /* Estilos del Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--color-navbar);
+            padding: 15px 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--color-texto-nav);
+            text-decoration: none;
+        }
+
+        .navbar-links a {
+            color: var(--color-texto-nav);
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar-links a:hover {
+            background-color: var(--color-acento); /* Acento al pasar el ratón */
+            color: var(--color-navbar);
+        }
+        
+        /* Contenedor principal de contenido */
+        .content-container {
+            padding: 20px 40px;
+        }
+        
+        /* Estilo de los productos/tarjetas para acentuación */
+        .card-producto {
+            border: 1px solid #ddd;
+            border-left: 5px solid var(--color-acento); /* Línea de acento */
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        
+        .card-producto h3 {
+            color: var(--color-navbar);
+            margin-top: 0;
+        }
+        
+        .precio {
+            color: #E67E22; /* Un color distinto para precios */
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="{% url 'home' %}" class="navbar-brand">Tienda Artaud</a>
+        <nav class="navbar-links">
+            <a href="{% url 'home' %}">Inicio</a>
+            <a href="{% url 'catalogo' %}">Catálogo</a>
+            <a href="{% url 'about' %}">Sobre nosotros</a>
+            
+            {% if user.is_authenticated %}
+    
+                <a href="{% url 'mis_productos' %}" style="text-decoration: none; color: white; margin-left: 20px;">
+                    Mis Productos
+                </a>
+                <a href="{% url 'panel_ventas' %}" style="text-decoration: none; color: white; margin-left: 20px;">
+                    Panel de Ventas 💸
+                </a>
+                
+                <a href="{% url 'ver_pedidos' %}" style="text-decoration: none; color: white; margin-left: 20px;">
+                    Mis Compras
+                </a>
+                <a href="{% url 'ver_carrito' %}" style="text-decoration: none; color: white; margin-left: 20px;">
+                    Carrito 🛒
+                </a>
+                
+                {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'admin:index' %}" style="text-decoration: none; color: white; margin-left: 20px;">
+                        Admin
+                    </a>
+                {% endif %}
+                
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            style="background: none; 
+                                border: none; 
+                                color: var(--color-texto-nav); 
+                                cursor: pointer; 
+                                padding: 0; 
+                                margin-left: 20px;
+                                font-size: 1em;">
+                        Salir ({{ user.username }})
+                    </button>
+                </form>
+
+            {% else %}
+                <a href="{% url 'login' %}">Ingresar / Registrarse</a>
+            {% endif %}
+        </nav>
+    </header>
+
+<main class="content-container">
+    <div style="margin-bottom: 20px; padding: 15px; background-color: #f0f0f0; border: 1px solid var(--color-acento); border-radius: 5px;">
+        <form action="{% url 'catalogo' %}" method="get" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="q" placeholder="Buscar por Artista, Título, Género, etc." 
+                value="{{ request.GET.q|default:'' }}" 
+                style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <button type="submit" style="padding: 10px 20px; background-color: var(--color-acento); color: var(--color-navbar); border: none; border-radius: 4px; cursor: pointer;">
+                Buscar
+            </button>
+            {% if request.GET.q %}
+            <a href="{% url 'catalogo' %}" style="text-decoration: none; color: #555; padding: 10px;">Borrar Búsqueda</a>
+            {% endif %}
+        </form>
+    </div>
+    {% block content %}
+    {% endblock content %}
+</main>
+
+</body>
+</html>

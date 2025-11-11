@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel de Ventas{% endblock %}
+
+{% block content %}
+    <h1 style="color: var(--color-navbar);">Panel de Ventas 💸</h1>
+    <p>Acá podés gestionar y ver los pedidos de productos que vendiste.</p>
+    
+    {% if pedidos_del_vendedor %}
+        {% for venta in pedidos_del_vendedor %}
+            <div class="card-producto" style="border-left-color: #28B463;">
+                <h2 style="color: #28B463;">Venta en Pedido Global #{{ venta.encabezado.id }}</h2>
+                
+                <p>Comprador: <strong>{{ venta.encabezado.comprador.username }}</strong></p>
+                <p>Fecha del Pedido: {{ venta.encabezado.fecha_pedido|date:"d M Y H:i" }} | Estado Global: <strong>{{ venta.encabezado.get_estado_display }}</strong></p>
+                <p>Dirección de Envío: {{ venta.encabezado.direccion_envio }}</p>
+                
+                <h3 style="margin-top: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Productos Vendidos en este Pedido:</h3>
+                <ul>
+                    {% for item in venta.items %}
+                        <li>
+                            {{ item.cantidad }}x **{{ item.album_comprado }}** ({{ item.artista_comprado }}) |
+                            Precio Unitario: ${{ item.precio_unitario|floatformat:2 }}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div style="text-align: right; margin-top: 15px;">
+                    <p style="font-size: 1.3em;">Total de <span style="font-weight: bold;">Tu Venta</span>: <span style="color: #28B463; font-weight: bold;">${{ venta.total_venta|floatformat:2 }}</span></p>
+                    <p style="font-size: 0.9em; color: #555;">*(Nota: El estado global del pedido puede variar según otros vendedores.)*</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Todavía no tenés ninguna venta :(.</p>
+    {% endif %}
+
+{% endblock content %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+    <div style="max-width: 500px; margin: 40px auto; padding: 25px; border: 1px solid red; border-left: 5px solid red; border-radius: 8px; background-color: #ffeaea;">
+        
+        <h1 style="color: red;">⚠️Confirmar Eliminación⚠️</h1>
+        <p style="font-size: 1.1em;">
+            ¿Desea realmente eliminar este producto?
+        </p>
+        
+        <h2 style="color: var(--color-navbar); margin-top: 5px;">
+            "{{ object.artista }} - {{ object.album }}"
+        </h2>
+        
+        <form method="post" style="margin-top: 30px;">
+            {% csrf_token %}
+            
+            <button type="submit" 
+                    style="padding: 10px 15px; 
+                        background-color: red; 
+                        color: white; 
+                        border: none; 
+                        border-radius: 4px; 
+                        cursor: pointer; 
+                        font-weight: bold; 
+                        margin-right: 15px;">
+                Sí, Eliminar Permanentemente
+            </button>
+            
+            <a href="{% url 'mis_productos' %}" 
+            style="color: #555; 
+                    text-decoration: none; 
+                    padding: 10px 15px; 
+                    border: 1px solid #ccc; 
+                    border-radius: 4px;">
+                Cancelar y Volver
+            </a>
+        </form>
+    </div>
+
+{% endblock content %}

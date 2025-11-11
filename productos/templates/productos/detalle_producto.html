@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ producto.artista }} - {{ producto.album }}{% endblock %}
+
+{% block content %}
+
+    <div class="card-producto" style="border-left: 5px solid var(--color-navbar);">
+        <h1>{{ producto.artista }} - {{ producto.album }}</h1>
+        <p class="precio" style="font-size: 2em; margin-top: -10px;">
+            Precio: ${{ producto.precio|floatformat:2 }}
+        </p>
+
+        {% if producto.stock > 0 %}
+            {% if producto.vendedor != request.user %}
+                <form method="POST" action="{% url 'agregar_a_carrito' producto_id=producto.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" style="background-color: var(--color-acento); color: white; padding: 12px 25px; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; margin-top: 20px;">
+                        Añadir al Carrito 🛒
+                    </button>
+                </form>
+            {% else %}
+                <p style="color: var(--color-navbar); font-weight: bold; font-size: 1.1em; margin-top: 20px;">
+                    Estás viendo un artículo propio.
+                </p>
+            <p>
+                <a href="{% url 'editar_producto' pk=producto.pk %}" style="color: var(--color-acento);">Editar tu publicación</a>.
+            </p>
+            {% endif %}
+
+        {% else %}
+            <p style="color: red; font-weight: bold; font-size: 1.1em; margin-top: 20px;">¡Agotado!</p>
+        {% endif %}
+
+        <h2>Detalles Físicos y de Edición</h2>
+        <hr style="border-color: var(--color-acento);">
+
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Formato:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_formato_display }}</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Condición:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_condicion_display }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Estado:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_estado_display }}</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Año de Lanzamiento:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.anio_lanzamiento }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**País de Origen:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.pais_origen }}</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Edición:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_edicion_display }}</td>
+            </tr>
+
+            {% if producto.sello or producto.cantidad_discos or producto.cantidad_canciones or producto.codigo_barras %}
+            <tr><td colspan="4"><h3 style="margin: 15px 0 5px 0;">Información Adicional</h3></td></tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Sello Discográfico:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.sello|default:"N/A" }}</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Cantidad de Discos/Cassetttes:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.cantidad_discos|default:"N/A" }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Cantidad de Canciones:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.cantidad_canciones|default:"N/A" }}</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Código de Barras:**</td>
+                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.codigo_barras|default:"N/A" }}</td>
+            </tr>
+            {% endif %}
+
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">**Género Principal:**</td>
+                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">{{ producto.get_genero_1_display|default:"No Especificado" }}</td>
+                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">**Género Secundario:**</td>
+                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">{{ producto.genero_2|default:"No Especificado" }}</td>
+            </tr>
+        </table>
+        
+        <h2 style="margin-top: 30px;">Descripción del Vendedor</h2>
+        <p style="white-space: pre-wrap;">{{ producto.descripcion }}</p>
+
+        <p style="margin-top: 40px;"><a href="{% url 'catalogo' %}" style="color: var(--color-navbar); font-weight: bold;">← Volver al Catálogo</a></p>
+    </div>
+
+{% endblock content %}

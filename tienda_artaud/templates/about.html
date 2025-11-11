@@ -1,54 +1,45 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Acerca de Tienda Artaud</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
+{% block title %}Acerca de{% endblock %}
 
-        h1 {
-            color: #333;
-        }
+{% block content %}
 
-        p {
-            line-height: 1.6;
-        }
-    </style>
-</head>
-
-<body>
     <h1>Bienvenidos a Tienda Artaud</h1>
     <h2>La Feria Online para Coleccionistas</h2>
 
     <p>
-        Tienda Artaud nace de la forma más atenta y responsable de amor por la música: el formato físico.
+        Tienda Artaud nace de la forma de amor más atenta y responsable hacia la música: el formato físico.
+    </p>
 
-        Aún cuando las ondas sonoras sean invisibles, uno puede sentir cómo golpean el cuerpo y lo transportan a un mundo ;
+    <p>
+        Aún cuando las ondas sonoras sean invisibles, uno puede sentir cómo golpean el cuerpo y lo transportan a un mundo único durante un tiempo limitado estableciendo una suerte de ritual entre artista y oyente que puede repetirse una incontable cantidad de veces, donde parte de la magia reside en descubrir algo nuevo en cada escucha.
+    </p>
+
+    <p>
         En una época donde el internet y las plataformas de streaming han llegado para ofrecer una cantidad prácticamente ilimitada de contenido, donde todo tiende cada vez más a cumplir una gratificación instantánea y la conversación suele centrarse en las cantidades de reproducciones o vistas que pueda llegar a tener un artista, desde nuestro humilde lugar creemos que todavía hay lugar para lo tangible y duradero que puede encontrarse en un objeto de colección.
+    </p>
 
+    <p>
         Si bien no puede negarse que , el valor de sostener en tus manos el resultado de tiempo y esfuerzo de los músicos responsables;
         quedarse horas y horas admirando el arte e interpretando las letras de los artistas que nos generan fascinación:
         todo que en las épocas modernas ha ido perdiendo terreno, desde nuestro espacio abogamos por mantener viva la tradición
         del formato físico como 
-        
-        Inspirada en las ferias de discos los fines de semana;
-        
+    </p>
+
+    <p>
+        Inspirada en las clásicas ferias de discos llevadas a cabo en plazas públicas durante   los fines de semana;    
         y la cultura del coleccionismo.
-        Somos un espacio local dedicado a la compra y venta de música en formato físico: **vinilos**,
-        **cassettes** y **CDs**.
+        Somos un espacio local dedicado a la compra y venta de música en formato físico: <b>vinilos</b>,
+        <b>cassettes</b> y <b>CDs</b>.
     </p>
 
     <h2>¿Qué es lo que ofrecemos?</h2>
     <ul>
-        <li>**Colecciones Usadas:** El foco principal del proyecto es el material coleccionable de segunda mano,
+        <li><b>Colecciones Usadas:</b> El foco principal del proyecto es el material coleccionable de segunda mano,
             donde puedes encontrar esa joya difícil de conseguir tratando directamente con los dueños del material expuesto.</li>
-        <li>**Material Nuevo/Sin Abrir:** Sin embargo, también publicamos lanzamientos nuevos y discos
+        <li><b>Material Nuevo/Sin Abrir:</b> Sin embargo, también publicamos lanzamientos nuevos y discos
             que nunca salieron de su empaque original.</li>
-        <li>**Calidad y Transparencia:** Cada item es cuidadosamente revisado y clasificado con una **Condición** (Nuevo/Usado)
+        <li><b>Calidad y Transparencia:</b> Cada item es cuidadosamente revisado y clasificado con una **Condición** (Nuevo/Usado)
             y un **Estado** comprobable (Bueno, Regular, Malo) detallado por el vendedor para asegurar que no se venda gato por liebre.</li>
     </ul>
 
@@ -61,4 +52,4 @@
     <p><a href="/admin/">Ir a la Administración (solo admins)</a></p>
 </body>
 
-</html>
+{% endblock content %}

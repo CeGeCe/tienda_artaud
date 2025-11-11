@@ -1,12 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 # --- CONSTANTES (CHOICES) ---
 FORMATO_CHOICES = (
-    ('VINILO', 'Vinilo'),
+    ('BLURAY', 'Blu-ray'),
     ('CASSETTE', 'Cassette'),
     ('CD', 'CD'),
+    ('DVD', 'DVD'),
+    ('VHS', 'VHS'),
+    ('VINILO', 'Vinilo'),
 )
 
 CONDICION_CHOICES = (
@@ -28,18 +32,27 @@ EDICION_CHOICES = (
 
 GENERO_1_CHOICES = (
     ('CLASICO', 'Clásico'),
-    ('JAZZ', 'Jazz'),
-    ('ROCK', 'Rock'),
-    ('POP', 'Pop'),
-    ('HIPHOP', 'Hip-hop'),
     ('ELECTRONICA', 'Electrónica'),
     ('FOLK', 'Folk'),
+    ('HIPHOP', 'Hip-hop'),
+    ('JAZZ', 'Jazz'),
+    ('POP', 'Pop'),
+    ('ROCK', 'Rock'),
 )
 
 
 class Producto(models.Model):
     # --- CAMPOS OBLIGATORIOS ---
+    vendedor = models.ForeignKey(User, on_delete=models.CASCADE)
     
+    imagen_portada = models.ImageField(
+        upload_to='portadas/',
+        blank=True,
+        null=True
+    )
+
+    stock = models.PositiveIntegerField(default=1)
+
     album = models.CharField(max_length=200)
     artista = models.CharField(max_length=200)
     precio = models.DecimalField(max_digits=10, decimal_places=2)

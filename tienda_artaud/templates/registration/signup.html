@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrarme{% endblock %}
+
+{% block content %}
+    <div style="max-width: 400px; margin: 40px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+        
+        <h2 style="text-align: center;">Registro de Usuario</h2>
+        <p style="text-align: center; font-size: 0.9em; margin-bottom: 20px;">
+            ¡Unite para <b>comprar</b> y <b>vender</b> tu colección!
+        </p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div style="margin-bottom: 15px;">
+                    <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        {{ field.label }}:
+                    </label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <p style="color: red; font-size: 0.85em; margin-top: 5px;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" 
+                    style="width: 100%; padding: 10px; background-color: var(--color-navbar); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; margin-top: 10px;">
+                Crear Cuenta
+            </button>
+        </form>
+
+        <p style="margin-top: 20px; text-align: center; font-size: 0.9em;">
+            ¿Ya tenés una cuenta? <a href="{% url 'login' %}" style="color: var(--color-acento); font-weight: bold;">Inicia sesión</a>.
+        </p>
+    </div>
+    
+    <style>
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; 
+        }
+    </style>
+{% endblock content %}

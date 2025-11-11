@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Sesión Cerrada{% endblock %}
+
+{% block content %}
+    <div style="max-width: 400px; margin: 60px auto; padding: 30px; border: 1px solid #ccc; border-radius: 8px; text-align: center;">
+        
+        <h2 style="font-size: 1.8em; color: var(--color-acento); margin-bottom: 20px;">
+            👋 ¡Sesión Cerrada!
+        </h2>
+        
+        <p style="margin-bottom: 30px; font-size: 1.1em; line-height: 1.5;">
+            Ha cerrado sesión exitosamente. ¡Vuelva pronto!
+        </p>
+        
+        <a href="{% url 'login' %}" 
+            style="display: inline-block; 
+                    padding: 10px 20px; 
+                    background-color: var(--color-navbar); 
+                    color: white; 
+                    border: none;
+                    border-radius: 4px; 
+                    text-decoration: none; 
+                    font-weight: bold;
+                    transition: background-color 0.3s;">
+            Iniciar Sesión de Nuevo
+        </a>
+        
+        <p style="margin-top: 15px; font-size: 0.9em;">
+            <a href="{% url 'home' %}" style="color: var(--color-acento); text-decoration: underline;">
+                Ir a la Tienda Principal
+            </a>
+        </p>
+    </div>
+    
+{% endblock content %}

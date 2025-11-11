@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Publicar/Editar Producto{% endblock %}
+
+{% block content %}
+    <div style="max-width: 600px; margin: 30px auto; padding: 25px; border: 1px solid #ddd; border-left: 5px solid var(--color-acento); border-radius: 8px;">
+        
+        {% if object %}
+            <h1 style="color: var(--color-navbar);">Editar: {{ object.artista }} - {{ object.album }}</h1>
+        {% else %}
+            <h1 style="color: var(--color-navbar);">Publicar Nuevo Producto</h1>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div style="margin-bottom: 15px;">
+                    <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        {{ field.label }}{% if field.field.required %} <span style="color: red;">*</span>{% endif %}:
+                    </label>
+                    
+                    {{ field }}
+                    
+                    {% for error in field.errors %}
+                        <p style="color: red; font-size: 0.85em; margin-top: 5px;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            <button type="submit" 
+                    style="width: 100%; padding: 10px; background-color: var(--color-navbar); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; margin-top: 20px;">
+                Guardar Producto
+            </button>
+        </form>
+        
+        <p style="margin-top: 20px;"><a href="{% url 'mis_productos' %}" style="color: #555;">← Volver al Panel</a></p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data"> 
+    {% csrf_token %}
+    
+    <div class="card-producto" style="border-left: 5px solid var(--color-navbar); display: flex; gap: 30px;">
+        
+        {% if producto.imagen_portada %}
+            <div style="flex-shrink: 0;">
+                <img src="{{ producto.imagen_portada.url }}" alt="Portada de {{ producto.album }}" 
+                    style="width: 200px; height: 200px; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            </div>
+        {% else %}
+            <div style="width: 200px; height: 200px; background-color: #f0f0f0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; text-align: center; color: #888; border-radius: 4px; flex-shrink: 0;">
+                No hay imagen de portada
+            </div>
+        {% endif %}
+
+        <div style="flex-grow: 1;">
+            <h1>{{ producto.artista }} - {{ producto.album }}</h1>
+            <p class="precio" style="font-size: 2em; margin-top: -10px;">
+                Precio: ${{ producto.precio|floatformat:2 }}
+            </p>
+            </div>
+    </div>
+    
+    <style>
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+
+{% endblock content %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Pedidos{% endblock %}
+
+{% block content %}
+
+    <h1 style="color: var(--color-navbar);">Historial de Pedidos</h1>
+    
+    {% if pedidos %}
+        {% for pedido in pedidos %}
+            <div class="card-producto" style="border-left-color: #5DADE2;">
+                <h2>Pedido #{{ pedido.id }}</h2>
+                <p>Fecha: {{ pedido.fecha_pedido|date:"d M Y H:i" }} | Estado: <strong>{{ pedido.get_estado_display }}</strong></p>
+                <p style="font-size: 1.2em;">Total Pagado: <span class="precio">${{ pedido.monto_total|floatformat:2 }}</span></p>
+                
+                <h3 style="margin-top: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Ítems:</h3>
+                <ul>
+                    {% for item in pedido.items.all %}
+                        <li>
+                            {{ item.cantidad }}x **{{ item.album_comprado }}** ({{ item.artista_comprado }}) |
+                            Vendedor: {{ item.vendedor.username }} | Subtotal: ${{ item.get_subtotal|floatformat:2 }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Aún no has realizado ninguna compra.</p>
+    {% endif %}
+
+    <p style="margin-top: 30px;"><a href="{% url 'catalogo' %}" style="color: var(--color-navbar);">← Seguir Comprando</a></p>
+
+{% endblock content %}w

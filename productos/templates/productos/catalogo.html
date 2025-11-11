@@ -1,63 +1,162 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Tienda Artaud | {{ titulo_pagina }}</title>
-    <style>
-        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f4; }
-        h1 { color: #555; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
-        .producto-lista {
-            background-color: white;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .producto-lista strong { color: #333; }
-        .producto-detalle { margin-left: 20px; font-size: 0.9em; color: #666; }
-        .precio { font-size: 1.2em; color: green; font-weight: bold; }
-        nav { margin-bottom: 20px; }
-        nav a { margin-right: 15px; text-decoration: none; color: navy; }
-    </style>
-</head>
+{% extends 'base.html' %}
 
-<body>
-    <nav>
-        <a href="{% url 'home' %}">Inicio</a>
-        <a href="{% url 'catalogo' %}">Catálogo</a>
-        <a href="{% url 'acerca_de' %}">Sobre Artaud</a>
-        <a href="{% url 'admin:index' %}">Administración</a>
-    </nav>
-    
-    <h1>{{ titulo_pagina }}</h1>
-    
-    {% if productos %}
-        {% for producto in productos %}
-            <div class="producto-lista">
-                <h2>
-                    {{ producto.artista }} - <em>{{ producto.album }}</em>
-                    <span class="precio">${{ producto.precio|floatformat:2 }}</span>
-                </h2>
-                <div class="producto-detalle">
-                    <p>
-                        Formato: <strong>{{ producto.get_formato_display }}</strong> 
-                        | Condición: <strong>{{ producto.get_condicion_display }}</strong> 
-                        | Estado Físico: <strong>{{ producto.get_estado_display }}</strong>
-                        | País: {{ producto.pais_origen }}
-                    </p>
-                    <p>
-                        Sello: {{ producto.sello|default:"N/A" }} 
-                        | Edición: {{ producto.get_edicion_display }} 
-                        | Género: {{ producto.get_genero_1_display|default:"N/A" }}
-                    </p>
-                    <p>Descripción: {{ producto.descripcion }}</p>
-                </div>
+{% block title %}Catálogo Completo{% endblock %}
+
+{% block content %}
+<h1>Catálogo Completo</h1>
+
+{% if query_actual %}
+<p style="font-size: 1.1em; color: var(--color-navbar);">
+    Resultados de búsqueda para: <strong>"{{ query_actual }}"</strong> ({{ productos.count }} encontrados).
+</p>
+{% else %}
+<p>Explora todos los productos de la feria.</p>
+{% endif %}
+
+
+<!-- Apartado de Filtros-->
+<div style="display: flex; gap: 30px;">
+
+    <div style="width: 250px; flex-shrink: 0; padding: 15px; border-right: 1px solid #eee;">
+        <h2>Filtros</h2>
+
+        <form action="{% url 'catalogo' %}" method="get">
+            {% if query_actual %}
+            <input type="hidden" name="q" value="{{ query_actual }}">
+            {% endif %}
+            <input type="hidden" name="orden" value="{{ orden_actual }}">
+
+            <label for="id_formato" style="font-weight: bold; display: block; margin-top: 15px;">Formato:</label>
+            <select name="formato" id="id_formato"
+                style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Cualquiera</option>
+                {% for key, display in formato_choices %}
+                <option value="{{ key }}" {% if key == formato_seleccionado %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="id_condicion" style="font-weight: bold; display: block; margin-top: 15px;">Condición:</label>
+            <select name="condicion" id="id_condicion"
+                style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Cualquiera</option>
+                {% for key, display in condicion_choices %}
+                <option value="{{ key }}" {% if key == condicion_seleccionada %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="id_edicion" style="font-weight: bold; display: block; margin-top: 15px;">Edición:</label>
+            <select name="edicion" id="id_edicion"
+                style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Cualquiera</option>
+                {% for key, display in edicion_choices %}
+                <option value="{{ key }}" {% if key == edicion_seleccionada %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="id_genero" style="font-weight: bold; display: block; margin-top: 15px;">Género
+                Principal:</label>
+            <select name="genero" id="id_genero"
+                style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Cualquiera</option>
+                {% for key, display in genero_choices %}
+                <option value="{{ key }}" {% if key == genero_seleccionado %}selected{% endif %}>{{ display }}</option>
+                {% endfor %}
+            </select>
+
+
+            <button type="submit"
+                style="width: 100%; padding: 10px; margin-top: 20px; background-color: var(--color-navbar); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Aplicar Filtros
+            </button>
+
+            <a href="{% url 'catalogo' %}"
+                style="display: block; text-align: center; margin-top: 10px; color: #555;">Limpiar Filtros</a>
+        </form>
+    </div>
+
+
+    <div style="flex-grow: 1;">
+
+        <div
+            style="margin-bottom: 20px; display: flex; justify-content: flex-end; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            <label for="id_orden" style="margin-right: 10px;">Ordenar por:</label>
+            <select id="id_orden" onchange="window.location.href = this.value;"
+                style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <option
+                    value="{% url 'catalogo' %}?q={{ query_actual|default:'' }}&formato={{ formato_seleccionado|default:'' }}&condicion={{ condicion_seleccionada|default:'' }}&edicion={{ edicion_seleccionado|default:'' }}&genero={{ genero_seleccionado|default:'' }}&orden=artista"
+                    {% if orden_actual == 'artista' %}selected{% endif %}>
+                    Alfabético
+                </option>
+                <option
+                    value="{% url 'catalogo' %}?q={{ query_actual|default:'' }}&formato={{ formato_seleccionado|default:'' }}&condicion={{ condicion_seleccionada|default:'' }}&edicion={{ edicion|default:'' }}&genero={{ genero_seleccionado|default:'' }}&orden=precio_asc"
+                    {% if orden_actual == 'precio_asc' %}selected{% endif %}>
+                    Precio (Menor a Mayor)
+                </option>
+                <option
+                    value="{% url 'catalogo' %}?q={{ query_actual|default:'' }}&formato={{ formato_seleccionado|default:'' }}&condicion={{ condicion_seleccionada|default:'' }}&edicion={{ edicion|default:'' }}&genero={{ genero_seleccionado|default:'' }}&orden=precio_desc"
+                    {% if orden_actual == 'precio_desc' %}selected{% endif %}>
+                    Precio (Mayor a Menor)
+                </option>
+            </select>
+        </div>
+
+
+        {% if page_obj %}
+        {% for producto in page_obj %}
+        <div class="card-producto">
+            <h3>
+                <a href="{% url 'detalle_producto' pk=producto.pk %}"
+                    style="color: var(--color-navbar); text-decoration: none;">
+                    {{ producto.artista }} - {{ producto.album }}
+                </a>
+                <span class="precio">${{ producto.precio|floatformat:2 }}</span>
+            </h3>
+            <div>
+                <p>
+                    Formato: <strong>{{ producto.get_formato_display }}</strong>
+                    | Condición: <strong>{{ producto.get_condicion_display }}</strong>
+                    | Estado Físico: <strong>{{ producto.get_estado_display }}</strong>
+                </p>
+                <p>Descripción: {{ producto.descripcion|truncatechars:150 }}</p>
             </div>
+        </div>
         {% endfor %}
+        
+        {% else %}
+        <p>No se encontraron productos que coincidan con los criterios de búsqueda y/o filtros.</p>
+        {% endif %}
+    </div>
 
-    {% else %}
-        <p>Aún no hay productos cargados en la tienda. ¡Carga algunos desde el administrador!</p>
-    {% endif %}
 
-</body>
-</html>
+    <div class="pagination" style="text-align: center; margin-top: 30px;">
+        {% if page_obj.has_other_pages %}
+        <div style="display: flex; justify-content: center; gap: 10px;">
+
+            {% if page_obj.has_previous %}
+            <a href="?page=1&q={{ query_actual|default:'' }}&formato={{ formato_seleccionado|default:'' }}&condicion={{ condicion_seleccionada|default:'' }}&estado={{ estado_seleccionado|default:'' }}&genero={{ genero_seleccionado|default:'' }}&orden={{ orden_actual|default:'' }}"
+                style="padding: 8px 12px; border: 1px solid #ccc; text-decoration: none; color: var(--color-navbar); border-radius: 4px;">&laquo;
+                Primera</a>
+
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ query_actual|default:'' }}&formato={{ formato_seleccionado|default:'' }}&condicion={{ condicion_seleccionada|default:'' }}&estado={{ estado_seleccionado|default:'' }}&genero={{ genero_seleccionado|default:'' }}&orden={{ orden_actual|default:'' }}"
+                style="padding: 8px 12px; border: 1px solid #ccc; text-decoration: none; color: var(--color-navbar); border-radius: 4px;">Anterior</a>
+            {% endif %}
+
+            <span class="current"
+                style="padding: 8px 12px; background-color: var(--color-acento); color: var(--color-navbar); border-radius: 4px; font-weight: bold;">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ query_actual|default:'' }}&formato={{ formato_seleccionado|default:'' }}&condicion={{ condicion_seleccionada|default:'' }}&estado={{ estado_seleccionado|default:'' }}&genero={{ genero_seleccionado|default:'' }}&orden={{ orden_actual|default:'' }}"
+                style="padding: 8px 12px; border: 1px solid #ccc; text-decoration: none; color: var(--color-navbar); border-radius: 4px;">Siguiente</a>
+
+            <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query_actual|default:'' }}&formato={{ formato_seleccionado|default:'' }}&condicion={{ condicion_seleccionada|default:'' }}&estado={{ estado_seleccionado|default:'' }}&genero={{ genero_seleccionado|default:'' }}&orden={{ orden_actual|default:'' }}"
+                style="padding: 8px 12px; border: 1px solid #ccc; text-decoration: none; color: var(--color-navbar); border-radius: 4px;">Última
+                &raquo;</a>
+            {% endif %}
+
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Carrito{% endblock %}
+
+{% block content %}
+<style>
+    .carrito-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+    .item-card { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 15px 0; }
+    .item-img { width: 80px; height: 80px; object-fit: cover; margin-right: 20px; border-radius: 4px; }
+    .item-details { flex-grow: 1; }
+    .item-price { font-weight: bold; color: green; }
+    .total-box { margin-top: 30px; padding: 20px; border: 2px solid var(--color-navbar); border-radius: 8px; text-align: right; }
+    .total-box h2 { margin: 0; }
+    .btn-checkout { background-color: var(--color-acento); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 15px; }
+    .btn-remove { color: red; text-decoration: none; margin-left: 10px; font-size: 0.9em; }
+</style>
+
+<div class="carrito-container">
+    <h1 style="color: var(--color-navbar);">🛒 Mi Carrito</h1>
+
+    {% if carrito.items.count %}
+        
+        <div class="item-list">
+            {% for item in carrito.items.all %}
+                <div class="item-card">
+                    <div class="item-details">
+                    <p style="margin: 0;">{{ item.producto.artista }} - <strong>{{ item.producto.album }}</strong></p>
+            
+                    <form method="POST" action="{% url 'actualizar_carrito' item_id=item.id %}" style="margin: 5px 0 0 0; display: flex; align-items: center;">
+                    {% csrf_token %}
+                        <label for="cantidad_{{ item.id }}" style="margin-right: 5px;">Cantidad:</label>
+                        <input type="number" 
+                            name="cantidad" 
+                            id="cantidad_{{ item.id }}"
+                            value="{{ item.cantidad }}" 
+                            min="0" 
+                            max="{{ item.producto.stock }}"
+                            style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+                        
+                        <button type="submit" 
+                                style="background-color: var(--color-acento); 
+                                color: var(--color-navbar); 
+                                border: none; 
+                                border-radius: 4px; 
+                                padding: 5px 8px; 
+                                margin-left: 10px; 
+                                cursor: pointer; 
+                                font-size: 0.9em;">
+                            Actualizar
+                        </button>
+                    </form>
+            
+            <p style="margin: 5px 0 0 0;">Stock disponible: {{ item.producto.stock }}</p>
+            <p style="margin: 5px 0 0 0;">Precio Unitario: <span class="item-price">${{ item.precio_item }}</span></p>
+        </div>
+
+        </div>
+{% endfor %}
+        </div>
+
+        <div class="total-box">
+            <h2>Total a Pagar: <span style="color: red;">${{ carrito.get_total|floatformat:2 }}</span></h2>
+            <a href="{% url 'checkout' %}" class="btn-checkout">
+                Proceder al Pago
+            </a>
+        </div>
+
+    {% else %}
+        <p style="font-size: 1.2em; margin-top: 30px;">
+            Tu carrito está vacío. ¡Comprá algo!
+        </p>
+        <a href="{% url 'catalogo' %}" class="btn-checkout" style="background-color: #555;">Ir al Catálogo</a>
+    {% endif %}
+
+</div>
+
+{% endblock content %}

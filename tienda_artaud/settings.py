@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,7 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'productos'
+    'productos',
+    'usuarios',
+    'carrito',
+    'pedidos',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +60,7 @@ ROOT_URLCONF = 'tienda_artaud.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'tienda_artaud', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,6 +104,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# ===============================================
+# CONFIGURACIÓN DE LOGIN/LOGOUT
+# ===============================================
+
+# El usuario es enviado a su Panel de Vendedor.
+LOGIN_REDIRECT_URL = 'mis_productos'
+
+# URL para redirigir usuarios no autenticados cuando intentan acceder a una página restringida (@login_required)
+# Dirige a la vista de login de Django
+LOGIN_URL = 'login'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
