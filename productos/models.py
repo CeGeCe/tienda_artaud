@@ -126,6 +126,8 @@ class Producto(models.Model):
         null = True
     )
 
+    favoritos = models.ManyToManyField(User, related_name='productos_favoritos', blank=True)
+
     # --- MÉTODO PARA REPRESENTACIÓN EN EL ADMIN
     def __str__(self):
         return f"{self.artista} - {self.album} ({self.formato})"

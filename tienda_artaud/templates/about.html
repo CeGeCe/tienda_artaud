@@ -1,55 +1,107 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Acerca de{% endblock %}
+{% block title %}Sobre Tienda Artaud{% endblock %}
 
 {% block content %}
 
-    <h1>Bienvenidos a Tienda Artaud</h1>
-    <h2>La Feria Online para Coleccionistas</h2>
+<h1 style="text-align: center;">Bienvenidos a Tienda Artaud</h1>
+    <h2 style="text-align: center;">La Feria Online para Coleccionistas</h2>
 
-    <p>
-        Tienda Artaud nace de la forma de amor más atenta y responsable hacia la música: el formato físico.
-    </p>
+    <div class="accordion-container" style="max-width: 900px; margin: 30px auto;">
 
-    <p>
-        Aún cuando las ondas sonoras sean invisibles, uno puede sentir cómo golpean el cuerpo y lo transportan a un mundo único durante un tiempo limitado estableciendo una suerte de ritual entre artista y oyente que puede repetirse una incontable cantidad de veces, donde parte de la magia reside en descubrir algo nuevo en cada escucha.
-    </p>
+        <div class="accordion-item">
+            <div class="accordion-header" data-target="content-1">
+                Nuestra Filosofía: El Valor del Formato Físico
+                <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-content" id="content-1">
+                <p><b>Tienda Artaud</b> nace de la forma de amor más atenta y responsable hacia la música: <b>el formato físico.</b></p>
 
-    <p>
-        En una época donde el internet y las plataformas de streaming han llegado para ofrecer una cantidad prácticamente ilimitada de contenido, donde todo tiende cada vez más a cumplir una gratificación instantánea y la conversación suele centrarse en las cantidades de reproducciones o vistas que pueda llegar a tener un artista, desde nuestro humilde lugar creemos que todavía hay lugar para lo tangible y duradero que puede encontrarse en un objeto de colección.
-    </p>
+                <p>Aún cuando las ondas sonoras sean invisibles, uno puede sentir cómo golpean y se introducen en el cuerpo, transportándote a un mundo único durante un tiempo limitado, sumergiéndote en todo lo que ofrecen las piezas músicales en intención y ejecución, estableciendo una suerte de ritual entre artista y oyente que puede repetirse una incontable cantidad de veces.</p>
 
-    <p>
-        Si bien no puede negarse que , el valor de sostener en tus manos el resultado de tiempo y esfuerzo de los músicos responsables;
-        quedarse horas y horas admirando el arte e interpretando las letras de los artistas que nos generan fascinación:
-        todo que en las épocas modernas ha ido perdiendo terreno, desde nuestro espacio abogamos por mantener viva la tradición
-        del formato físico como 
-    </p>
+                <p>El valor que representa poder sostener en tus manos el resultado de tiempo y esfuerzo de los músicos responsables; quedarse horas y horas admirando el arte, interpretando las letras y revisando los créditos para saber quién hizo qué aporte, y la posterior experiencia de comentar tu parecer junto a otros amantes de la música en una charla.</p>
+                    
+                <p>Todo esto ha ido perdiendo lugar en épocas modernas en pos de la sobre-exposición a una oferta infinita de contenido en plataformas de *streaming* y la necesidad adquirida de querer tener todo de inmediato y pasar a la siguiente fuente de estímulo sin detenerse un tiempo para analizar o reflexionar sobre lo vivido.</p>
 
-    <p>
-        Inspirada en las clásicas ferias de discos llevadas a cabo en plazas públicas durante   los fines de semana;    
-        y la cultura del coleccionismo.
-        Somos un espacio local dedicado a la compra y venta de música en formato físico: <b>vinilos</b>,
-        <b>cassettes</b> y <b>CDs</b>.
-    </p>
+                <p> Si bien reconocemos que la creciente accesibilidad ha ayudado a descubrir música de una forma que era impensable en el pasado, desde nuestro espacio creemos en ese valor agregado que ofrece la tangibilidad que puede encontrarse en un objeto de colección que puede llegar a crear recuerdos imborrables y experiencias conjuntas con otros amantes de la música 🤘.</p>
+            </div>
+        </div>
+        
+        <div class="accordion-item">
+            <div class="accordion-header" data-target="content-2">
+                ¿Por qué 'Artaud'?
+                <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-content" id="content-2">
+                <p>El álbum del grupo <b>Pescado Rabioso</b> se presenta a sí mismo y se divisa desde lo lejos como un ítem único, distinguible del resto tanto por su color como por sus proporciones que van en contra de lo convencional. Tal fue así que todo el diseño del sitio está basado en los colores vivos que presenta esta obra cumbre.</p>
 
-    <h2>¿Qué es lo que ofrecemos?</h2>
-    <ul>
-        <li><b>Colecciones Usadas:</b> El foco principal del proyecto es el material coleccionable de segunda mano,
-            donde puedes encontrar esa joya difícil de conseguir tratando directamente con los dueños del material expuesto.</li>
-        <li><b>Material Nuevo/Sin Abrir:</b> Sin embargo, también publicamos lanzamientos nuevos y discos
-            que nunca salieron de su empaque original.</li>
-        <li><b>Calidad y Transparencia:</b> Cada item es cuidadosamente revisado y clasificado con una **Condición** (Nuevo/Usado)
-            y un **Estado** comprobable (Bueno, Regular, Malo) detallado por el vendedor para asegurar que no se venda gato por liebre.</li>
-    </ul>
+                <p>En parte por ese concepto de distinción dentro del formato físico, decidimos adoptarlo como símbolo análogo del oasis que representa dentro de la escena digital de la escena actual, además de rendirle homenaje al que consideramos un estandarte dentro de la historia de la música nacional.</p>
 
-    <h2>¿Qué hace diferente a **Artaud** del resto?</h2>
-    <ul>
-        Desde la génesis que incluye la propia elección del nombre, nos destacamos como fieles melómanos que 
-    </ul>
+                <p>(Solo no le avisen a la familia del Flaco Spinetta.)</p>
+            </div>
+        </div>
 
-    <p>¡Esperamos que disfrutes por nuestra feria musical!</p>
-    <p><a href="/admin/">Ir a la Administración (solo admins)</a></p>
-</body>
+        <div class="accordion-item">
+            <div class="accordion-header" data-target="content-3">
+                ¿Qué es lo que ofrecemos?
+                <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-content" id="content-3">
+                <p>Inspirada en las clásicas ferias de discos llevadas a cabo en plazas públicas durante los fines de semana (que, no vamos a mentirnos, han ido perdiendo terreno), ofrecemos un espacio dentro del mundo virtual dedicado a la compra y venta de música en (el superior) formato físico: <b>vinilos</b>, <b>cassettes</b> y <b>CDs</b>, además de también dar lugar al soporte en vidoe que ofrencen los <b>VHSs</b>, <b>DVDs</b> y <b>Blu-rays</b>.</p>
+
+                <p>Algunas de las cosas que vas a encontrar en <b>Tienda Artaud</b> son:</p>
+                <ul>
+                    <li><u><b>Colecciones Usadas</u>:</b> El foco principal del proyecto es el material coleccionable de segunda mano, donde podés encontrar esa joya difícil de conseguir, la pieza faltante para completar tu colección, ediciones especiales o distintas a las que ya tenés, o una copia de un ítem que querés reponer, tratando directamente con los dueños del material expuesto.</li>
+                    <li><u><b>Material Nuevo/Sin Abrir</u>:</b> Sin embargo, también ofrecemos lanzamientos nuevos y discos que nunca salieron de su empaque original.</li>
+                    <li><u><b>Calidad y Transparencia</u>:</b> Cada ítem es cuidadosamente revisado por nuestros moderadores y clasificado con una <b>Condición</b> (Nuevo/Usado) y un <b>Estado</b> comprobable (Bueno, Regular, Malo) constatado según la descripción ofrecida quien vende, para asegurar que no se venda gato por liebre y te quedes tranquilo sabiendo qué es lo que decidís comprar.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header" data-target="content-4">
+                ¿Qué hace diferente a Artaud del resto?
+                <span class="accordion-icon">+</span>
+            </div>
+            <div class="accordion-content" id="content-4">
+                <p>Además del principal atractivo de la feria de compra/venta, también vas a poder encontrar otras secciones pensadas para sumar a la experiencia de navegación del sitio: un blog con gran variedad de contenido que incluye reseñas, notas para el cuidado de tu colección e historias personales, herramientas para ayudarte a la hora de identificar qué querés comprar o vender, y hasta juegos para relajarte por un momento y darte un descanso del mundo capitalista.</p>
+
+                <p>Bajo la idea de estar en constante evolución, te invitamos a pasar por nuestra <b>Caja de comentarios</b> para que dejés tus comentarios, quejas y sugerencias con respecto a tu experiencia en nuestro sitio para que de esa manera podamos mejorar, cambiar y, por supuesto, agregar nuevas cosas 🤘</p>
+            </div>
+        </div>
+
+    </div> <p style="text-align: center; margin-top: 30px;">¡Esperamos que disfrutes tu estadía en nuestra feria musical!</p>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const headers = document.querySelectorAll('.accordion-header');
+
+            headers.forEach(header => {
+                header.addEventListener('click', () => {
+                    const contentId = header.getAttribute('data-target');
+                    const content = document.getElementById(contentId);
+                    const icon = header.querySelector('.accordion-icon');
+
+                    // Alternar la visibilidad y el padding
+                    content.classList.toggle('active');
+                    icon.classList.toggle('active');
+
+                    // Cerrar otros acordeones
+                    headers.forEach(otherHeader => {
+                        if (otherHeader !== header) {
+                            const otherContentId = otherHeader.getAttribute('data-target');
+                            const otherContent = document.getElementById(otherContentId);
+                            const otherIcon = otherHeader.querySelector('.accordion-icon');
+
+                            otherContent.classList.remove('active');
+                            otherIcon.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 
 {% endblock content %}

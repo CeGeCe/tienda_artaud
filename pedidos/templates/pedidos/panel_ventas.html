@@ -1,38 +1,71 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Panel de Ventas{% endblock %}
 
 {% block content %}
+<div class="orders-container" style="max-width: 900px; margin: 40px auto; padding: 20px;">
     <h1 style="color: var(--color-navbar);">Panel de Ventas 💸</h1>
-    <p>Acá podés gestionar y ver los pedidos de productos que vendiste.</p>
-    
-    {% if pedidos_del_vendedor %}
-        {% for venta in pedidos_del_vendedor %}
-            <div class="card-producto" style="border-left-color: #28B463;">
-                <h2 style="color: #28B463;">Venta en Pedido Global #{{ venta.encabezado.id }}</h2>
-                
-                <p>Comprador: <strong>{{ venta.encabezado.comprador.username }}</strong></p>
-                <p>Fecha del Pedido: {{ venta.encabezado.fecha_pedido|date:"d M Y H:i" }} | Estado Global: <strong>{{ venta.encabezado.get_estado_display }}</strong></p>
-                <p>Dirección de Envío: {{ venta.encabezado.direccion_envio }}</p>
-                
-                <h3 style="margin-top: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Productos Vendidos en este Pedido:</h3>
-                <ul>
-                    {% for item in venta.items %}
-                        <li>
-                            {{ item.cantidad }}x **{{ item.album_comprado }}** ({{ item.artista_comprado }}) |
-                            Precio Unitario: ${{ item.precio_unitario|floatformat:2 }}
-                        </li>
-                    {% endfor %}
-                </ul>
+    <p>Aquí puedes gestionar y ver los pedidos de productos que vendiste.</p>
 
-                <div style="text-align: right; margin-top: 15px;">
-                    <p style="font-size: 1.3em;">Total de <span style="font-weight: bold;">Tu Venta</span>: <span style="color: #28B463; font-weight: bold;">${{ venta.total_venta|floatformat:2 }}</span></p>
-                    <p style="font-size: 0.9em; color: #555;">*(Nota: El estado global del pedido puede variar según otros vendedores.)*</p>
-                </div>
+    {% if pedidos_del_vendedor %}
+    {% for venta in pedidos_del_vendedor %}
+    <div class="order-card" style="border-left: 5px solid #28B463; padding: 25px; margin-bottom: 30px;">
+
+        <h2 style="color: var(--color-navbar); margin-top: 0;">Venta en Pedido Global #{{ venta.encabezado.id }}</h2>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+            <div>
+                <p>Comprador: <strong>{{ venta.encabezado.comprador.username }}</strong></p>
+                <p class="order-date">Fecha: {{ venta.encabezado.fecha_pedido|date:"d M Y, H:i" }}</p>
             </div>
-        {% endfor %}
+            <div style="text-align: right;">
+                <p style="font-size: 1.1em; margin-bottom: 5px;">Total de Tu Venta:</p>
+                <p style="font-size: 1.6em; font-weight: bold; color: #28B463;">
+                    ${{ venta.total_venta|floatformat:2 }}
+                </p>
+            </div>
+        </div>
+
+        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px;">Artículos Vendidos:</h3>
+            <ul style="list-style: none; padding: 0;">
+                {% for item in venta.items %}
+                    <li class="sales-item-line">
+                        
+                        <div class="item-details-panel">
+                            <strong>{{ item.cantidad }}x {{ item.album_comprado }}</strong> ({{ item.artista_comprado }})
+                            <br><small style="color: #777;">Precio Unitario: ${{ item.precio_unitario|floatformat:2 }}</small>
+                        </div>
+                        
+                        <form method="POST" action="{% url 'actualizar_estado_venta' item_id=item.id %}" style="margin: 0; display: flex; align-items: center;">
+                            {% csrf_token %}
+                            
+                            <label for="estado_{{ item.id }}" style="margin-right: 10px; font-size: 0.9em;">Estado:</label>
+                            <select name="nuevo_estado" id="estado_{{ item.id }}" style="padding: 5px; border-radius: 4px;">
+                                {% for value, display in item.ESTADO_CHOICES %}
+                                    <option value="{{ value }}" {% if item.estado == value %}selected{% endif %}>
+                                        {{ display }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            
+                            <button type="submit" class="btn-status-update">
+                                Actualizar
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+
+        <p style="margin-top: 20px; font-size: 0.9em; color: #555;">
+            *El estado global del pedido ({{ venta.encabezado.get_estado_display }}) puede variar.
+        </p>
+    </div>
+    {% endfor %}
     {% else %}
-        <p>Todavía no tenés ninguna venta :(.</p>
+    <p>Todavía no vendiste ningún artículo. Pero no desesperes; como decía Brian:<p></p>:
+    <p><strong>ALWAYS LOOK ON THE BRIGHT SIDE OF LIFE</strong></p>
     {% endif %}
+</div>
 
 {% endblock content %}

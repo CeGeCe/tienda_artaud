@@ -32,7 +32,7 @@ class Pedido(models.Model):
         return f"Pedido {self.id} de {self.comprador.username}"
 
 class ItemPedido(models.Model):
-    """Detalle de la transacción: un ítem específico que fue comprado."""
+    """Detalle de la trans|ción: un ítem específico que fue comprado."""
     
     # Relación con el Pedido y el Producto
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='items')
@@ -46,6 +46,13 @@ class ItemPedido(models.Model):
     artista_comprado = models.CharField(max_length=200)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     cantidad = models.PositiveIntegerField(default=1)
+
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='PAGADO')
+
+    # Acceder a las opciones de estado en la plantilla
+    @property
+    def ESTADO_CHOICES(self):
+        return ESTADO_CHOICES
 
     def get_subtotal(self):
         return self.precio_unitario * self.cantidad

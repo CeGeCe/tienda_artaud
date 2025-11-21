@@ -6,157 +6,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Tienda Artaud{% endblock %}</title>
-    
-    <style>
-        /* Definición de Colores */
-        :root {
-            --color-fondo: #FFFFFF; /* Blanco */
-            --color-navbar: #38761D; /* Verde Oscuro */
-            --color-acento: #93C47D; /* Verde Claro */
-            --color-texto-nav: white;
-            --color-texto-principal: #333;
-        }
 
-        /* Estilos Generales */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding-top: 60px; /* Espacio para el navbar fijo */
-            background-color: var(--color-fondo); 
-            color: var(--color-texto-principal);
-        }
-
-        /* Estilos del Navbar */
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: var(--color-navbar);
-            padding: 15px 40px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar-brand {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--color-texto-nav);
-            text-decoration: none;
-        }
-
-        .navbar-links a {
-            color: var(--color-texto-nav);
-            text-decoration: none;
-            margin-left: 20px;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .navbar-links a:hover {
-            background-color: var(--color-acento); /* Acento al pasar el ratón */
-            color: var(--color-navbar);
-        }
-        
-        /* Contenedor principal de contenido */
-        .content-container {
-            padding: 20px 40px;
-        }
-        
-        /* Estilo de los productos/tarjetas para acentuación */
-        .card-producto {
-            border: 1px solid #ddd;
-            border-left: 5px solid var(--color-acento); /* Línea de acento */
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-        
-        .card-producto h3 {
-            color: var(--color-navbar);
-            margin-top: 0;
-        }
-        
-        .precio {
-            color: #E67E22; /* Un color distinto para precios */
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        
-    </style>
+    <link rel="stylesheet" href="{% static 'tienda_artaud/styles.css' %}">
 </head>
+
 <body>
 
-    <header class="navbar">
-        <a href="{% url 'home' %}" class="navbar-brand">Tienda Artaud</a>
-        <nav class="navbar-links">
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a href="{% url 'home' %}">
+            <span class="brand-text">Tienda Artaud</span>
+
+            <img src="{% static 'tienda_artaud/artaud_logo.png' %}" alt="Logo Tienda Artaud" 
+                style="height: 40px; vertical-align: middle; margin-left: 10px; margin-right: 10px;">
+            </a>
+
+            <a href="{% url 'about' %}" style="color: white; font-size: 0.8em; padding: 0 10px;">
+            Sobre nosotros
+            </a>
+        </div>
+
+        <div class="navbar-links">
+    
+            <button id="dark-mode-toggle" onclick="toggleDarkMode()" 
+                    style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2em; margin-right: 15px;" 
+                    aria-label="Alternar modo oscuro">
+                ☀️
+            </button>
+
             <a href="{% url 'home' %}">Inicio</a>
             <a href="{% url 'catalogo' %}">Catálogo</a>
-            <a href="{% url 'about' %}">Sobre nosotros</a>
             
             {% if user.is_authenticated %}
-    
-                <a href="{% url 'mis_productos' %}" style="text-decoration: none; color: white; margin-left: 20px;">
-                    Mis Productos
-                </a>
-                <a href="{% url 'panel_ventas' %}" style="text-decoration: none; color: white; margin-left: 20px;">
-                    Panel de Ventas 💸
-                </a>
+
+                <div class="dropdown">
+                    <a href="#">Mi Gestión ▼</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'mis_productos' %}">Mis Productos</a>
+                        <a href="{% url 'panel_ventas' %}">Panel de Ventas 💸</a>
+                    </div>
+                </div>
                 
-                <a href="{% url 'ver_pedidos' %}" style="text-decoration: none; color: white; margin-left: 20px;">
-                    Mis Compras
-                </a>
-                <a href="{% url 'ver_carrito' %}" style="text-decoration: none; color: white; margin-left: 20px;">
-                    Carrito 🛒
-                </a>
-                
-                {% if user.is_superuser or user.is_staff %}
-                    <a href="{% url 'admin:index' %}" style="text-decoration: none; color: white; margin-left: 20px;">
-                        Admin
-                    </a>
-                {% endif %}
-                
-                <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" 
-                            style="background: none; 
-                                border: none; 
-                                color: var(--color-texto-nav); 
-                                cursor: pointer; 
-                                padding: 0; 
-                                margin-left: 20px;
-                                font-size: 1em;">
-                        Salir ({{ user.username }})
-                    </button>
-                </form>
+                <div class="dropdown">
+                    <a href="#"">Mi Cuenta ({{ user.username }}) ▼</a>
+                    <div class="dropdown-content">
+
+                        <a href="{% url 'ver_favoritos' %}">Mis Favoritos ❤️</a>
+                        <a href="{% url 'ver_carrito' %}">Mi Carrito 🛒</a>
+                        <a href="{% url 'ver_pedidos' %}">Mis Compras</a>
+                        
+                        {% if user.is_superuser or user.is_staff %}
+                            <hr style="border-top: 1px solid #555; margin: 0;">
+                            <a href="{% url 'admin:index' %}">Acceso Admin</a>
+                        {% endif %}
+                        
+                        <hr style="border-top: 1px solid #555; margin: 0;">
+                        <form method="post" action="{% url 'account_logout' %}" style="display: block; padding: 0;">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    style="width: 100%; text-align: left; 
+                                        background: none; border: none; color: var(--color-texto-nav); 
+                                        cursor: pointer; padding: 10px 16px; font-size: 1em;">
+                                Cerrar Sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
             {% else %}
-                <a href="{% url 'login' %}">Ingresar / Registrarse</a>
+                <a href="{% url 'account_login' %}">Ingresar / Registrarse</a>
             {% endif %}
-        </nav>
-    </header>
+        </div>
+    </nav>
 
 <main class="content-container">
-    <div style="margin-bottom: 20px; padding: 15px; background-color: #f0f0f0; border: 1px solid var(--color-acento); border-radius: 5px;">
-        <form action="{% url 'catalogo' %}" method="get" style="display: flex; gap: 10px; align-items: center;">
-            <input type="text" name="q" placeholder="Buscar por Artista, Título, Género, etc." 
-                value="{{ request.GET.q|default:'' }}" 
-                style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-            <button type="submit" style="padding: 10px 20px; background-color: var(--color-acento); color: var(--color-navbar); border: none; border-radius: 4px; cursor: pointer;">
-                Buscar
-            </button>
-            {% if request.GET.q %}
-            <a href="{% url 'catalogo' %}" style="text-decoration: none; color: #555; padding: 10px;">Borrar Búsqueda</a>
-            {% endif %}
-        </form>
+    <div class="search-bar-full-width"> 
+        <div class="search-bar-inner-container"> 
+            
+            <form action="{% url 'catalogo' %}" method="get" style="display: flex; gap: 10px; align-items: center;">
+
+                <input type="text" name="q" placeholder="Buscar por Artista, Álbum, Sello, País, etc." 
+                    value="{{ request.GET.q|default:'' }}" 
+                    class="search-input">
+
+                <button type="button" id="voice-search-button" class="voice-search-btn" 
+                aria-label="Búsqueda por voz">
+                🎤
+                </button>
+
+                <button type="submit" class="search-button">
+                    🔍︎
+                </button>
+
+                {% if request.GET.q %}
+                <a href="{% url 'catalogo' %}" class="search-clear-link">Borrar</a>
+                {% endif %}
+            </form>
+        </div>
     </div>
+
+    {% if messages %}
+        <div class="message-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% block content %}
     {% endblock content %}
 </main>
+
+<script src="{% static 'tienda_artaud/scripts/theme.js' %}"></script>
+<script src="{% static 'tienda_artaud/scripts/busq_voz.js' %}"></script>
+<script src="{% static 'tienda_artaud/scripts/catalogo_sort.js' %}"></script>
+<script src="{% static 'tienda_artaud/scripts/zoom.js' %}"></script>
+
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-col">
+            <h4>Navegación</h4>
+            <a href="{% url 'home' %}">Inicio</a>
+            <a href="{% url 'catalogo' %}">Catálogo</a>
+            <a href="{% url 'about' %}">Sobre Nosotros</a>
+        </div>
+        <div class="footer-col">
+            <h4>Mi Cuenta</h4>
+            <a href="{% url 'account_login' %}">Ingresar</a>
+            <a href="{% url 'ver_pedidos' %}">Mis Compras</a>
+            <a href="{% url 'mis_productos' %}">Mis Productos</a>
+        </div>
+        <div class="footer-col">
+            <h4>Legal</h4>
+            <a href="#">Términos y Condiciones</a>
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Ayuda y Soporte</a>
+        </div>
+        <div class="footer-col">
+            <h4>Contacto</h4>
+            <p>Email: info@tienda-artaud.com</p>
+            <p>Tel: +54 11 5555-ARTAUD</p>
+        </div>
+        <div class="footer-col">
+            <h4>Redes Sociales</h4>
+            <div>
+                <a href="https://facebook.com" aria-label="Facebook">Facebook</a>
+                <a href="https://instagram.com" aria-label="Instagram">Instagram</a>
+                <a href="https://twitter.com" aria-label="Twitter">X (Twitter)</a>
+                <a href="https://tiktok.com" aria-label="TikTok">TikTok</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copy">
+        &copy; 2025 Tienda Artaud. Todos los derechos reservados.
+    </div>
+</footer>
 
 </body>
 </html>

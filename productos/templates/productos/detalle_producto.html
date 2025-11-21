@@ -1,87 +1,106 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ producto.artista }} - {{ producto.album }}{% endblock %}
 
 {% block content %}
 
-    <div class="card-producto" style="border-left: 5px solid var(--color-navbar);">
-        <h1>{{ producto.artista }} - {{ producto.album }}</h1>
-        <p class="precio" style="font-size: 2em; margin-top: -10px;">
-            Precio: ${{ producto.precio|floatformat:2 }}
-        </p>
+<a href="{% url 'catalogo' %}" style="color: var(--color-navbar); font-weight: bold; text-decoration: none; margin-bottom: 15px; display: inline-block;">
+    ← Volver al Catálogo
+</a>
+
+<div class="detalle-grid">
+    
+    <div class="detalle-imagen-col">
+        {% if producto.imagen_portada %}
+            <img src="{{ producto.imagen_portada.url }}" alt="Portada de {{ producto.album }}" 
+                class="detalle-imagen" id="detalle-main-image">
+        {% else %}
+            <img src="{% static 'tienda_artaud/sin_imagen.png' %}" alt="Sin imagen de portada" 
+                class="detalle-imagen" id="detalle-main-image" style="object-fit: contain; background-color: #f0f0f0;">
+        {% endif %}
+        <span class="zoom-button" id="zoom-button">Clic para hacer zoom</span>
+    </div>
+
+    <div class="detalle-info-col">
+        
+        <h1>{{ producto.artista }}</h1>
+        <h1>{{ producto.album }}</h1>
+        <p class="vendedor-info">Vendido por: <strong>{{ producto.vendedor.username }}</strong></p>
+
+        <span class="precio-detalle">${{ producto.precio|floatformat:2 }}</span>
 
         {% if producto.stock > 0 %}
             {% if producto.vendedor != request.user %}
-                <form method="POST" action="{% url 'agregar_a_carrito' producto_id=producto.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" style="background-color: var(--color-acento); color: white; padding: 12px 25px; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; margin-top: 20px;">
-                        Añadir al Carrito 🛒
-                    </button>
-                </form>
+                <div style="display: flex; align-items: stretch; gap: 15px; margin-bottom: 20px;">
+                    
+                    <form method="POST" action="{% url 'agregar_a_carrito' producto_id=producto.pk %}" style="margin: 0; flex-grow: 1;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-add-to-cart" style="width: 100%; height: 100%;">
+                            Añadir al Carrito 🛒
+                        </button>
+                    </form>
+                    
+                    <form method="POST" action="{% url 'toggle_favorito' producto_id=producto.pk %}" style="margin: 0; flex-shrink: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-favorito-detalle 
+                                {% if request.user in producto.favoritos.all %}favorited{% endif %}" 
+                                style="height: 100%;" 
+                                aria-label="Añadir a favoritos">
+                            {% if request.user in producto.favoritos.all %}❤️{% else %}♡{% endif %}
+                        </button>
+                    </form>
+                </div>
+
             {% else %}
-                <p style="color: var(--color-navbar); font-weight: bold; font-size: 1.1em; margin-top: 20px;">
-                    Estás viendo un artículo propio.
-                </p>
-            <p>
-                <a href="{% url 'editar_producto' pk=producto.pk %}" style="color: var(--color-acento);">Editar tu publicación</a>.
-            </p>
+                <div style="margin-bottom: 20px;">
+                    <p style="color: var(--color-navbar); font-weight: bold; font-size: 1.1em;">
+                        Estás viendo un artículo propio.
+                    </p>
+                    <a href="{% url 'editar_producto' pk=producto.pk %}" style="color: var(--color-acento); text-decoration: underline;">Editar tu publicación</a>
+                </div>
             {% endif %}
 
         {% else %}
-            <p style="color: red; font-weight: bold; font-size: 1.1em; margin-top: 20px;">¡Agotado!</p>
+            <div style="margin-bottom: 20px;">
+                <p class="stock-agotado" style="font-size: 1.3em;">¡AGOTADO!</p>
+            </div>
         {% endif %}
-
-        <h2>Detalles Físicos y de Edición</h2>
-        <hr style="border-color: var(--color-acento);">
-
-        <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Formato:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_formato_display }}</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Condición:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_condicion_display }}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Estado:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_estado_display }}</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Año de Lanzamiento:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.anio_lanzamiento }}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**País de Origen:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.pais_origen }}</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Edición:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.get_edicion_display }}</td>
-            </tr>
-
-            {% if producto.sello or producto.cantidad_discos or producto.cantidad_canciones or producto.codigo_barras %}
-            <tr><td colspan="4"><h3 style="margin: 15px 0 5px 0;">Información Adicional</h3></td></tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Sello Discográfico:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.sello|default:"N/A" }}</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Cantidad de Discos/Cassetttes:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.cantidad_discos|default:"N/A" }}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Cantidad de Canciones:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.cantidad_canciones|default:"N/A" }}</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">**Código de Barras:**</td>
-                <td style="padding: 8px; border-bottom: 1px dashed #eee;">{{ producto.codigo_barras|default:"N/A" }}</td>
-            </tr>
-            {% endif %}
-
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">**Género Principal:**</td>
-                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">{{ producto.get_genero_1_display|default:"No Especificado" }}</td>
-                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">**Género Secundario:**</td>
-                <td style="padding: 8px; border-bottom: 1px solid var(--color-acento);">{{ producto.genero_2|default:"No Especificado" }}</td>
-            </tr>
-        </table>
         
-        <h2 style="margin-top: 30px;">Descripción del Vendedor</h2>
-        <p style="white-space: pre-wrap;">{{ producto.descripcion }}</p>
-
-        <p style="margin-top: 40px;"><a href="{% url 'catalogo' %}" style="color: var(--color-navbar); font-weight: bold;">← Volver al Catálogo</a></p>
+        <table class="metadata-tabla">
+            <tr>
+                <td>Stock Disponible</td>
+                <td>
+                    {% if producto.stock <= 0 %}
+                        <strong class="stock-agotado">AGOTADO</strong>
+                    {% elif producto.stock <= 5 %}
+                        <strong class="stock-alerta">{{ producto.stock }}</strong> unidades (¡Bajo!)
+                    {% else %}
+                        <strong class="stock-alto">{{ producto.stock }}</strong> unidades
+                    {% endif %}
+                </td>
+            </tr>
+            <tr><td>Formato</td><td>{{ producto.get_formato_display }}</td></tr>
+            <tr><td>Condición</td><td>{{ producto.get_condicion_display }}</td></tr>
+            <tr><td>Estado Físico</td><td>{{ producto.get_estado_display }}</td></tr>
+            <tr><td>Sello</td><td>{{ producto.sello|default:"N/A" }}</td></tr>
+            <tr><td>País</td><td>{{ producto.pais_origen|default:"N/A" }}</td></tr>
+            <tr><td>Año de Lanzamiento</td><td>{{ producto.anio_lanzamiento }}</td></tr>
+            <tr><td>Código de Barras</td><td>{{ producto.codigo_barras|default:"No registrado" }}</td></tr>
+        </table>
     </div>
+</div>
+
+<div class="descripcion-larga">
+    <h2>Descripción del Vendedor</h2>
+    <p>{{ producto.descripcion }}</p>
+</div>
+
+<div id="image-zoom-modal" class="image-zoom-modal">
+    <div class="modal-wrapper">
+        <span class="close-button">&times;</span>
+        <img class="modal-content" id="modal-zoomed-image" alt="Imagen con zoom">
+    </div>
+</div>
 
 {% endblock content %}

@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.contrib import messages
-from .models import Pedido, ItemPedido
+from .models import Pedido, ItemPedido, ESTADO_CHOICES
 from carrito.models import Carrito, ItemCarrito
 from productos.models import Producto
 from itertools import groupby # AGRUPAR
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 
@@ -112,3 +113,50 @@ def panel_ventas(request):
         })
         
     return render(request, 'pedidos/panel_ventas.html', {'pedidos_del_vendedor': pedidos_del_vendedor})
+
+
+@require_POST
+@login_required
+def actualizar_estado_venta(request, item_id):
+    """Permite al vendedor actualizar el estado de un ItemPedido específico."""
+    
+    item = get_object_or_404(ItemPedido, id=item_id)
+    
+    # Seguridad: Solo el propio vendedor puede actualizarlo
+    if item.vendedor != request.user:
+        messages.error(request, "Error de seguridad: No tienes permiso para modificar este ítem.")
+        return redirect('panel_ventas')
+        
+    # Obtener el nuevo estado enviado por el formulario
+    nuevo_estado = request.POST.get('nuevo_estado')
+    
+    # Validación del estado
+    # Asegurar que el estado sea válido
+    valid_estados = [choice[0] for choice in ESTADO_CHOICES]
+    if nuevo_estado and nuevo_estado in valid_estados:
+        
+        # Aplicar la actualización
+        item.estado = nuevo_estado
+        item.save()
+        messages.success(request, f'Estado de "{item.album_comprado}" actualizado a {item.get_estado_display}.')
+        
+        # Opcional: Si el vendedor marca su ítem como ENVIADO o ENTREGADO,
+        # se puede actualizar el estado general del Pedido si todos los ítems de ese pedido tienen el mismo estado.
+        # Por ahora solo se actualiza el ItemPedido, que es la venta individual del vendedor.
+        
+    else:
+        messages.error(request, "Estado inválido proporcionado.")
+
+    return redirect('panel_ventas')
+
+
+@login_required
+def detalle_pedido(request, pedido_id):
+    """
+    Muestra los detalles de un pedido específico, 
+    asegurándose de que pertenezca al comprador logueado.
+    """
+    # Intentam obtener el pedido por ID, solo si el comprador es el usuario actual.
+    pedido = get_object_or_404(Pedido, id=pedido_id, comprador=request.user)
+    
+    return render(request, 'pedidos/pedido_detalle.html', {'pedido': pedido})

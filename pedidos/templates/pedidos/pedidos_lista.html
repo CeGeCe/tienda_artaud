@@ -1,33 +1,50 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Mis Pedidos{% endblock %}
 
 {% block content %}
 
-    <h1 style="color: var(--color-navbar);">Historial de Pedidos</h1>
-    
+<div class="orders-container">
+    <h1 style="color: var(--color-navbar);">📜 Mis Pedidos</h1>
+
     {% if pedidos %}
-        {% for pedido in pedidos %}
-            <div class="card-producto" style="border-left-color: #5DADE2;">
-                <h2>Pedido #{{ pedido.id }}</h2>
-                <p>Fecha: {{ pedido.fecha_pedido|date:"d M Y H:i" }} | Estado: <strong>{{ pedido.get_estado_display }}</strong></p>
-                <p style="font-size: 1.2em;">Total Pagado: <span class="precio">${{ pedido.monto_total|floatformat:2 }}</span></p>
-                
-                <h3 style="margin-top: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Ítems:</h3>
-                <ul>
-                    {% for item in pedido.items.all %}
-                        <li>
-                            {{ item.cantidad }}x **{{ item.album_comprado }}** ({{ item.artista_comprado }}) |
-                            Vendedor: {{ item.vendedor.username }} | Subtotal: ${{ item.get_subtotal|floatformat:2 }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endfor %}
+    <p style="color: #555;">Aquí están todos los pedidos que has realizado:</p>
+    {% for pedido in pedidos %}
+    <div class="order-card">
+        <div class="order-summary">
+            <p class="order-id">Pedido #{{ pedido.id }}</p>
+
+            {# Asumiendo que tienes un campo fecha_pedido #}
+            <p class="order-date">Fecha: {{ pedido.fecha_pedido|date:"d M Y, H:i" }}</p>
+        </div>
+
+        {# Esto asume que el campo estado es un string, por ejemplo 'Pendiente', 'Enviado', etc. #}
+        <div class="order-status status-{{ pedido.estado }}">
+            {{ pedido.estado }}
+        </div>
+
+        <div class="order-actions">
+            {# Asumiendo que el método get_total calcula el total del pedido #}
+            <p class="order-total">${{ pedido.get_total|floatformat:2 }}</p>
+
+            {# Asegúrate de que tienes una URL llamada 'detalle_pedido' que acepte el ID del pedido #}
+            <a href="{% url 'detalle_pedido' pedido_id=pedido.id %}" class="btn-details">
+                Ver Detalles
+            </a>
+        </div>
+    </div>
+    {% endfor %}
     {% else %}
-        <p>Aún no has realizado ninguna compra.</p>
+    <div class="empty-message">
+        <h2 style="color: var(--color-navbar);">Aún no has realizado ningún pedido.</h2>
+        <p>Cuando compres algo, aparecerá aquí.</p>
+        {# Asegúrate de que tienes una URL llamada 'catalogo' #}
+        <a href="{% url 'catalogo' %}" class="btn-details" style="background-color: #555; margin-top: 20px;">
+            Ir al Catálogo
+        </a>
+    </div>
     {% endif %}
 
-    <p style="margin-top: 30px;"><a href="{% url 'catalogo' %}" style="color: var(--color-navbar);">← Seguir Comprando</a></p>
-
-{% endblock content %}w
+</div>
+{% endblock content %}

@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # URLs de autenticación de Django (login/logout)
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('allauth.urls')),
     
     # URLs para registro (signup) 
     path('accounts/', include('usuarios.urls')),

@@ -31,8 +31,10 @@
             </button>
         </form>
 
+        {% include "registration/_google_login.html" %}
+
         <p style="margin-top: 20px; text-align: center; font-size: 0.9em;">
-            ¿Ya tenés una cuenta? <a href="{% url 'login' %}" style="color: var(--color-acento); font-weight: bold;">Inicia sesión</a>.
+            ¿Ya tenés una cuenta? <a href="{% url 'account_login' %}" style="color: var(--color-acento); font-weight: bold;">Inicia sesión</a>.
         </p>
     </div>
     
@@ -45,4 +47,5 @@
             box-sizing: border-box; 
         }
     </style>
+
 {% endblock content %}

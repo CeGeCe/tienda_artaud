@@ -1,38 +1,65 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Home | Tienda Artaud{% endblock %}
+{% block title %}Inicio | Tienda Artaud{% endblock %}
 
 {% block content %}
-<h1>Bienvenidos a Tienda Artaud 🤘</h1>
-    <p>El lugar de encuentro para los amantes del coleccionismo</p>
-    <p>¡Acá tenés lo último que llegó!</p>
 
-<h2>Últimos Ingresos</h2>
+<h1 style="text-align: center; margin-bottom: 40px;">¡Bienvenido a la Tienda Artaud!</h1>
 
-{% if productos %}
-    {% for producto in productos %}
-        <div class="card-producto" style="display: flex; gap: 15px; align-items: center;">
-            
-            {% if producto.imagen_portada %}
-                <img src="{{ producto.imagen_portada.url }}" alt="Portada" 
-                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
-            {% endif %}
-            
-            <div style="flex-grow: 1;">
-                <h3>
-                    <a href="{% url 'detalle_producto' pk=producto.pk %}" style="color: var(--color-navbar); text-decoration: none;">
-                        {{ producto.artista }} - {{ producto.album }} 
-                    </a>
-                    <span class="precio">${{ producto.precio|floatformat:2 }}</span>
-                </h3>
+<div class="carousel-wrapper">
+    <h2 class="carousel-title" style="text-align: center; color: var(--color-navbar);">
+        💿 Últimos Ingresos
+    </h2>
+
+    <div class="carousel-content" id="product-carousel">
+        {% for producto in productos %}
+        <div class="carousel-item-card">
+            <a href="{% url 'detalle_producto' pk=producto.pk %}" style="text-decoration: none; color: inherit;">
+                <div class="card-image-container" style="height: 200px;">
+                    {% if producto.imagen_portada %}
+                    <img src="{{ producto.imagen_portada.url }}" alt="{{ producto.album }}" class="card-image">
+                    {% else %}
+                    <img src="{% static 'tienda_artaud/sin_imagen.png' %}" alt="Sin imagen" class="card-image"
+                        style="object-fit: contain;">
+                    {% endif %}
                 </div>
-        </div>
-    {% endfor %}
 
-<p><a href="{% url 'catalogo' %}" style="color: var(--color-navbar); font-weight: bold;">Explorar el Catálogo
-        completo →</a></p>
-{% else %}
-    <p>Aún no hay productos destacados. ¡Carga algunos ítems para que aparezcan aquí!</p>
-{% endif %}
+                <div class="card-content" style="padding: 10px;">
+                    <h3 style="color: var(--color-navbar); font-size: 1em; height: auto;">
+                        {{ producto.artista }} - {{ producto.album|truncatechars:30 }}
+                    </h3>
+                    <p class="card-metadata" style="margin-top: 5px;">
+                        {{ producto.get_formato_display }} | {{ producto.get_condicion_display }}
+                    </p>
+                    <span class="producto-precio" style="font-size: 1.3em; margin-top: auto;">
+                        ${{ producto.precio|floatformat:2 }} 
+                        {# ⬆️ Asegúrate de que esto esté así. Si se veía `{{ producto.precio|floatformat:2 }}` en la imagen, es un error de sintaxis. #}
+                    </span>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="carousel-nav-btn prev" onclick="scrollCarousel(-1)">&#10094;</button>
+    <button class="carousel-nav-btn next" onclick="scrollCarousel(1)">&#10095;</button>
+
+</div>
+
+<div style="text-align: center; margin-top: 50px;">
+    <a href="{% url 'catalogo' %}" class="btn-add-to-cart" 
+        style="width: auto; padding: 12px 30px; text-decoration: none; margin-right: 15px; color: var(--color-navbar);">
+        Ver Catálogo Completo 🔎
+    </a>
+
+    <a href="{% if user.is_authenticated %}{% url 'publicar_producto' %}{% else %}{% url 'account_login' %}?next={% url 'publicar_producto' %}{% endif %}" 
+        class="btn-add-to-cart btn-publicar-dark" 
+        style="width: auto; padding: 12px 30px; text-decoration: none;">
+        Publicar un Producto 📝
+    </a>
+</div>
+
+<script src="{% static 'tienda_artaud/scripts/carrusel.js' %}"></script>
 
 {% endblock content %}

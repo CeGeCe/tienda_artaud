@@ -31,19 +31,32 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+APPS_PREINSTALADAS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+
+APPS_PROPIAS = [
     'productos',
     'usuarios',
     'carrito',
     'pedidos',
     'blog',
 ]
+
+APPS_TERCEROS = [
+    'django.contrib.sites', # Para el 'allauth'
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+]
+
+INSTALLED_APPS = APPS_PREINSTALADAS + APPS_PROPIAS + APPS_TERCEROS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 ROOT_URLCONF = 'tienda_artaud.urls'
@@ -104,16 +118,53 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# ID del sitio (allauth)
+SITE_ID = 1
+
+# Configurar los 'backends' para permitir login con email/pass Y con Google
+AUTHENTICATION_BACKENDS = [
+    # Backend estándar de Django (login con usuario/contraseña)
+    'django.contrib.auth.backends.ModelBackend',
+    
+    # Backend de Allauth (login con email y social logins)
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
 # ===============================================
 # CONFIGURACIÓN DE LOGIN/LOGOUT
 # ===============================================
 
-# El usuario es enviado a su Panel de Vendedor.
-LOGIN_REDIRECT_URL = 'mis_productos'
+# El usuario logueado va a la HOME.
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # URL para redirigir usuarios no autenticados cuando intentan acceder a una página restringida (@login_required)
 # Dirige a la vista de login de Django
 LOGIN_URL = 'login'
+
+# Usar el email como método principal de identificación
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True # Mantener el login por username
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_SESSION_REMEMBER = True
+
+# No requerir verificación de email por ahora (optional o none)
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '622197194026-esfheendbq8finld9lqd4kialbnboh36.apps.googleusercontent.com',
+            'secret': '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',
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+    }
+}
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -135,6 +186,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATICFILES_DIRS = [
+    # Buscar archivos estáticos
+    os.path.join(BASE_DIR, 'static'), 
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
