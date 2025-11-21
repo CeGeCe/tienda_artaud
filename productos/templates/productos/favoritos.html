@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Favoritos{% endblock %}
+
+{% block content %}
+    <h1>{{ titulo_pagina }}</h1>
+
+    {% if productos %}
+        <p>Acá están todos los artículos que guardaste.</p>
+        
+        <div class="catalogo-grid" style="margin-top: 20px;">
+            
+            {% for producto in productos %}
+                <div class="card-producto" style="position: relative;">
+
+                    <div class="favorite-btn-wrapper">
+                        <form action="{% url 'toggle_favorito' producto_id=producto.pk %}" method="POST" style="margin: 0;">
+                            {% csrf_token %}
+                            {% if request.user in producto.favoritos.all %}
+                                <button type="submit" class="favorite-btn favorited" aria-label="Quitar de favoritos">
+                                    ❤️
+                                </button>
+                            {% else %}
+                                <button type="submit" class="favorite-btn" aria-label="Añadir a favoritos">
+                                    ♡
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
+
+                    <a href="{% url 'detalle_producto' pk=producto.pk %}" style="text-decoration: none; color: inherit;">
+                        <div class="card-image-container">
+                            {% if producto.imagen_portada %}
+                                <img src="{{ producto.imagen_portada.url }}" alt="{{ producto.album }}" class="card-image">
+                            {% else %}
+                                <img src="{% static 'tienda_artaud/no_image.png' %}" alt="Sin imagen de portada" class="card-image" style="object-fit: contain;">
+                            {% endif %}
+                        </div>
+                    </a>
+                    
+                    <div class="card-content">
+                        <a href="{% url 'detalle_producto' pk=producto.pk %}" style="text-decoration: none;">
+                            <h3 style="color: var(--color-navbar);">
+                                {{ producto.artista }} - {{ producto.album }} 
+                            </h3>
+                        </a>
+                        <div class="card-metadata">
+                            <p style="margin: 0;">
+                                Formato: <strong>{{ producto.get_formato_display }}</strong> 
+                                | Condición: <strong>{{ producto.get_condicion_display }}</strong> 
+                            </p>
+                            <p style="margin: 5px 0 0 0;">
+                                <strong>País:</strong> {{ producto.pais_origen|default:"N/A" }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <span class="producto-precio">${{ producto.precio|floatformat:2 }}</span>
+                    <span class="producto-vendedor">Publicado por: <strong>{{ producto.vendedor.username }}</strong></span>
+                </div>
+            {% endfor %}
+            
+        </div> {% else %}
+        <p>Todavía no tenés productos en Favoritos.</p>
+        <a href="{% url 'catalogo' %}" class="btn-add-to-cart" style="width: auto; text-decoration: none; margin-top: 15px;">Explorar Catálogo</a>
+    {% endif %}
+
+{% endblock content %}

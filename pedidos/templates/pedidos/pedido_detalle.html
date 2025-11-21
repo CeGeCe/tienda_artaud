@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalle de Pedido #{{ pedido.id }}{% endblock %}
+
+{% block content %}
+<style>
+    .detalle-pedido-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .detalle-header {
+        border-bottom: 2px solid var(--color-acento);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .item-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 0.95em;
+    }
+
+    .item-list-table th,
+    .item-list-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .item-list-table th {
+        background-color: #f8f8f8;
+        font-weight: bold;
+    }
+
+    .pedido-total-box {
+        text-align: right;
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 2px solid var(--color-navbar);
+    }
+
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        background-color: #ffeb3b;
+        color: #333;
+    }
+
+    /* Modo Oscuro */
+    body.dark-mode .item-list-table th {
+        background-color: #333;
+        color: #eee;
+    }
+
+    body.dark-mode .item-list-table td {
+        border-bottom-color: #444;
+    }
+
+    body.dark-mode .pedido-total-box {
+        border-top-color: #444;
+    }
+
+    body.dark-mode .status-badge {
+        background-color: #ffc107;
+    }
+</style>
+
+<div class="detalle-pedido-container">
+    <a href="{% url 'ver_pedidos' %}" style="color: var(--color-navbar); text-decoration: none;">← Volver a Mis
+        Pedidos</a>
+
+    <div class="detalle-header">
+        <h1 style="margin-top: 15px;">Pedido #{{ pedido.id }}</h1>
+        <p style="font-size: 1.1em; color: #777;">
+            Fecha: {{ pedido.fecha_pedido|date:"d M Y H:i" }} | Estado:
+            <span class="status-badge status-{{ pedido.estado }}">
+                {{ pedido.get_estado_display }}
+            </span>
+        </p>
+    </div>
+
+    <h2>Artículos Comprados:</h2>
+    <table class="item-list-table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Vendedor</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in pedido.items.all %}
+            <tr>
+                <td>
+                    {{ item.artista_comprado }} - <strong>{{ item.album_comprado }}</strong>
+                    <br><small style="color: #999;">Estado de Venta: {{ item.get_estado_display }}</small>
+                </td>
+                <td>{{ item.vendedor.username }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.precio_unitario|floatformat:2 }}</td>
+                <td>${{ item.get_subtotal|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pedido-total-box">
+        <h2 style="color: var(--color-navbar);">Total del Pedido: ${{ pedido.monto_total|floatformat:2 }}</h2>
+    </div>
+
+    {# Opcional: Mostrar dirección de envío aquí #}
+
+</div>
+{% endblock content %}

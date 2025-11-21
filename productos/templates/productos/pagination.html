@@ -1,0 +1,29 @@
+{% if page_obj.has_other_pages %}
+
+    <div class="pagination-controls">
+        {# Botón Anterior #}
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&orden={{ orden_actual }}&vista={{ vista_actual }}&por_pagina={{ por_pagina_actual }}" 
+            class="page-link">
+                « Anterior
+            </a>
+        {% else %}
+            <span class="page-link disabled">« Anterior</span>
+        {% endif %}
+
+        {# Indicador de página actual #}
+        <span class="current-page-info">
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {# Botón Siguiente #}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&orden={{ orden_actual }}&vista={{ vista_actual }}&por_pagina={{ por_pagina_actual }}" 
+            class="page-link">
+                Siguiente »
+            </a>
+        {% else %}
+            <span class="page-link disabled">Siguiente »</span>
+        {% endif %}
+    </div>
+{% endif %}
