@@ -94,8 +94,12 @@ WSGI_APPLICATION = 'tienda_artaud.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'tienda_artaud_db',
+        'USER': 'artaud_user',      
+        'PASSWORD': 'artaud_p455',
+        'HOST': 'localhost',        
+        'PORT': '5432',
     }
 }
 
@@ -143,11 +147,11 @@ LOGOUT_REDIRECT_URL = '/'
 # Dirige a la vista de login de Django
 LOGIN_URL = 'login'
 
-# Usar el email como método principal de identificación
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True # Mantener el login por username
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+# Usar el email como método principal de identificación / también 'username'
+ACCOUNT_LOGIN_METHODS = ['email', 'username']
+ACCOUNT_SIGNUP_FIELDS = ['email', 'username']
+
+# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_SESSION_REMEMBER = True
 
 # No requerir verificación de email por ahora (optional o none)
