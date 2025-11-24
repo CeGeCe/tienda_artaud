@@ -12,113 +12,151 @@
 
 <body>
 
+<header>
     <nav class="navbar">
-        <div class="navbar-brand">
-            <a href="{% url 'home' %}">
-            <span class="brand-text">Tienda Artaud</span>
-
-            <img src="{% static 'tienda_artaud/artaud_logo.png' %}" alt="Logo Tienda Artaud" 
-                style="height: 40px; vertical-align: middle; margin-left: 10px; margin-right: 10px;">
+        <div class="nav-left">
+            <a href="{% url 'home' %}" class="navbar-brand-link">
+                <img src="{% static 'tienda_artaud/artaud_logo.png' %}" alt="Logo" class="brand-icon"> 
+                <span class="brand-text">Tienda Artaud</span>
             </a>
 
-            <a href="{% url 'about' %}" style="color: white; font-size: 0.8em; padding: 0 10px;">
-            Sobre nosotros
-            </a>
-        </div>
+            <div class="nav-links-simple">
+                <a href="{% url 'about' %}">Nosotros</a>
+                <a href="#">Blog</a>
+                <a href="{% url 'catalogo' %}">Catálogo</a>
+            </div>
 
-        <div class="navbar-links">
-    
             <button id="dark-mode-toggle" onclick="toggleDarkMode()" 
                     style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2em; margin-right: 15px;" 
                     aria-label="Alternar modo oscuro">
                 ☀️
             </button>
+        </div>
 
-            <a href="{% url 'home' %}">Inicio</a>
-            <a href="{% url 'catalogo' %}">Catálogo</a>
-            
+        <div class="nav-search-wrapper">
+            <form action="{% url 'catalogo' %}" method="get" class="nav-search-form">
+                
+                <button type="button" id="voice-search-button" class="nav-voice-btn" aria-label="Buscar por voz">
+                    🎤
+                </button>
+
+                <input type="text" name="q" placeholder="Buscar..." 
+                    value="{{ request.GET.q|default:'' }}" 
+                    class="nav-search-field search-input">
+                
+                {% if request.GET.q %}
+                    <a href="{% url 'catalogo' %}" class="nav-search-clear" aria-label="Borrar">✕</a>
+                {% endif %}
+
+                <button type="submit" class="nav-search-btn" aria-label="Buscar">
+                    🔍
+                </button>
+            </form>
+        </div>
+
+        <div class="nav-right">
             {% if user.is_authenticated %}
 
                 <div class="dropdown">
-                    <a href="#">Mi Gestión ▼</a>
+                    <a href="#" class="nav-link-icon user-pill">
+                        👤 {{ user.username|truncatechars:10 }}
+                    </a>
                     <div class="dropdown-content">
-                        <a href="{% url 'mis_productos' %}">Mis Productos</a>
-                        <a href="{% url 'panel_ventas' %}">Panel de Ventas 💸</a>
-                    </div>
-                </div>
-                
-                <div class="dropdown">
-                    <a href="#"">Mi Cuenta ({{ user.username }}) ▼</a>
-                    <div class="dropdown-content">
-
-                        <a href="{% url 'ver_favoritos' %}">Mis Favoritos ❤️</a>
-                        <a href="{% url 'ver_carrito' %}">Mi Carrito 🛒</a>
-                        <a href="{% url 'ver_pedidos' %}">Mis Compras</a>
-                        
-                        {% if user.is_superuser or user.is_staff %}
-                            <hr style="border-top: 1px solid #555; margin: 0;">
-                            <a href="{% url 'admin:index' %}">Acceso Admin</a>
+                        <a href="#">Dashboard 📊</a> {% if user.is_staff %}
+                            <hr style="margin: 0; border-top: 1px solid #ddd;">
+                            <a href="{% url 'admin:index' %}">Acceso Admin 👮‍♂️</a>
                         {% endif %}
                         
-                        <hr style="border-top: 1px solid #555; margin: 0;">
-                        <form method="post" action="{% url 'account_logout' %}" style="display: block; padding: 0;">
+                        <hr style="margin: 0; border-top: 1px solid #ddd;">
+                        <form method="post" action="{% url 'account_logout' %}" style="padding: 0;">
                             {% csrf_token %}
-                            <button type="submit" 
-                                    style="width: 100%; text-align: left; 
-                                        background: none; border: none; color: var(--color-texto-nav); 
-                                        cursor: pointer; padding: 10px 16px; font-size: 1em;">
-                                Cerrar Sesión
-                            </button>
+                            <button type="submit" class="dropdown-logout-btn">Cerrar Sesión</button>
                         </form>
                     </div>
                 </div>
 
+                <div class="dropdown">
+                    <a href="#" class="nav-link-icon">Mis Ventas ▾</a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'panel_ventas' %}">Panel de Ventas 💸</a>
+                        <a href="{% url 'mis_productos' %}">Mis Productos</a>
+                        <a href="{% url 'publicar_producto' %}">Publicar Nuevo ➕</a>
+                    </div>
+                </div>
+
+                <a href="{% url 'ver_pedidos' %}" class="nav-link-icon">Mis Compras</a>
+                
+                <div class="dropdown rich-dropdown">
+                    <a href="{% url 'ver_favoritos' %}" class="nav-link-icon">Favoritos</a>
+                    <div class="dropdown-content preview-list">
+                        <div class="preview-header">Últimos Favoritos</div>
+                        {% if navbar_favs %}
+                            {% for prod in navbar_favs %}
+                                <a href="{% url 'detalle_producto' pk=prod.pk %}" class="preview-item">
+                                    {% if prod.imagen_portada %}
+                                        <img src="{{ prod.imagen_portada.url }}" class="preview-img">
+                                    {% endif %}
+                                    <div class="preview-info">
+                                        <span class="preview-title">{{ prod.album|truncatechars:15 }}</span>
+                                        <span class="preview-price">${{ prod.precio|floatformat:0 }}</span>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <div style="padding: 10px; color: #777; font-size: 0.9em;">Sin favoritos aún.</div>
+                        {% endif %}
+                        <a href="{% url 'ver_favoritos' %}" class="preview-footer-link">Ver Todos los Favoritos →</a>
+                    </div>
+                </div>
+
+                <div class="dropdown rich-dropdown">
+                    <a href="{% url 'ver_carrito' %}" class="nav-link-icon">
+                        🛒 <span class="badge">{{ navbar_cart_count }}</span>
+                    </a>
+                    <div class="dropdown-content preview-list">
+                        <div class="preview-header">Tu Carrito</div>
+                        {% if navbar_cart_items %}
+                            {% for item in navbar_cart_items %}
+                                <a href="{% url 'detalle_producto' pk=item.producto.pk %}" class="preview-item">
+                                    {% if item.producto.imagen_portada %}
+                                        <img src="{{ item.producto.imagen_portada.url }}" class="preview-img">
+                                    {% endif %}
+                                    <div class="preview-info">
+                                        <span class="preview-title">{{ item.producto.album|truncatechars:15 }}</span>
+                                        <span class="preview-qty">x{{ item.cantidad }}</span>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <div style="padding: 10px; color: #777; font-size: 0.9em;">Carrito vacío.</div>
+                        {% endif %}
+                        <a href="{% url 'ver_carrito' %}" class="preview-footer-link">Ir al Carrito →</a>
+                    </div>
+                </div>
+
             {% else %}
-                <a href="{% url 'account_login' %}">Ingresar / Registrarse</a>
+                <a href="{% url 'account_login' %}" style="color: white; text-decoration: none; font-weight: bold;">Ingresar / Registrarse</a>
             {% endif %}
         </div>
     </nav>
+</header>
 
-<main class="content-container">
-    <div class="search-bar-full-width"> 
-        <div class="search-bar-inner-container"> 
-            
-            <form action="{% url 'catalogo' %}" method="get" style="display: flex; gap: 10px; align-items: center;">
+    <main class="content-container">
 
-                <input type="text" name="q" placeholder="Buscar por Artista, Álbum, Sello, País, etc." 
-                    value="{{ request.GET.q|default:'' }}" 
-                    class="search-input">
+        {% if messages %}
+            <div class="message-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                        <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-                <button type="button" id="voice-search-button" class="voice-search-btn" 
-                aria-label="Búsqueda por voz">
-                🎤
-                </button>
-
-                <button type="submit" class="search-button">
-                    🔍︎
-                </button>
-
-                {% if request.GET.q %}
-                <a href="{% url 'catalogo' %}" class="search-clear-link">Borrar</a>
-                {% endif %}
-            </form>
-        </div>
-    </div>
-
-    {% if messages %}
-        <div class="message-container">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    {% block content %}
-    {% endblock content %}
-</main>
+        {% block content %}
+        {% endblock content %}
+    </main>
 
 <script src="{% static 'tienda_artaud/scripts/theme.js' %}"></script>
 <script src="{% static 'tienda_artaud/scripts/busq_voz.js' %}"></script>
@@ -132,6 +170,7 @@
             <a href="{% url 'home' %}">Inicio</a>
             <a href="{% url 'catalogo' %}">Catálogo</a>
             <a href="{% url 'about' %}">Sobre Nosotros</a>
+            Blog
         </div>
         <div class="footer-col">
             <h4>Mi Cuenta</h4>
@@ -140,7 +179,7 @@
             <a href="{% url 'mis_productos' %}">Mis Productos</a>
         </div>
         <div class="footer-col">
-            <h4>Legal</h4>
+            <h4>Legales</h4>
             <a href="#">Términos y Condiciones</a>
             <a href="#">Política de Privacidad</a>
             <a href="#">Ayuda y Soporte</a>

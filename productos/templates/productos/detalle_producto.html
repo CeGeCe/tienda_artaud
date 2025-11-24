@@ -32,22 +32,26 @@
 
         {% if producto.stock > 0 %}
             {% if producto.vendedor != request.user %}
-                <div style="display: flex; align-items: stretch; gap: 15px; margin-bottom: 20px;">
-                    
-                    <form method="POST" action="{% url 'agregar_a_carrito' producto_id=producto.pk %}" style="margin: 0; flex-grow: 1;">
+                <div style="display: flex; align-items: stretch; gap: 15px; margin-bottom: 20px;">                    
+                    <form method="POST" action="{% url 'agregar_a_carrito' producto_id=producto.pk %}" style="margin: 0; flex: 1;">
                         {% csrf_token %}
                         <button type="submit" class="btn-add-to-cart" style="width: 100%; height: 100%;">
                             Añadir al Carrito 🛒
                         </button>
                     </form>
                     
-                    <form method="POST" action="{% url 'toggle_favorito' producto_id=producto.pk %}" style="margin: 0; flex-shrink: 0;">
+                    <form method="POST" action="{% url 'toggle_favorito' producto_id=producto.pk %}" style="margin: 0; flex: 1;">
                         {% csrf_token %}
                         <button type="submit" class="btn-favorito-detalle 
                                 {% if request.user in producto.favoritos.all %}favorited{% endif %}" 
-                                style="height: 100%;" 
-                                aria-label="Añadir a favoritos">
-                            {% if request.user in producto.favoritos.all %}❤️{% else %}♡{% endif %}
+                                aria-label="Alternar favoritos" style="width: 100%; height: 100%;">
+                            
+                            {% if request.user in producto.favoritos.all %}
+                                <span style="margin-right: 5px;">❤️</span> Quitar de favoritos
+                            {% else %}
+                                <span style="margin-right: 5px;">♡</span> Agregar a favoritos
+                            {% endif %}
+                            
                         </button>
                     </form>
                 </div>
@@ -84,7 +88,7 @@
             <tr><td>Condición</td><td>{{ producto.get_condicion_display }}</td></tr>
             <tr><td>Estado Físico</td><td>{{ producto.get_estado_display }}</td></tr>
             <tr><td>Sello</td><td>{{ producto.sello|default:"N/A" }}</td></tr>
-            <tr><td>País</td><td>{{ producto.pais_origen|default:"N/A" }}</td></tr>
+            <tr><td>País</td><td>{{ producto.pais|default:"N/A" }}</td></tr>
             <tr><td>Año de Lanzamiento</td><td>{{ producto.anio_lanzamiento }}</td></tr>
             <tr><td>Código de Barras</td><td>{{ producto.codigo_barras|default:"No registrado" }}</td></tr>
         </table>

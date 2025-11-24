@@ -4,6 +4,7 @@
 {% block title %}Detalle de Pedido #{{ pedido.id }}{% endblock %}
 
 {% block content %}
+
 <style>
     .detalle-pedido-container {
         max-width: 800px;
@@ -75,41 +76,47 @@
         Pedidos</a>
 
     <div class="detalle-header">
-        <h1 style="margin-top: 15px;">Pedido #{{ pedido.id }}</h1>
         <p style="font-size: 1.1em; color: #777;">
-            Fecha: {{ pedido.fecha_pedido|date:"d M Y H:i" }} | Estado:
+            Estado: 
             <span class="status-badge status-{{ pedido.estado }}">
                 {{ pedido.get_estado_display }}
             </span>
+
+            {% if pedido.estado == 'PENDIENTE' %}
+                <a href="{% url 'pagar_pedido_pendiente' pedido_id=pedido.id %}" 
+                    style="margin-left: 15px; background-color: #2D9CDB; color: white; padding: 5px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 0.9em;">
+                    Pagar Ahora 💳
+                </a>
+            {% endif %}
         </p>
     </div>
 
     <h2>Artículos Comprados:</h2>
-    <table class="item-list-table">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Vendedor</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in pedido.items.all %}
-            <tr>
-                <td>
-                    {{ item.artista_comprado }} - <strong>{{ item.album_comprado }}</strong>
-                    <br><small style="color: #999;">Estado de Venta: {{ item.get_estado_display }}</small>
-                </td>
-                <td>{{ item.vendedor.username }}</td>
-                <td>{{ item.cantidad }}</td>
-                <td>${{ item.precio_unitario|floatformat:2 }}</td>
-                <td>${{ item.get_subtotal|floatformat:2 }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <table class="item-list-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Vendedor</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in pedido.items.all %}
+                <tr>
+                    <td>
+                        {{ item.artista_comprado }} - <strong>{{ item.album_comprado }}</strong>
+                        <br><small style="color: #999;">Estado de Venta: {{ item.get_estado_display }}</small>
+                    </td>
+                    <td>{{ item.vendedor.username }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>${{ item.precio_unitario|floatformat:2 }}</td>
+                    <td>${{ item.get_subtotal|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
     <div class="pedido-total-box">
         <h2 style="color: var(--color-navbar);">Total del Pedido: ${{ pedido.monto_total|floatformat:2 }}</h2>

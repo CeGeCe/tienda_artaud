@@ -9,36 +9,36 @@
     <h1 style="color: var(--color-navbar);">📜 Mis Pedidos</h1>
 
     {% if pedidos %}
-    <p style="color: #555;">Aquí están todos los pedidos que has realizado:</p>
-    {% for pedido in pedidos %}
-    <div class="order-card">
-        <div class="order-summary">
-            <p class="order-id">Pedido #{{ pedido.id }}</p>
+        <p style="color: #555;">Aquí están todos los pedidos que has realizado:</p>
 
-            {# Asumiendo que tienes un campo fecha_pedido #}
-            <p class="order-date">Fecha: {{ pedido.fecha_pedido|date:"d M Y, H:i" }}</p>
-        </div>
+        {% for pedido in pedidos %}
+            <div class="order-card">
 
-        {# Esto asume que el campo estado es un string, por ejemplo 'Pendiente', 'Enviado', etc. #}
-        <div class="order-status status-{{ pedido.estado }}">
-            {{ pedido.estado }}
-        </div>
+                <div class="order-card-row">
+                    
+                    <div class="order-summary">
+                        <p class="order-id">Pedido #{{ pedido.id }}</p>
+                        <p class="order-date">Fecha: {{ pedido.fecha_pedido|date:"d M Y, H:i" }}</p>
+                    </div>
 
-        <div class="order-actions">
-            {# Asumiendo que el método get_total calcula el total del pedido #}
-            <p class="order-total">${{ pedido.get_total|floatformat:2 }}</p>
+                    <div class="order-status status-{{ pedido.estado }}">
+                        {{ pedido.get_estado_display }}
+                    </div>
 
-            {# Asegúrate de que tienes una URL llamada 'detalle_pedido' que acepte el ID del pedido #}
-            <a href="{% url 'detalle_pedido' pedido_id=pedido.id %}" class="btn-details">
-                Ver Detalles
-            </a>
-        </div>
-    </div>
-    {% endfor %}
+                    <div class="order-actions">
+                        <p class="order-total">${{ pedido.monto_total|floatformat:2 }}</p>
+                        <a href="{% url 'detalle_pedido' pedido_id=pedido.id %}" class="btn-details">
+                            Ver Detalles
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
     {% else %}
     <div class="empty-message">
-        <h2 style="color: var(--color-navbar);">Aún no has realizado ningún pedido.</h2>
-        <p>Cuando compres algo, aparecerá aquí.</p>
+        <h2 style="color: var(--color-navbar);">Todavía no realizaste ningún pedido.</h2>
+        <p>Cuando compres algo, aparecerá por acá.</p>
         {# Asegúrate de que tienes una URL llamada 'catalogo' #}
         <a href="{% url 'catalogo' %}" class="btn-details" style="background-color: #555; margin-top: 20px;">
             Ir al Catálogo

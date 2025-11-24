@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin: Ventas Globales{% endblock %}
+
+{% block content %}
+<div class="orders-container" style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+    <h1 style="color: var(--color-navbar);">📊 Ventas Globales (Admin)</h1>
+    
+    {% if ventas_globales %}
+        {% for venta in ventas_globales %}
+            <div class="order-card" style="border-left: 5px solid #555; padding: 25px; margin-bottom: 30px;">
+                
+                <div style="display: flex; justify-content: space-between;">
+                    <h2 style="margin-top: 0;">Pedido #{{ venta.encabezado.id }}</h2>
+                    <span style="background-color: #eee; padding: 5px 10px; border-radius: 4px;">
+                        Comprador: <strong>{{ venta.encabezado.comprador.username }}</strong>
+                    </span>
+                </div>
+                
+                <p class="order-date">Fecha: {{ venta.encabezado.fecha_pedido|date:"d M Y, H:i" }}</p>
+
+                <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 15px;">Detalle de Items:</h3>
+                
+                <ul style="list-style: none; padding: 0;">
+                    {% for item in venta.items %}
+                        <li class="sales-item-line" style="border-bottom: 1px dashed #ccc;">
+                            
+                            <div style="flex-basis: 50%;">
+                                <strong>{{ item.cantidad }}x {{ item.album_comprado }}</strong>
+                                <br>
+                                <small>Vendedor: <strong style="color: var(--color-acento);">{{ item.vendedor.username }}</strong></small>
+                            </div>
+                            
+                            <div style="flex-basis: 30%; text-align: right;">
+                                Estado: 
+                                <span class="status-badge status-{{ item.estado }}">
+                                    {{ item.get_estado_display }}
+                                </span>
+                            </div>
+
+                            <div style="flex-basis: 20%; text-align: right; font-weight: bold;">
+                                ${{ item.get_subtotal|floatformat:2 }}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No hay ventas registradas en la plataforma.</p>
+    {% endif %}
+</div>
+
+{% endblock content %}

@@ -8,15 +8,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin # Proteger las vistas
 from .models import Producto, FORMATO_CHOICES, CONDICION_CHOICES, EDICION_CHOICES, GENERO_1_CHOICES
 from .forms import ProductoForm
 from django.views.decorators.http import require_POST
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 
 # Create your views here.
 
 
 def home(request):
     """Muestra la página de inicio con una selección de productos."""
-    # Muestra los 12 más recientes para el Carrusel ('ID' como proxy de reciente)
-    productos_destacados = Producto.objects.all().order_by('-id')[:12]
+    # Muestra los 12 más recientes (y aprobados) en Carrusel ('ID' como proxy de recientes)
+    productos_destacados = Producto.objects.filter(
+        aprobado=True,
+        stock__gt=0, # Productos con stock > 0
+        ).order_by('-id')[:12]
 
     contexto = {
         'productos': productos_destacados,
@@ -62,8 +65,12 @@ def is_valid_filter(filter_list):
 def catalogo(request):
     """Catálogo completo, búsqueda y filtros"""
 
-    #Obtener todos los productos y el Query
-    productos = Producto.objects.all()
+    #Obtener SOLO productos aprobados
+    productos = Producto.objects.filter(
+        aprobado=True,
+        stock__gt=0,
+        )
+
     query = request.GET.get('q') # Búsqueda por texto
 
     if query:
@@ -73,7 +80,7 @@ def catalogo(request):
             Q(album__icontains=query) |
             Q(codigo_barras__icontains=query) |
             Q(sello__icontains=query) |
-            Q(pais_origen__icontains=query) |
+            Q(pais__icontains=query) |
             Q(genero_1__icontains=query) |
             Q(genero_2__icontains=query) 
         ).distinct() # distinct() evitar duplicados si un producto coincide varias veces
@@ -182,6 +189,13 @@ def detalle_producto(request, pk):
         'titulo_pagina': f'{producto.artista} - {producto.album}',
     }
 
+    # SEGURIDAD / MODERACIÓN
+    if not producto.aprobado:
+        # Si el usuario NO es el vendedor ni es admin
+        if request.user != producto.vendedor and not request.user.is_staff:
+            # Da error 404, no "Prohibido" porque no revela que el producto existe
+            raise Http404("Este producto no está disponible o no existe.")
+
     # Renderizar
     return render(request, 'productos/detalle_producto.html', contexto)
 
@@ -193,9 +207,16 @@ class ProductoCreateView(LoginRequiredMixin, CreateView):
     template_name = 'productos/producto_form.html'
     success_url = reverse_lazy('mis_productos') # Redirige al panel del vendedor
     
-    # Sobrescribir el método para asignar el usuario logueado como vendedor
     def form_valid(self, form):
-        form.instance.vendedor = self.request.user # Asigna el usuario actual
+        # Asignar el usuario actual como vendedor
+        form.instance.vendedor = self.request.user 
+        
+        # AUTO-APROBACIÓN PARA admin
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            form.instance.aprobado = True
+        else:
+            form.instance.aprobado = False
+            
         return super().form_valid(form)
 
 

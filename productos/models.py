@@ -36,8 +36,12 @@ GENERO_1_CHOICES = (
     ('FOLK', 'Folk'),
     ('HIPHOP', 'Hip-hop'),
     ('JAZZ', 'Jazz'),
+    ('METAL', 'Metal'),
     ('POP', 'Pop'),
+    ('RAP', 'Rap'),
+    ('REGGAE', 'Reggae'),
     ('ROCK', 'Rock'),
+    ('SOUNDTRACK', 'Soundtrack')
 )
 
 
@@ -51,12 +55,12 @@ class Producto(models.Model):
         null=True
     )
 
-    stock = models.PositiveIntegerField(default=1)
+    stock = models.PositiveIntegerField(default=1, verbose_name="Copias disponibles")
 
-    album = models.CharField(max_length=200)
+    album = models.CharField(max_length=200, verbose_name="Álbum")
     artista = models.CharField(max_length=200)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-    anio_lanzamiento = models.IntegerField() 
+    anio_lanzamiento = models.IntegerField(verbose_name="Año de lanzamiento")
 
     # Formatos predefinidos: Vinilo, CD, Cassette
     formato = models.CharField(
@@ -64,12 +68,13 @@ class Producto(models.Model):
         choices = FORMATO_CHOICES
     )
     
-    pais_origen = models.CharField(max_length=100)
+    pais = models.CharField(max_length=100, verbose_name="País")
     
     # Condiciones predefinidas: Usado o Nuevo
     condicion = models.CharField(
         max_length = 10, 
-        choices = CONDICION_CHOICES
+        choices = CONDICION_CHOICES,
+        verbose_name= "Condición"
     )
     
     # Estados predefinidos: Bueno, Regular, Malo
@@ -78,56 +83,65 @@ class Producto(models.Model):
         choices = ESTADO_CHOICES
     )
     
-    descripcion = models.TextField(max_length=500) 
-    
+    descripcion = models.TextField(max_length=500, verbose_name="Condición")
     
     # --- CAMPOS OPCIONALES ---
-    
+
     edicion = models.CharField(
         max_length=10, 
         choices = EDICION_CHOICES, 
         default = 'ESTANDAR',
         blank = True,
-        null = True
+        null = True,
+        verbose_name= "Edición"
     )
         
     sello = models.CharField(
         max_length = 100, 
         blank = True, 
-        null = True
+        null = True,
+        verbose_name= "Sello discográfico"
     )
 
     cantidad_discos = models.IntegerField(
         blank = True, 
-        null = True
+        null = True,
+        verbose_name= "Cantidad de discos"
     )
     
     cantidad_canciones = models.IntegerField(
         blank = True, 
-        null = True
+        null = True,
+        verbose_name= "Cantidad de canciones"
     )
     
     genero_1 = models.CharField(
         max_length = 50, 
         choices = GENERO_1_CHOICES,
         blank = True, 
-        null = True
+        null = True,
+        verbose_name= "Género principal"
     )
     
     genero_2 = models.CharField(
         max_length = 50, 
         blank = True, 
-        null = True
+        null = True,
+        verbose_name= "Género secundario"
     )
     
     codigo_barras = models.CharField(
         max_length = 50, 
         blank = True, 
-        null = True
+        null = True,
+        verbose_name= "Código de barras"
     )
+
+    # default=False : al crearse, NO es visible hasta que se apruebe
+    aprobado = models.BooleanField(default=False, verbose_name="Aprobado por Admin")
 
     favoritos = models.ManyToManyField(User, related_name='productos_favoritos', blank=True)
 
-    # --- MÉTODO PARA REPRESENTACIÓN EN EL ADMIN
+    # MÉTODO PARA REPRESENTACIÓN EN EL ADMIN
     def __str__(self):
         return f"{self.artista} - {self.album} ({self.formato})"

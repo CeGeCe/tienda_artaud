@@ -81,6 +81,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'tienda_artaud.context_processors.navbar_data',
             ],
         },
     },
@@ -134,6 +136,12 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+# ===============================================
+# CONFIGURACIÓN DE EMAIL (PARA DESARROLLO)
+# ===============================================
+
+# Esto imprime los correos en la terminal en lugar de intentar enviarlos por internet.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ===============================================
 # CONFIGURACIÓN DE LOGIN/LOGOUT
@@ -145,17 +153,34 @@ LOGOUT_REDIRECT_URL = '/'
 
 # URL para redirigir usuarios no autenticados cuando intentan acceder a una página restringida (@login_required)
 # Dirige a la vista de login de Django
-LOGIN_URL = 'login'
+LOGIN_URL = 'account_login'
 
-# Usar el email como método principal de identificación / también 'username'
-ACCOUNT_LOGIN_METHODS = ['email', 'username']
+# Desactivar login por código para que siempre pida contraseña
+ACCOUNT_LOGIN_BY_CODE_ENABLED = False
+
+# Permite loguearse con usuario ó email
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+
+# Pide email al registrarse
+ACCOUNT_EMAIL_REQUIRED = True
+
+ACCOUNT_USERNAME_REQUIRED = True
+
+ACCOUNT_PASSWORD_REQUIRED = True
+
 ACCOUNT_SIGNUP_FIELDS = ['email', 'username']
 
-# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+
+ACCOUNT_LOGIN_METHODS = {'username'}
+
 ACCOUNT_SESSION_REMEMBER = True
 
-# No requerir verificación de email por ahora (optional o none)
+# No requerir verificación de email por ahora (optional || none)
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# Evita la página intermedia de confirmación de "Sign In Via..."
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -200,3 +225,6 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-6973532859148559-112313-90998e1af493223f0045d212e8d8cf45-3008632151'

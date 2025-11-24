@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+
+{% block title %}Registrarme{% endblock %}
+
+{% block content %}
+    <div class="signup-container" style="max-width: 400px; margin: 40px auto; padding: 30px; border: 1px solid #ccc; border-radius: 8px; background-color: var(--color-fondo, white);">
+        
+        <h2 style="text-align: center; margin-bottom: 10px;">Registro de Usuario</h2>
+        <p style="text-align: center; font-size: 0.9em; margin-bottom: 20px; color: #666;">
+            ¡Unite para <b>comprar</b> y <b>vender</b> tu colección!
+        </p>
+        
+        <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert-error" style="margin-bottom: 15px; padding: 10px; background-color: #ffebee; color: #c62828; border: 1px solid #ef9a9a; border-radius: 4px;">
+                    {% for error in form.non_field_errors %}
+                        <p style="margin: 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div style="margin-bottom: 15px;">
+                <label for="id_email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
+                <input type="email" name="email" placeholder="ejemplo@correo.com" required id="id_email">
+                {% for error in form.email.errors %}<p style="color: red; font-size: 0.85em;">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="id_username" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre de Usuario:</label>
+                <input type="text" name="username" placeholder="Tu nombre de usuario" required id="id_username">
+                {% for error in form.username.errors %}<p style="color: red; font-size: 0.85em;">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="id_password1" style="display: block; margin-bottom: 5px; font-weight: bold;">Contraseña:</label>
+                <input type="password" name="password1" placeholder="Crea una contraseña" required id="id_password1">
+                <p style="font-size: 0.75em; color: #777; margin-top: 2px;">La contraseña debe tener al menos 8 caracteres y no ser demasiado común.</p>
+                {% for error in form.password1.errors %}<p style="color: red; font-size: 0.85em;">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="id_password2" style="display: block; margin-bottom: 5px; font-weight: bold;">Repetir Contraseña:</label>
+                <input type="password" name="password2" placeholder="Repite la contraseña" required id="id_password2">
+                {% for error in form.password2.errors %}<p style="color: red; font-size: 0.85em;">{{ error }}</p>{% endfor %}
+            </div>
+
+            <button type="submit" 
+                    style="width: 100%; padding: 12px; background-color: var(--color-navbar); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; font-weight: bold; margin-top: 10px;">
+                Crear Cuenta
+            </button>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+
+        <p style="margin-top: 20px; text-align: center; font-size: 0.9em;">
+            ¿Ya tenés una cuenta? <a href="{% url 'account_login' %}" style="color: var(--color-acento); font-weight: bold;">Inicia sesión</a>.
+        </p>
+
+        <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee;">
+            {% include "registration/_google_login.html" %}
+        </div>
+    </div>
+    
+    <style>
+        .signup-container input:not([type="checkbox"]):not([type="hidden"]) {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        /* Ajuste Modo Oscuro para inputs locales */
+        body.dark-mode .signup-container {
+            background-color: var(--color-fondo) !important;
+            border-color: #444;
+        }
+        body.dark-mode .signup-container input {
+            background-color: #333;
+            color: white;
+            border-color: #555;
+        }
+    </style>
+{% endblock content %}

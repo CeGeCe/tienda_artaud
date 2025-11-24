@@ -7,6 +7,13 @@ from carrito.models import Carrito, ItemCarrito
 from productos.models import Producto
 from itertools import groupby # AGRUPAR
 from django.views.decorators.http import require_POST
+import mercadopago
+from django.conf import settings
+from django.urls import reverse
+
+from .models import Pedido, ItemPedido
+from carrito.models import Carrito, ItemCarrito
+from productos.models import Producto
 
 # Create your views here.
 
@@ -15,67 +22,115 @@ from django.views.decorators.http import require_POST
 @transaction.atomic # Si algo falla, se deshacen todos los cambios de DB
 def checkout_proceso(request):
     """
-    Procesa la compra: Mueve ítems del Carrito a Pedido, actualiza el stock y vacía el carrito.
+    1. Crea el Pedido (Pendiente).
+    2. Genera la preferencia en Mercado Pago.
+    3. Redirige al usuario a pagar.
     """
+
+    # Obtener carrito
     try:
         carrito = Carrito.objects.get(usuario=request.user)
         items_carrito = ItemCarrito.objects.filter(carrito=carrito)
     except Carrito.DoesNotExist:
-        messages.error(request, "Tu carrito está vacío o no existe.")
         return redirect('ver_carrito')
 
     if not items_carrito.exists():
-        messages.error(request, "Tu carrito está vacío. Añade productos para comprar.")
         return redirect('catalogo')
 
-    # VERIFICACIÓN FINAL de Stock
+    # Validación de Stock
     productos_agotados = []
-    for item_carrito in items_carrito:
-        producto = item_carrito.producto
-        if item_carrito.cantidad > producto.stock:
-            productos_agotados.append(f"{producto.album} ({producto.stock} disponibles)")
+    for item_c in items_carrito:
+        if item_c.cantidad > item_c.producto.stock:
+            productos_agotados.append(item_c.producto.album)
     
     if productos_agotados:
-        messages.error(request, f"No hay suficiente stock para los siguientes ítems: {', '.join(productos_agotados)}. Ajusta la cantidad.")
+        messages.error(request, f"Stock insuficiente para: {', '.join(productos_agotados)}")
         return redirect('ver_carrito')
 
-    # Encabezado del Pedido
-    nuevo_pedido = Pedido.objects.create(
+    # Crea el Pedido como PENDIENTE
+    pedido = Pedido.objects.create(
         comprador=request.user,
         monto_total=carrito.get_total(),
-        # En una implementación real acá iría la dirección
-        direccion_envio="Dirección de prueba", 
-        estado='PAGADO' # Asumimos pago exitoso para la prueba
+        estado='PENDIENTE'
     )
 
-    # Mover Ítems del Carrito al Pedido y Actualizar Stock ---
-    for item_carrito in items_carrito:
-        producto = item_carrito.producto
+    # Preparar datos para Mercado Pago y Crear ItemPedido
+    items_mp = []
+    
+    for item_c in items_carrito:
+        producto = item_c.producto
         
-        # Crear ItemPedido (el registro de la venta)
+        # Guardar ItemPedido en la BB.DD
         ItemPedido.objects.create(
-            pedido=nuevo_pedido,
+            pedido=pedido,
             producto=producto,
-            vendedor=producto.vendedor, # Asignamos el vendedor del producto original
+            vendedor=producto.vendedor,
             album_comprado=producto.album,
             artista_comprado=producto.artista,
-            precio_unitario=item_carrito.precio_item,
-            cantidad=item_carrito.cantidad
+            precio_unitario=item_c.precio_item,
+            cantidad=item_c.cantidad,
+            estado='PENDIENTE'
         )
         
-        # Actualizar el stock
-        producto.stock -= item_carrito.cantidad
+        # Descontar stock (Reserva)
+        producto.stock -= item_c.cantidad
         producto.save()
         
-        # Eliminar el ítem del carrito
-        item_carrito.delete()
+        # Estructura del ítem para Mercado Pago
+        items_mp.append({
+            "title": f"{producto.artista} - {producto.album}",
+            "quantity": int(item_c.cantidad),
+            "currency_id": "ARS",
+            "unit_price": float(item_c.precio_item)
+        })
+
+    # Configurar el SDK de Mercado Pago
+    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+    
+    # Crear las URLs de retorno
+    # 'build_absolute_uri' para que MP sepa volver a la tienda
+    url_exito = request.build_absolute_uri(reverse('pago_exitoso', args=[pedido.id]))
+    url_fallo = request.build_absolute_uri(reverse('pago_fallido'))
+
+    preference_data = {
+        "items": items_mp,
+        "payer": {
+            "email": request.user.email
+        },
+        "back_urls": {
+            "success": url_exito,
+            "failure": url_fallo,
+            "pending": url_fallo
+        },
+        # "auto_return": "approved", # Vuelve SI se aprueba el pago
+        "external_reference": str(pedido.id),
+    }
+
+    # ⚠️ AGREGA ESTAS LÍNEAS DE DEPURACIÓN AQUÍ:
+    print("--- DATOS A ENVIAR A MP ---")
+    print(preference_data)
+    print("---------------------------")
+
+    # Crea la Preferencia
+    preference_response = sdk.preference().create(preference_data)
+    preference = preference_response.get("response", {})
+
+    # ⚠️ DIAGNÓSTICO: Verificamos si existe el init_point
+    if "init_point" not in preference:
+        # Si falla, imprimimos el error real en la consola
+        print("❌ ERROR DE MERCADO PAGO:", preference_response)
         
-    messages.success(request, f"¡Compra realizada con éxito! Tu pedido {nuevo_pedido.id} fue creado.")
-    
-    # Eliminar el carrito (si quedó vacío, aunque los ítems ya se eliminaron)
-    carrito.delete()
-    
-    return redirect('ver_pedidos') # Redirigir al comprador a ver sus pedidos
+        messages.error(request, "Hubo un error al generar el pago. Intenta nuevamente.")
+        # Borramos el pedido pendiente para no dejar basura
+        pedido.delete() 
+        return redirect('ver_carrito')
+
+    # Vaciar el carrito local (porque ya está hecho el pedido)
+    items_carrito.delete()
+    carrito.delete() # Borra el carrito / lo deja vacío
+
+    # Redirigir a Mercado Pago
+    return redirect(preference["init_point"])
 
 
 # Vista simple para ver los pedidos del comprador
@@ -122,30 +177,50 @@ def actualizar_estado_venta(request, item_id):
     
     item = get_object_or_404(ItemPedido, id=item_id)
     
-    # Seguridad: Solo el propio vendedor puede actualizarlo
+    # Seguridad: Solo el vendedor
     if item.vendedor != request.user:
-        messages.error(request, "Error de seguridad: No tienes permiso para modificar este ítem.")
+        messages.error(request, "No tienes permiso.")
         return redirect('panel_ventas')
         
-    # Obtener el nuevo estado enviado por el formulario
     nuevo_estado = request.POST.get('nuevo_estado')
+    estado_anterior = item.estado
     
-    # Validación del estado
-    # Asegurar que el estado sea válido
-    valid_estados = [choice[0] for choice in ESTADO_CHOICES]
-    if nuevo_estado and nuevo_estado in valid_estados:
+    # --- VALIDACIONES DE FLUJO ---
+    
+    # No permitir volver a 'PENDIENTE' bajo ninguna circunstancia
+    if nuevo_estado == 'PENDIENTE':
+        messages.error(request, "No se puede volver al estado 'Pendiente' manualmente.")
+        return redirect('panel_ventas')
+
+    # Si ya está enviado o entregado, no volver a 'PAGADO' (opcional)
+    if estado_anterior in ['ENVIADO', 'ENTREGADO'] and nuevo_estado == 'PAGADO':
+        messages.warning(request, "El pedido ya estaba avanzado. Verifica si es correcto volver a 'Pagado'.")
+        # (Aquí permitimos el cambio pero avisamos, o podría bloquearse con un return)
+
+    # --- LÓGICA DE STOCK (CANCELACIÓN) ---
+    
+    if item.producto: # Verificamos que el producto original siga existiendo
         
-        # Aplicar la actualización
-        item.estado = nuevo_estado
-        item.save()
-        messages.success(request, f'Estado de "{item.album_comprado}" actualizado a {item.get_estado_display}.')
-        
-        # Opcional: Si el vendedor marca su ítem como ENVIADO o ENTREGADO,
-        # se puede actualizar el estado general del Pedido si todos los ítems de ese pedido tienen el mismo estado.
-        # Por ahora solo se actualiza el ItemPedido, que es la venta individual del vendedor.
-        
-    else:
-        messages.error(request, "Estado inválido proporcionado.")
+        # Si se CANCELA la venta -> Devolver Stock
+        if nuevo_estado == 'CANCELADO' and estado_anterior != 'CANCELADO':
+            item.producto.stock += item.cantidad
+            item.producto.save()
+            messages.info(request, f"Venta cancelada. Se han repuesto {item.cantidad} unidades al stock.")
+
+        # Si se REACTIVA una venta cancelada -> Restar Stock (si hay disponible)
+        elif estado_anterior == 'CANCELADO' and nuevo_estado != 'CANCELADO':
+            if item.producto.stock >= item.cantidad:
+                item.producto.stock -= item.cantidad
+                item.producto.save()
+            else:
+                messages.error(request, "No hay suficiente stock para reactivar esta venta cancelada.")
+                return redirect('panel_ventas')
+
+    # --- GUARDADO ---
+    
+    item.estado = nuevo_estado
+    item.save()
+    messages.success(request, f'Estado actualizado a {item.get_estado_display()}.')
 
     return redirect('panel_ventas')
 
@@ -160,3 +235,106 @@ def detalle_pedido(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, comprador=request.user)
     
     return render(request, 'pedidos/pedido_detalle.html', {'pedido': pedido})
+
+
+def pago_exitoso(request, pedido_id):
+    """Cuando desde MP confirma el pago exitoso."""
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    
+    # Verificar usuario
+    if request.user != pedido.comprador:
+        return redirect('home')
+
+    # Actualizar estado del Pedido
+    pedido.estado = 'PAGADO'
+    pedido.save()
+    
+    # Actualizar estado de los ítems individuales
+    pedido.items.all().update(estado='PAGADO')
+
+    messages.success(request, f"¡Pago Acreditado! Tu pedido #{pedido.id} está confirmado.")
+    return redirect('detalle_pedido', pedido_id=pedido.id)
+
+def pago_fallido(request):
+    """Si el usuario cancela o el pago falla."""
+    messages.error(request, "El proceso de pago fue cancelado o rechazado.")
+    return redirect('catalogo')
+
+
+@login_required
+def pagar_pedido_pendiente(request, pedido_id):
+    """Regenera la preferencia de MP para un pedido existente y redirige."""
+    pedido = get_object_or_404(Pedido, id=pedido_id, comprador=request.user)
+
+    # Solo permitir si está pendiente
+    if pedido.estado != 'PENDIENTE':
+        messages.info(request, "Este pedido ya no está pendiente de pago.")
+        return redirect('detalle_pedido', pedido_id=pedido.id)
+
+    # Reconstruir la lista de ítems para MP
+    items_mp = []
+    for item in pedido.items.all():
+        items_mp.append({
+            "title": f"{item.producto.artista} - {item.album_comprado}",
+            "quantity": int(item.cantidad),
+            "currency_id": "ARS",
+            "unit_price": float(item.precio_unitario)
+        })
+
+    # Configurar SDK
+    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+
+    url_exito = request.build_absolute_uri(reverse('pago_exitoso', args=[pedido.id]))
+    url_fallo = request.build_absolute_uri(reverse('pago_fallido'))
+
+    preference_data = {
+        "items": items_mp,
+        "payer": {"email": request.user.email},
+        "back_urls": {
+            "success": url_exito,
+            "failure": url_fallo,
+            "pending": url_fallo
+        },
+        # "auto_return": "approved", # Descomentar en producción
+        "external_reference": str(pedido.id),
+    }
+
+    preference_response = sdk.preference().create(preference_data)
+    preference = preference_response.get("response", {})
+
+    if "init_point" not in preference:
+        messages.error(request, "Error al conectar con Mercado Pago.")
+        return redirect('detalle_pedido', pedido_id=pedido.id)
+
+    return redirect(preference["init_point"])
+
+
+@login_required
+def admin_resumen_ventas(request):
+    """Vista exclusiva para administradores: Ve todas las ventas de la plataforma."""
+    
+    # Verificar permiso STAFF
+    if not request.user.is_staff:
+        messages.error(request, "Acceso denegado. Área exclusiva de administración.")
+        return redirect('home')
+    
+    # Obtener TODOS los items vendidos (sin filtrar por usuario)
+    # Ordenamos por fecha de pedido (descendente)
+    ventas_items = ItemPedido.objects.all().order_by('-pedido__fecha_pedido')
+    
+    # Agrupar (Igual que en el panel de vendedor)
+    from itertools import groupby
+    ventas_globales = []
+    
+    for pedido_id, group in groupby(ventas_items, key=lambda x: x.pedido.id):
+        items_del_pedido = list(group)
+        pedido = items_del_pedido[0].pedido 
+        total_venta = sum(item.get_subtotal() for item in items_del_pedido)
+        
+        ventas_globales.append({
+            'encabezado': pedido,
+            'items': items_del_pedido,
+            'total_venta': total_venta,
+        })
+        
+    return render(request, 'pedidos/admin_ventas.html', {'ventas_globales': ventas_globales})

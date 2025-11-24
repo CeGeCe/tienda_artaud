@@ -16,10 +16,22 @@
             
             {% for field in form %}
                 <div style="margin-bottom: 15px;">
-                    <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">
-                        {{ field.label }}{% if field.field.required %} <span style="color: red;">*</span>{% endif %}:
-                    </label>
+
+                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
+                        <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                            {{ field.label }}{% if field.field.required %} <span style="color: red;">*</span>{% endif %}:
+                        </label>
                     
+                    {% if field.help_text %}
+                        <div class="tooltip-container">
+                            <span class="info-icon">i</span>
+                            <span class="tooltip-text">{{ field.help_text }}</span>
+                        </div>
+                    {% endif %}
+
+                    </div>
+
                     {{ field }}
                     
                     {% for error in field.errors %}
@@ -39,27 +51,6 @@
 
     <form method="post" enctype="multipart/form-data"> 
     {% csrf_token %}
-    
-    <div class="card-producto" style="border-left: 5px solid var(--color-navbar); display: flex; gap: 30px;">
-        
-        {% if producto.imagen_portada %}
-            <div style="flex-shrink: 0;">
-                <img src="{{ producto.imagen_portada.url }}" alt="Portada de {{ producto.album }}" 
-                    style="width: 200px; height: 200px; object-fit: cover; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            </div>
-        {% else %}
-            <div style="width: 200px; height: 200px; background-color: #f0f0f0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; text-align: center; color: #888; border-radius: 4px; flex-shrink: 0;">
-                No hay imagen de portada
-            </div>
-        {% endif %}
-
-        <div style="flex-grow: 1;">
-            <h1>{{ producto.artista }} - {{ producto.album }}</h1>
-            <p class="precio" style="font-size: 2em; margin-top: -10px;">
-                Precio: ${{ producto.precio|floatformat:2 }}
-            </p>
-            </div>
-    </div>
     
     <style>
         input[type="text"], input[type="number"], textarea, select {

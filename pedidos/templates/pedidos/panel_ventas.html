@@ -6,7 +6,7 @@
 {% block content %}
 <div class="orders-container" style="max-width: 900px; margin: 40px auto; padding: 20px;">
     <h1 style="color: var(--color-navbar);">Panel de Ventas 💸</h1>
-    <p>Aquí puedes gestionar y ver los pedidos de productos que vendiste.</p>
+    <p>Acá podés ver y gestionar los pedidos de productos que vendiste.</p>
 
     {% if pedidos_del_vendedor %}
     {% for venta in pedidos_del_vendedor %}
@@ -16,7 +16,7 @@
 
         <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
             <div>
-                <p>Comprador: <strong>{{ venta.encabezado.comprador.username }}</strong></p>
+                <p>Comprado por: <strong>{{ venta.encabezado.comprador.username }}</strong></p>
                 <p class="order-date">Fecha: {{ venta.encabezado.fecha_pedido|date:"d M Y, H:i" }}</p>
             </div>
             <div style="text-align: right;">
@@ -33,7 +33,16 @@
                     <li class="sales-item-line">
                         
                         <div class="item-details-panel">
-                            <strong>{{ item.cantidad }}x {{ item.album_comprado }}</strong> ({{ item.artista_comprado }})
+                            <strong>{{ item.cantidad }}x 
+                                {% if item.producto %}
+                                    <a href="{% url 'detalle_producto' pk=item.producto.pk %}" style="color: var(--color-navbar); text-decoration: none;">
+                                        {{ item.album_comprado }}
+                                    </a>
+                                {% else %}
+                                    {{ item.album_comprado }} (Producto Eliminado)
+                                {% endif %}
+                            </strong> 
+                            ({{ item.artista_comprado }})
                             <br><small style="color: #777;">Precio Unitario: ${{ item.precio_unitario|floatformat:2 }}</small>
                         </div>
                         
@@ -63,8 +72,8 @@
     </div>
     {% endfor %}
     {% else %}
-    <p>Todavía no vendiste ningún artículo. Pero no desesperes; como decía Brian:<p></p>:
-    <p><strong>ALWAYS LOOK ON THE BRIGHT SIDE OF LIFE</strong></p>
+    <p>Todavía no vendiste ningún artículo. Pero no desesperes; como decía Brian:</p>
+    <h2><strong>ALWAYS LOOK ON THE BRIGHT SIDE OF LIFE</strong></h2>
     {% endif %}
 </div>
 

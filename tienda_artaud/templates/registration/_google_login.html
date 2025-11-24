@@ -1,10 +1,10 @@
 {% load socialaccount %}
 
 <div style="margin-top: 20px; text-align: center;">
-    <h3 style="font-size: 1.2em; color: #777;">O inicia sesión con:</h3>
+  <h3 style="font-size: 1.2em; color: #000000;">También podés:</h3>
 
-    <a href="{% provider_login_url 'google' method='oauth2' %}" style="display: block; 
-            width: 100%; 
+  <a href="{% provider_login_url 'google' method='oauth2' %}" style="display: block; 
+            width: 95%; 
             padding: 12px; 
               background-color: #DB4437; /* Color de Google */
             color: white; 
@@ -13,6 +13,6 @@
             font-size: 1.1em;
             font-weight: bold;
             transition: background-color 0.2s;">
-        <span style="margin-right: 10px;">G</span> Ingresar con Google
-    </a>
+    <span style="margin-right: 10px;">G</span> Ingresar con Google
+  </a>
 </div>

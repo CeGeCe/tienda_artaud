@@ -18,10 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Esto intercepta /accounts/login/ y usa el sistema nativo que sabemos que funciona.
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='account/login.html'), name='account_login'),
 
     # URLs de autenticación de Django (login/logout)
     path('accounts/', include('allauth.urls')),
@@ -30,7 +34,6 @@ urlpatterns = [
     path('accounts/', include('usuarios.urls')),
 
     path('', include('productos.urls')),
-    # path('', include('doom.urls')),
 
     path('carrito/', include('carrito.urls')),
 

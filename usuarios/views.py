@@ -10,4 +10,4 @@ from .forms import CustomUserCreationForm
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm # Form Personalizado (En español)
     success_url = reverse_lazy('login') # Redirige al usuario a la página de login después del registro
-    template_name = 'registration/signup.html'
+    template_name = 'account/signup.html'

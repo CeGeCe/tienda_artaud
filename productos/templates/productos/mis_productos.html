@@ -9,7 +9,7 @@
     <div style="margin-bottom: 20px;">
         <a href="{% url 'publicar_producto' %}" 
             style="padding: 10px 15px; background-color: var(--color-navbar); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
-            + Publicar Nuevo Álbum
+            + Publicar un Artículo Nuevo
         </a>
     </div>
 
@@ -23,7 +23,19 @@
                         </a>
                         <span class="precio">${{ producto.precio|floatformat:2 }}</span>
                     </h3>
-
+                
+                <div style="margin-bottom: 10px;">
+                    {% if producto.aprobado %}
+                        <span style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 4px; font-size: 0.9em; border: 1px solid #c3e6cb;">
+                            ✅ Publicado
+                        </span>
+                    {% else %}
+                        <span style="background-color: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 4px; font-size: 0.9em; border: 1px solid #ffeeba;">
+                            ⏳ Pendiente de Aprobación
+                        </span>
+                    {% endif %}
+                </div>
+                
                 <div style="font-size: 0.9em; margin-top: 5px;">
                     <p>
                         Formato: <strong>{{ producto.get_formato_display }}</strong> 
@@ -45,7 +57,7 @@
             {% endfor %}
 
         {% else %}
-            <p>Todavía no publicaste ningún producto. ¡Ponete a vender!</p>
+            <p>Todavía no publicaste ningún producto.</p>
         {% endif %}
 
     </div>

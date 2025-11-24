@@ -28,29 +28,6 @@ body.dark-mode {
     color: #FFFFFF;
 }
 
-
-/* ============== */
-/* --- NAVBAR --- */
-/* ============== */
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background-color: var(--color-navbar);
-    padding: 10px 0px;
-    /* Espacios horizontales */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    display: flex;
-    justify-content: space-between;
-    /* Clave: empuja los 3 elementos a los extremos */
-    align-items: center;
-}
-
-body.dark-mode .navbar-links a {
-    color: #FFFFFF;
-}
-
 body.dark-mode a {
     color: var(--color-acento);
 }
@@ -61,10 +38,31 @@ body.dark-mode h3 {
     color: #FFFFFF;
 }
 
-
 /* ============== */
 /* --- NAVBAR --- */
 /* ============== */
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: var(--color-navbar);
+    height: 65px;
+    padding: 0 20px;
+    /* Espacios horizontales */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Separación entre Logo y Links */
+    padding-left: 50px;
+}
 
 .navbar-brand {
     font-size: 1.6em;
@@ -88,52 +86,195 @@ body.dark-mode h3 {
     /* Elimina el gap interno para controlar el espaciado manualmente */
 }
 
-body.dark-mode .navbar-brand .brand-text {
-    color: #FFFFFF;
-}
-
-/* Estilo para el enlace "Sobre nosotros" */
-.navbar-brand>a:last-child {
-    /* Estilos del enlace Sobre Nosotros, junto al Brand */
-    color: white;
-    font-size: 0.8em;
-    text-decoration: none;
-    padding: 8px 10px;
-    /* Pequeño padding para que se vea como botón */
-}
-
-.navbar-brand>a:last-child:hover {
-    background-color: var(--color-hover-nav);
-    border-radius: 4px;
-}
-
-.navbar-brand img {
-    height: 30px;
-    /* Tamaño del ícono */
-    width: auto;
-}
-
-.navbar-links {
-    /* flexbox para controlar mejor el espaciado y la alineación */
+.navbar-brand-link {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.navbar-links a {
-    font-size: 0.9 em;
-    font-weight: 500;
-    padding: 8px 8px;
     text-decoration: none;
-    color: var(--color-texto-nav);
-    white-space: nowrap;
-    /* Evita que el texto de los botones se divida en dos líneas */
+    color: white;
+    font-size: 1.4em;
+    font-weight: bold;
 }
 
-.navbar-links a:hover {
-    background-color: var(--color-acento);
-    /* Acento al pasar el ratón */
+.brand-icon {
+    height: 35px;
+    margin-right: 10px;
+}
+
+.nav-links-simple {
+    display: flex;
+    gap: 5px; 
+    align-items: center;
+}
+
+.nav-links-simple a {
+    color: var(--color-texto-nav);
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+
+    padding: 8px 12px; 
+    border-radius: 4px;
+    
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-links-simple a:hover {
     background-color: var(--color-hover-nav);
+    opacity: 1;
+}
+
+/* ESPACIO CENTRAL */
+.nav-spacer {
+    flex-grow: 1; /* Ocupa todo el espacio disponible */
+}
+
+/* SECTOR DERECHO */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Separación entre íconos */
+    padding-right: 20px;
+}
+
+.nav-link-icon {
+    color: white;
+    text-decoration: none;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.nav-link-icon:hover {
+    background-color: var(--color-hover-nav);
+}
+
+/* CONTADOR del Carrito */
+.badge {
+    background-color: var(--color-acento);
+    color: var(--color-navbar);
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75em;
+    font-weight: bold;
+    margin-left: 5px;
+    margin-right: 30px;
+}
+
+/* Estilo "Pill" para el Usuario */
+.user-pill {
+    background-color:var(--color-acento);
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
+/* --- DROPDOWNS RICOS (Favoritos y Carrito) --- */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0; /* Alinear a la derecha del botón padre */
+    top: 100%;
+    background-color: white;
+    min-width: 220px;
+    box-shadow: 0 8px 20px rgb(55, 197, 149);
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 1001;
+}
+
+/* Ajuste para Dark Mode */
+body.dark-mode .dropdown-content {
+    background-color: var(--color-navbar);
+    border: 1px solid #444;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Estilos internos del Dropdown Rico */
+.preview-header {
+    padding: 10px;
+    background-color: var(--color-acento);
+    font-weight: bold;
+    font-size: 0.85em;
+    color: var(--color-texto-nav);
+    border-bottom: 1px solid var(--color-fondo);
+}
+body.dark-mode .preview-header {
+    background-color: #b51a1a;
+    color: #aaa;
+    border-bottom-color: #2bbda2;
+}
+
+.preview-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #f9f9f9;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+}
+body.dark-mode .preview-item {
+    border-bottom-color: #444;
+    color: #eee;
+}
+
+.preview-item:hover {
+    background-color: #f9f9f9;
+}
+body.dark-mode .preview-item:hover {
+    background-color: #3a3a3a;
+}
+
+.preview-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.preview-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85em;
+}
+
+.preview-footer-link {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    background-color: var(--color-acento);
+    color: var(--color-navbar);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.dropdown-logout-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #d9534f; /* Rojo suave */
+    cursor: pointer;
+    padding: 12px 15px;
+    font-size: 0.95em;
+}
+body.dark-mode .dropdown-logout-btn {
+    color: #ff6b6b;
+}
+.dropdown-logout-btn:hover {
+    background-color: #f9f9f9;
 }
 
 
@@ -141,97 +282,124 @@ body.dark-mode .navbar-brand .brand-text {
 /* --- BARRA DE BÚSQUEDA --- */
 /* ========================= */
 
-/* Contenedor externo (extiende de lado a lado) */
-.search-bar-full-width {
-    background-color: var(--color-fondo);
-    padding: 15px 0;
-    margin-bottom: 20px;
-}
-
-body.dark-mode .search-bar-full-width {
-    background-color: #1C1A1B !important;
-}
-
-/* Contenedor interno que se centra */
-.search-bar-inner-container {
-    max-width: 600px;
-    width: 90%;
-    /* Asegura que en pantallas chicas no toque los bordes */
-    margin: 0 auto;
-    padding: 15px;
-    border: 1px solid var(--color-acento);
-    border-radius: 8px;
-    background-color: var(--color-fondo);
-}
-
-body.dark-mode .search-bar-inner-container {
-    /* El contenedor interno también usa el fondo principal */
-    background-color: #1C1A1B !important;
-    border-color: var(--color-acento) !important;
-}
-
-/* Elementos del formulario */
-.search-input {
+.nav-search-wrapper {
     flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--color-texto-secundario);
-    border-radius: 4px;
-    color: var(--color-texto-principal);
-    background-color: white;
+    max-width: 600px;
+    margin: 0 30px;
+    position: relative;
 }
 
-body.dark-mode .search-input {
-    /* El input tiene texto claro y fondo oscuro */
-    color: #FFFFFF !important;
+/* TODO EL FORMULARIO con forma de Píldora */
+.nav-search-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 35px;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.2); /* Fondo oscuro translúcido por defecto */
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    overflow: hidden; /* Para que los hijos no se salgan de las esquinas redondeadas */
+}
+
+/* ESTADO FOCUS: Cuando se usa el input, todo el contenedor se ilumina */
+.nav-search-form:focus-within {
     background-color: #ffffff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.voice-search-btn {
-    background-color: transparent;
-    border: 1px solid #ccc;
-    border-radius: 50%;
-    /* Redondo */
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    font-size: 1.2em;
-    padding: 0;
-    margin-left: -5px; /* Pequeño ajuste de espacio */
-}
-
-.voice-search-btn:hover {
-    background-color: var(--color-hover-nav);
-}
-
-/* Estilo cuando está escuchando */
-.voice-search-btn.listening {
-    background-color: #FF5C5C;
-    /* Rojo "grabando" */
-    color: white;
-    border-color: #FF5C5C;
-}
-
-/* Botón LUPA */
-.search-button {
-    padding: 10px 20px;
-    background-color: var(--color-acento);
-    color: var(--color-texto-nav);
+/*  BOTÓN DE VOZ (Izquierda) --- */
+.nav-voice-btn {
+    background: transparent;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 1.1em;
+    padding: 0 12px;
+    height: 100%; /* Ocupa toda la altura */
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    
+    /* LÍNEA SEPARADORA DERECHA */
+    border-right: 1px solid rgba(255, 255, 255, 0.3); 
+    transition: background-color 0.2s;
 }
 
-/* BORRAR búsqueda */
-.search-clear-link {
+.nav-voice-btn:hover {
+    background-color: var(--color-fondo);
+}
+
+/* INPUT (Centro) --- */
+.nav-search-field {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    border: none;
+    background: transparent; /* Fondo transparente */
+    padding: 0 10px;
+    color: white;
+    font-size: 0.95em;
+    outline: none;
+    height: 100%;
+}
+
+.nav-search-field::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* BOTÓN DE BUSCAR (Derecha) --- */
+.nav-search-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 0 15px;
+    height: 100%;
+    color: rgba(255, 255, 255, 0.8);
+    
+    /* LÍNEA SEPARADORA IZQUIERDA */
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background-color 0.2s;
+}
+
+.nav-search-btn:hover {
+    background-color: var(--color-fondo);
+}
+
+/* --- BOTÓN BORRAR (X) --- */
+.nav-search-clear {
     text-decoration: none;
-    color: var(--color-texto-principal);
-    padding: 10px;
+    color: #ccc;
+    font-weight: bold;
+    padding: 0 10px;
     font-size: 0.9em;
+    cursor: pointer;
+}
+.nav-search-clear:hover {
+    color: #ff5c5c;
 }
 
-body.dark-mode .search-clear-link {
-    color: var(--color-texto-secundario);
+/* --- CAMBIOS DE COLOR AL HACER FOCO (Fondo Blanco) --- */
+
+/* Cuando el formulario tiene foco (es blanco), cambiamos los colores de los hijos */
+.nav-search-form:focus-within .nav-search-field {
+    color: #333; /* Texto negro */
+}
+.nav-search-form:focus-within .nav-voice-btn,
+.nav-search-form:focus-within .nav-search-btn {
+    color: var(--color-navbar); /* Iconos verdes */
+    border-color: #eee; /* Líneas separadoras grises suaves */
+}
+.nav-search-form:focus-within .nav-voice-btn:hover,
+.nav-search-form:focus-within .nav-search-btn:hover {
+    background-color: #f0f0f0; /* Hover gris claro */
+}
+.nav-search-form:focus-within .nav-search-field::placeholder {
+    color: #999;
+}
+
+/* Estilo de grabación (rojo) */
+.nav-voice-btn.listening {
+    color: #FF5C5C !important;
+    animation: pulse 1.5s infinite;
 }
 
 
@@ -985,18 +1153,18 @@ body.dark-mode .card-producto {
 
 /* Botón de Añadir al Carrito */
 .btn-add-to-cart {
-    /* Reducimos el padding horizontal para que sea solo 10px más ancho */
-    display: inline-block;
-    /* ⚠️ CAMBIO: de 'block' a 'inline-block' */
-    padding: 10px 20px;
-    /* ⚠️ CAMBIO: Padding reducido */
-    margin-bottom: 30px;
+    display: flex;
+    padding: 10px 15px;
+    margin-bottom: 0;
+    align-items: center;
+    justify-content: center;
+
     background-color: var(--color-acento);
-    color: var(--color-texto-nav);
+    color: var(--color-navbar);
+
     border: none;
     border-radius: 6px;
     font-size: 1.1em;
-    /* Un poco más chico */
     font-weight: bold;
     cursor: pointer;
     text-align: center;
@@ -1006,6 +1174,55 @@ body.dark-mode .card-producto {
 .btn-add-to-cart:hover {
     background-color: var(--color-hover-nav);
     /* Un verde acento más oscuro */
+}
+
+/* Botón de favorito en la PÁGINA DE DETALLE */
+.btn-favorito-detalle {
+    padding: 10px 15px; /* Más espacio a los lados para el texto */
+    height: auto;
+
+    /* Tipografía igual al botón de carrito */
+    font-size: 1.1em; 
+    font-weight: bold;
+    
+    /* Alineación del ícono y texto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap; /* Evita que el texto se rompa en dos líneas */
+    line-height: 1;
+
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+body.dark-mode .btn-favorito-detalle {
+    background-color: #444;
+    color: #eee;
+    border-color: #666;
+}
+
+.btn-favorito-detalle:hover {
+    background-color: #e0e0e0;
+}
+
+/* Cuando está 'favorited' (rojo) */
+.btn-favorito-detalle.favorited {
+    background-color: #FADBD8;
+    /* Rojo pálido */
+    color: #C0392B;
+    /* Rojo oscuro */
+    border-color: #C0392B;
+}
+
+body.dark-mode .btn-favorito-detalle.favorited {
+    background-color: #573a3a;
+    color: #f7aaaa;
+    border-color: #f7aaaa;
 }
 
 /* Tabla de Metadatos (Diseño más limpio) */
@@ -1175,32 +1392,92 @@ body.dark-mode .card-producto {
     /* Corazón relleno */
 }
 
-/* Botón de favorito en la PÁGINA DE DETALLE */
-.btn-favorito-detalle {
-    /* Hereda la altura del botón de carrito */
-    padding: 10px 15px;
-    font-size: 1.5em;
-    /* Ícono grande */
-    line-height: 1;
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ccc;
+
+/* ======================================== */
+/* --- TOOLTIPS DE AYUDA EN FORMULARIOS --- */
+/* ======================================== */
+
+/* El contenedor del ícono (para posicionar el popup relativo a él) */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+    cursor: help;
+    vertical-align: middle;
+}
+
+/* El ícono "i" */
+.info-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+    background-color: #999; /* Gris neutro */
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: serif; /* Para que la 'i' se vea clásica */
+    transition: background-color 0.2s;
+}
+
+.tooltip-container:hover .info-icon {
+    background-color: var(--color-acento); /* Se ilumina al pasar el mouse */
+}
+
+/* El texto oculto (Popup) */
+.tooltip-text {
+    visibility: hidden;
+    width: 220px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
     border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+    padding: 8px;
+    font-size: 0.85em;
+    font-weight: normal;
+    line-height: 1.4;
+    
+    /* Posicionamiento */
+    position: absolute;
+    z-index: 100;
+    bottom: 125%; /* Lo ubica arriba del ícono */
+    left: 50%;
+    margin-left: -110px; /* Centra el popup (mitad del ancho) */
+    
+    /* Efectos */
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.btn-favorito-detalle:hover {
-    background-color: #e0e0e0;
+/* Flechita pequeña abajo del popup */
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Al final del popup */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
 }
 
-/* Cuando está 'favorited' (rojo) */
-.btn-favorito-detalle.favorited {
-    background-color: #FADBD8;
-    /* Rojo pálido */
-    color: #C0392B;
-    /* Rojo oscuro */
-    border-color: #C0392B;
+/* Mostrar al hacer hover */
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Ajuste para Modo Oscuro */
+body.dark-mode .tooltip-text {
+    background-color: #eee;
+    color: #333;
+    box-shadow: 0 4px 10px rgba(255,255,255,0.1);
+}
+body.dark-mode .tooltip-text::after {
+    border-color: #eee transparent transparent transparent;
 }
 
 
@@ -1290,26 +1567,6 @@ body.dark-mode .alert-info {
 }
 
 
-/* Barra de búsqueda */
-
-
-/* Barra de filtros */
-body.dark-mode div[style*="border-right: 1px solid #eee"] {
-    border-right-color: #333 !important;
-}
-
-body.dark-mode .catalogo-sidebar {
-    border-right-color: var(--color-texto-principal);
-    /* Blanco/Gris claro */
-}
-
-/* REGLA MODO OSCURO: "Limpiar filtros" blanco */
-/* (Seleccionamos el enlace específico dentro del sidebar) */
-body.dark-mode .catalogo-sidebar a[href="{% url 'catalogo' %}"] {
-    color: var(--color-texto-principal) !important;
-    /* Forzar blanco/gris claro */
-}
-
 /* Precio y acentos */
 body.dark-mode .precio {
     color: var(--color-acento);
@@ -1364,22 +1621,6 @@ body.dark-mode .vendedor-info {
     color: #888;
 }
 
-
-
-/* Modo Oscuro para el botón de favorito */
-body.dark-mode .btn-favorito-detalle {
-    background-color: #444;
-    color: #eee;
-    border-color: #666;
-}
-
-body.dark-mode .btn-favorito-detalle.favorited {
-    background-color: #573a3a;
-    /* Rojo oscuro de fondo */
-    color: #f7aaaa;
-    /* Corazón rosa/rojo */
-    border-color: #f7aaaa;
-}
 
 /* ---  MODO OSCURO (Formularios Login) --- */
 
@@ -1571,19 +1812,33 @@ body.dark-mode .cart-qty-form input[type="number"] {
 
 /* Tarjeta de pedido individual */
 .order-card {
+    display: block;
     border: 1px solid #ddd;
     border-radius: 8px;
     margin-bottom: 20px;
     padding: 20px;
-    /*display: flex;*/
+    background-color: white;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.3s ease;
 }
 
+body.dark-mode .order-card {
+    background-color: var(--color-fondo);
+    border-color: #444;
+}
+
 .order-card:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Usar SOLO dentro de 'Mis Pedidos' (Comprador) */
+.order-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 /* Detalles principales del pedido (ID, Fecha) */
@@ -1612,6 +1867,12 @@ body.dark-mode .cart-qty-form input[type="number"] {
     min-width: 100px;
     margin: 0 20px;
     font-size: 0.9em;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
 }
 
 .status-Pendiente {
