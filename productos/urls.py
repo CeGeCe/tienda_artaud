@@ -20,4 +20,6 @@ urlpatterns = [
     # Manejar el 'toggle' de Favoritos
     path('favorito/toggle/<int:producto_id>/', views.toggle_favorito, name='toggle_favorito'),
     path('mis-favoritos/', views.ver_favoritos, name='ver_favoritos'),
+
+    path('radio/', views.reproductor_popup, name='radio_artaud'),
 ]

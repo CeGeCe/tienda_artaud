@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Radio Artaud 📻</title>
+    <style>
+        body {
+            background-color: #1E281E; /* Verde oscuro Artaud */
+            color: white;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .player-container {
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Disco giratorio */
+        .album-art {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background-image: url("{% static 'tienda_artaud/cd_icon.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            border: 4px solid #333;
+            animation: spin 10s linear infinite;
+            animation-play-state: paused; /* Pausado por defecto */
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .running { animation-play-state: running; }
+
+        h2 { margin: 0; font-size: 1.1em; color: #A4E58E; }
+        p { margin: 0px 0 20px 0; font-size: 0.9em; color: #999; }
+
+        /* Controles */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 20px 0;
+        }
+
+        .btn-control {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: transform 0.1s, color 0.2s;
+            padding: 0;
+        }
+        .btn-control:hover { color: #A4E58E; transform: scale(1.1); }
+        .btn-control:active { transform: scale(0.9); }
+        .btn-play { font-size: 3.5wem; }
+
+        /* Barra de progreso */
+
+        .progress-area {
+            width: 100%;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #444;
+            height: 8px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #A4E58E, #4B9A27);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none; /* Quitar estilo por defecto */
+            appearance: none;
+            width: 70%; /* Más ancho */
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px; /* Thumb más grande */
+            width: 20px;
+            border-radius: 50%;
+            background: #A4E58E;
+            cursor: pointer;
+            margin-top: -8px; /* Centrar verticalmente */
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 5px;
+            cursor: pointer;
+            background: #555;
+            border-radius: 5px;
+        }
+
+        /* Lista de canciones */
+        .playlist {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            max-height: 120px;
+            overflow-y: auto;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            margin-top: 10px;
+        }
+        .playlist li {
+            padding: 12px 10px;
+            border-bottom: 1px solid #2a2a2a;;
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #aaa;
+            transition: background 0.2s;
+        }
+        .playlist li:hover { background-color: #2a3a2a; color: white; }
+        .playlist li.active { color: #A4E58E; font-weight: bold; background-color: #222; border-left: 3px solid #A4E58E;}
+
+        /* Scrollbar bonita */
+        .playlist::-webkit-scrollbar { width: 6px; }
+        .playlist::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        .playlist::-webkit-scrollbar-track { background: #1E281E; }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="player-container">
+        <div class="album-art" id="albumArt"></div>
+        
+        <h2 id="songTitle">Cargando...</h2>
+        <p id="artistName">Radio Artaud</p>
+
+        <div class="progress-area" id="progressArea">
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-control" onclick="prevSong()" title="Anterior">⏮</button>
+            <button class="btn-control btn-play" onclick="togglePlay()" id="playBtn" title="Reproducir">▶</button>
+            <button class="btn-control" onclick="nextSong()" title="Siguiente">⏭</button>
+        </div>
+        
+        <div class="volume-container">
+            <span style="font-size: 1.2em;">🔇</span>
+            <input type="range" min="0" max="1" step="0.05" value="0.35" oninput="setVolume(this.value)" title="Volumen">
+            <span style="font-size: 1.2em;">🔊</span>
+        </div>
+
+        <ul class="playlist" id="playlistElement">
+            </ul>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        // CONFIGURACIÓN DE LA PLAYLIST (Edita esto con tus archivos reales)
+        const songs = [
+            { title: "Neverender", artist: "Justice", src: "{% static 'tienda_artaud/audio/tema_01.mp3' %}" },
+            { title: "Post-Crucifixión", artist: "Pescado Rabioso", src: "{% static 'tienda_artaud/audio/tema_02.mp3' %}" },
+            { title: "I Sat By The Ocean", artist: "Queens of the Stone Age", src: "{% static 'tienda_artaud/audio/tema_03.mp3' %}" },
+            { title: "IRIS OUT", artist: "Kenshi Yonezu", src: "{% static 'tienda_artaud/audio/tema_04.mp3' %}" },
+            { title: "iPod Touch", artist: "Ninajirachi", src: "{% static 'tienda_artaud/audio/tema_05.mp3' %}" },
+            { title: "As Alive As You Need Me To Be", artist: "Nine Inch Nails", src: "{% static 'tienda_artaud/audio/tema_06.mp3' %}" },
+        ];
+
+        let currentIndex = 0;
+        const audio = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const albumArt = document.getElementById('albumArt');
+        const title = document.getElementById('songTitle');
+        const artist = document.getElementById('artistName');
+        const progressBar = document.getElementById('progressBar');
+        const playlistElement = document.getElementById('playlistElement');
+
+        // Cargar lista
+        function loadPlaylist() {
+            playlistElement.innerHTML = '';
+            songs.forEach((song, index) => {
+                const li = document.createElement('li');
+                li.innerText = `${index + 1}. ${song.title}`;
+                li.onclick = () => loadSong(index);
+                if (index === currentIndex) li.classList.add('active');
+                playlistElement.appendChild(li);
+            });
+            // Auto-scroll para mostrar la canción activa
+            const activeLi = playlistElement.querySelector('.active');
+            if(activeLi) activeLi.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        // Cargar datos de la canción
+        function loadSong(index) {
+            currentIndex = index;
+            title.innerText = songs[index].title;
+            artist.innerText = songs[index].artist;
+            
+            // Solo cambia el src si es diferente para evitar recargas innecesarias
+            if (audio.getAttribute('src') !== songs[index].src) {
+                audio.src = songs[index].src;
+            }
+            
+            // Actualizar estilo de lista
+            loadPlaylist();
+            playSong();
+        }
+
+        function playSong() {
+            audio.play().catch(e => console.log("Esperando interacción usuario")); 
+            playBtn.innerText = '⏸';
+            albumArt.classList.add('running');
+        }
+
+        function pauseSong() {
+            audio.pause();
+            playBtn.innerText = '▶';
+            albumArt.classList.remove('running');
+        }
+
+        function togglePlay() {
+            if (audio.paused) playSong();
+            else pauseSong();
+        }
+
+        function nextSong() {
+            currentIndex = (currentIndex + 1) % songs.length;
+            loadSong(currentIndex);
+        }
+
+        function prevSong() {
+            currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+            loadSong(currentIndex);
+        }
+
+        function setVolume(vol) {
+            audio.volume = vol;
+        }
+
+        // Actualizar barra de progreso
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = `${percent}%`;
+            }
+        });
+        
+        // Clic en la barra de progreso (Saltar a tiempo)
+        document.getElementById('progressArea').addEventListener('click', (e) => {
+            const width = e.currentTarget.clientWidth; // Ancho total del área
+            const clickX = e.offsetX; // Dónde se hizo clic
+            const duration = audio.duration;
+            
+            if (duration) {
+                audio.currentTime = (clickX / width) * duration;
+            }
+        });
+
+        // Siguiente automático
+        audio.addEventListener('ended', nextSong);
+
+        // Carga inicial (sin autoplay para evitar bloqueo de navegador)
+        title.innerText = songs[0].title;
+        artist.innerText = songs[0].artist;
+        audio.src = songs[0].src;
+        audio.volume = 0.35; // Volumen inicial
+        loadPlaylist();
+
+    </script>
+
+</body>
+</html>

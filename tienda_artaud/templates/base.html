@@ -31,6 +31,22 @@
                     aria-label="Alternar modo oscuro">
                 ☀️
             </button>
+
+            <button onclick="abrirRadio()" class="icon-btn" title="Abrir Radio Artaud 📻" style="margin-right: 10px;">
+            ▶️
+            </button>
+
+            <script>
+                function abrirRadio() {
+                    // Abre una ventana de 350x600 px
+                    const url = "{% url 'radio_artaud' %}";
+                    const nombre = "RadioArtaud";
+                    const opciones = "width=380,height=600,resizable=no,scrollbars=no,status=no,toolbar=no";
+                    
+                    // Si ya existe la ventana, la enfoca. Si no, la crea.
+                    window.open(url, nombre, opciones);
+                }
+            </script>
         </div>
 
         <div class="nav-search-wrapper">

@@ -277,3 +277,8 @@ def ver_favoritos(request):
     }
     
     return render(request, 'productos/favoritos.html', contexto)
+
+
+def reproductor_popup(request):
+    """Reproductor de música en una ventana aparte."""
+    return render(request, 'reproductor.html')
