@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,12 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1i2jpu6sd*#9@$d+j8%&bwbtl9&bp#b4z$ygxbyx36c!gtn2b5'
+# Si existe la variable 'RENDER', usa la clave secreta del servidor, sino la local insegura
+SECRET_KEY = os.environ.get('django-insecure-1i2jpu6sd*#9@$d+j8%&bwbtl9&bp#b4z$ygxbyx36c!gtn2b5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Permitir que Render sirva el sitio
 ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -60,6 +66,7 @@ INSTALLED_APPS = APPS_PREINSTALADAS + APPS_PROPIAS + APPS_TERCEROS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # WhiteNoise para leer CSS online
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -95,16 +102,13 @@ WSGI_APPLICATION = 'tienda_artaud.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tienda_artaud_db',
-        'USER': 'artaud_user',      
-        'PASSWORD': 'artaud_p455',
-        'HOST': 'localhost',        
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        # Si no hay variable DATABASE_URL (local), usar la configuración local de siempre:
+        default='postgresql://artaud_user:artaud_p455@localhost:5432/tienda_artaud_db',
+        conn_max_age=600
+    )
 }
-
+#  'ENGINE': 'django.db.backends.postgresql',
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -216,10 +220,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    # Buscar archivos estáticos
-    os.path.join(BASE_DIR, 'static'), 
-]
+if not DEBUG:
+    # Configuración para producción
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # Compresión y almacenamiento eficiente
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    # Configuración local [Buscar archivos estáticos]
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
