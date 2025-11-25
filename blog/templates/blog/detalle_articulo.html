@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ articulo.titulo }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    
+    <a href="{% url 'blog_lista' %}" style="color: var(--color-navbar); text-decoration: none; font-weight: bold;">
+        ← Volver al Blog
+    </a>
+
+    <header style="margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+        <span class="blog-category tag-{{ articulo.categoria }}" style="font-size: 0.9em;">
+            {{ articulo.get_categoria_display }}
+        </span>
+        
+        <h1 style="font-size: 2.5em; margin: 10px 0; color: var(--color-texto-principal);">
+            {{ articulo.titulo }}
+        </h1>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; color: #777; font-size: 0.9em;">
+            <span>
+                Por 
+                <a href="{% url 'ver_vendedor' username=articulo.autor.username %}" 
+                style="color: var(--color-acento); text-decoration: none; font-weight: bold;">
+                {{ articulo.autor.username }}
+                </a>
+                | {{ articulo.fecha_publicacion|date:"d de F, Y" }}
+            </span>
+            
+            {% if user.is_staff %}
+                <a href="{% url 'blog_eliminar' pk=articulo.pk %}" 
+                    style="color: #d9534f; text-decoration: none; border: 1px solid #d9534f; padding: 5px 10px; border-radius: 4px; font-size: 0.9em;">
+                    Eliminar Artículo 🗑️
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="blog-body" style="margin-top: 30px; line-height: 1.8; font-size: 1.1em; color: var(--color-texto-principal);">
+        {{ articulo.cuerpo|linebreaksbr }}
+    </div>
+
+</div>
+
+<style>
+    .blog-body p { margin-bottom: 20px; }
+    /* Ajuste modo oscuro */
+    body.dark-mode .blog-body { color: #ddd; }
+</style>
+
+{% endblock %}

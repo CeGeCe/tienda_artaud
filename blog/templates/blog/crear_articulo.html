@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Escribir Artículo{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 30px; border: 1px solid #ddd; border-radius: 8px; background-color: var(--color-fondo);">
+    
+    <h2 style="color: var(--color-navbar); margin-top: 0;">Escribir un Nuevo Artículo ✍️</h2>
+    <p style="color: #777; margin-bottom: 20px;">Compartí tu historia y conocimientos con la comunidad</p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">
+                    {{ field.label }}:
+                </label>
+                
+                {{ field }}
+                
+                {% if field.help_text %}
+                    <small style="color: #777; display: block; margin-top: 3px;">{{ field.help_text }}</small>
+                {% endif %}
+                
+                {% for error in field.errors %}
+                    <p style="color: red; font-size: 0.9em;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-add-to-cart" style="width: 100%;">
+            Publicar Artículo
+        </button>
+    </form>
+</div>
+
+<style>
+    input[type="text"], select, textarea {
+        width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;
+    }
+    body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+        background-color: #333; color: white; border-color: #555;
+    }
+    body.dark-mode div[style*="border: 1px solid #ddd"] {
+        border-color: #444 !important;
+        background-color: #2D3E2D !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }}{% endblock %}
+
+{% block content %}
+
+<div class="blog-header">
+    <h1>Blog Artaud ✍️</h1>
+    <p>Noticias, reviews y el rincón del coleccionista. Descubrí lo último del mundo analógico.</p>
+    
+    {% if user.is_authenticated %}
+        <a href="{% url 'blog_crear' %}" class="btn-blog-create">Escribir un Artículo +</a>
+    {% endif %}
+</div>
+
+<div class="blog-container">
+
+    <div class="blog-main">
+        {% if articulos %}
+            {% for articulo in articulos %}
+                <article class="blog-card">
+                    <div class="blog-card-header">
+                        <span class="blog-category tag-{{ articulo.categoria }}">{{ articulo.get_categoria_display }}</span>
+                        <span class="blog-date">{{ articulo.fecha_publicacion|date:"d M Y" }}</span>
+                    </div>
+                    
+                    <a href="{% url 'blog_detalle' pk=articulo.pk %}" class="blog-title-link">
+                        <h2>{{ articulo.titulo }}</h2>
+                    </a>
+                    
+                    <p class="blog-author">
+                        Por 
+                        <a href="{% url 'ver_vendedor' username=articulo.autor.username %}" 
+                        style="color: inherit; font-weight: bold; text-decoration: underline;">
+                        {{ articulo.autor.username }}
+                        </a>
+                    </p>
+                    
+                    <p class="blog-preview">
+                        {{ articulo.cuerpo|truncatewords:50 }} </p>
+                    
+                    <a href="{% url 'blog_detalle' pk=articulo.pk %}" class="read-more">Leer más →</a>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p class="no-articles">No hay artículos publicados en esta categoría.</p>
+            <a href="{% url 'blog_lista' %}" style="color: var(--color-acento);">Ver todo</a>
+        {% endif %}
+    </div>
+
+    <aside class="blog-sidebar">
+        <div class="sidebar-widget">
+            <h3>Categorías</h3>
+            <ul>
+                <li>
+                    <a href="{% url 'blog_lista' %}" class="{% if not categoria_actual %}active{% endif %}">
+                        Todas
+                    </a>
+                </li>
+                {% for key, label in categorias %}
+                    <li>
+                        <a href="?categoria={{ key }}" class="{% if categoria_actual == key %}active{% endif %}">
+                            {{ label }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="sidebar-widget">
+            <h3>Buscar en el Blog</h3>
+            <form action="." method="GET" class="blog-search-form">
+                <input type="text" name="q" placeholder="Buscar..." value="{{ query_actual|default:'' }}">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+    </aside>
+
+</div>
+
+{% endblock content %}

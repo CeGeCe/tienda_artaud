@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Artículo{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 500px; margin: 50px auto; padding: 30px; border: 1px solid #d9534f; border-radius: 8px; background-color: #fff5f5; text-align: center;">
+    <h2 style="color: #d9534f; margin-top: 0;">⚠️ ¿Eliminar Artículo?</h2>
+    
+    <p style="font-size: 1.1em;">Estás a punto de eliminar permanentemente:</p>
+    <h3 style="color: #333;">"{{ object.titulo }}"</h3>
+    
+    <form method="post" style="margin-top: 30px;">
+        {% csrf_token %}
+        <button type="submit" style="background-color: #d9534f; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1em;">
+            Sí, Eliminar
+        </button>
+        <a href="{% url 'blog_detalle' pk=object.pk %}" style="margin-left: 15px; color: #555; text-decoration: none;">Cancelar</a>
+    </form>
+</div>
+
+{% endblock %}
