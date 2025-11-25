@@ -22,14 +22,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Si existe la variable 'RENDER', usa la clave secreta del servidor, sino la local insegura
-SECRET_KEY = os.environ.get('django-insecure-1i2jpu6sd*#9@$d+j8%&bwbtl9&bp#b4z$ygxbyx36c!gtn2b5')
+# Intenta obtener la clave del entorno
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# Si por alguna razón es None o es una cadena vacía "", usar la de respaldo
+if not SECRET_KEY:
+    SECRET_KEY = 'django-insecure-1i2jpu6sd*#9@$d+j8%&bwbtl9&bp#b4z$ygxbyx36c!gtn2b5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # Permitir que Render sirva el sitio
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
