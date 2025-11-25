@@ -21,4 +21,6 @@ urlpatterns = [
     path('pagar-pendiente/<int:pedido_id>/', views.pagar_pedido_pendiente, name='pagar_pedido_pendiente'),
 
     path('admin/ventas-globales/', views.admin_resumen_ventas, name='admin_ventas_globales'),
+
+    path('dashboard/', views.dashboard_analytics, name='dashboard_analytics'),
 ]

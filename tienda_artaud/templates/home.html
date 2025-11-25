@@ -48,14 +48,13 @@
 </div>
 
 <div style="text-align: center; margin-top: 50px;">
-    <a href="{% url 'catalogo' %}" class="btn-add-to-cart" 
-        style="width: auto; padding: 12px 30px; text-decoration: none; margin-right: 15px; color: var(--color-navbar);">
-        Ver Catálogo Completo 🔎
+
+    <a href="{% url 'catalogo' %}" class="btn-action-home"">
+        Ver Catálogo Completo 🔍
     </a>
 
     <a href="{% if user.is_authenticated %}{% url 'publicar_producto' %}{% else %}{% url 'account_login' %}?next={% url 'publicar_producto' %}{% endif %}" 
-        class="btn-add-to-cart btn-publicar-dark" 
-        style="width: auto; padding: 12px 30px; text-decoration: none;">
+        class="btn-action-home secondary">
         Publicar un Producto 📝
     </a>
 </div>

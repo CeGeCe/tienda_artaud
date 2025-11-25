@@ -4,6 +4,12 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Carrito, ItemCarrito
 from productos.models import Producto
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.core.mail import EmailMessage
+from django.conf import settings
+from .utils import render_pdf
 
 # Create your views here.
 
@@ -129,4 +135,116 @@ def eliminar_de_carrito(request, item_id):
     item.delete()
     
     messages.warning(request, f'"{album_eliminado}" fue eliminado de tu carrito.')
+    return redirect('ver_carrito')
+
+
+@login_required
+def generar_presupuesto_pdf(request):
+    """(xhtml2pdf) Genera un PDF con el contenido actual del carrito."""
+    
+    # Obtener el carrito
+    try:
+        carrito = Carrito.objects.get(usuario=request.user)
+    except Carrito.DoesNotExist:
+        messages.error(request, "Tu carrito no está activo para generar un presupuesto.")
+        return redirect('catalogo')
+
+    if not carrito.items.exists():
+        messages.error(request, "El carrito está vacío.")
+        return redirect('ver_carrito')
+
+    # Definir la plantilla y el contexto
+    template_path = 'carrito/presupuesto_pdf.html'
+    context = {
+        'carrito': carrito,
+        'user': request.user
+    }
+
+    # Crear el objeto HttpResponse con las cabeceras PDF
+    response = HttpResponse(content_type='application/pdf')
+    # 'attachment' para descargar. Cambiar por 'inline' para verlo en el navegador.
+    response['Content-Disposition'] = f'attachment; filename="Presupuesto_Artaud_{request.user.username}.pdf"'
+
+    # Renderizar y crear el PDF
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    # La función CreatePDF escribe el resultado en 'response'
+    pisa_status = pisa.CreatePDF(
+        html, dest=response
+    )
+
+    # Manejo de errores de generación
+    if pisa_status.err:
+        return HttpResponse('Ocurrió un error al generar el PDF <pre>' + html + '</pre>')
+    
+    return response
+
+
+@login_required
+def opciones_presupuesto(request):
+    """Muestra la página para elegir qué hacer con el presupuesto."""
+    # Obtenemos el carrito solo para verificar que exista
+    try:
+        carrito = Carrito.objects.get(usuario=request.user)
+        if not carrito.items.exists():
+            messages.error(request, "El carrito está vacío.")
+            return redirect('ver_carrito')
+    except Carrito.DoesNotExist:
+        return redirect('catalogo')
+
+    # Pasamos el email del usuario para pre-llenar el formulario
+    return render(request, 'carrito/presupuesto_opciones.html', {'email_usuario': request.user.email})
+
+
+@login_required
+def procesar_presupuesto(request):
+    """Procesa la acción elegida: Descargar o Enviar Email."""
+    if request.method == 'POST':
+        accion = request.POST.get('accion')
+        email_destino = request.POST.get('email_destino')
+
+        # Obtener datos
+        carrito = Carrito.objects.get(usuario=request.user)
+        context = {'carrito': carrito, 'user': request.user}
+        
+        # Generar PDF en memoria
+        pdf_content = render_pdf('carrito/presupuesto_pdf.html', context)
+        if not pdf_content:
+            messages.error(request, "Error al generar el PDF.")
+            return redirect('ver_carrito')
+
+        # --- OPCIÓN 1: DESCARGAR ---
+        if accion == 'descargar':
+            response = HttpResponse(pdf_content, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="Presupuesto_Artaud.pdf"'
+            return response
+
+        # --- OPCIÓN 2: ENVIAR EMAIL ---
+        elif accion == 'email':
+            if not email_destino:
+                messages.error(request, "Debes ingresar un email.")
+                return redirect('opciones_presupuesto')
+
+            try:
+                # Crear el correo
+                email = EmailMessage(
+                    subject=f'Tu Presupuesto - Tienda Artaud',
+                    body=f'Hola {request.user.username},\n\nAdjunto encontrarás el presupuesto solicitado con los ítems de tu carrito.\n\n¡Gracias por tu interés!',
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[email_destino],
+                )
+                # Adjuntar el PDF
+                email.attach('Presupuesto_Artaud.pdf', pdf_content, 'application/pdf')
+                
+                # Enviar
+                email.send()
+                
+                messages.success(request, f"Presupuesto enviado exitosamente a {email_destino}")
+                return redirect('ver_carrito')
+                
+            except Exception as e:
+                messages.error(request, f"Error al enviar el correo: {e}")
+                return redirect('opciones_presupuesto')
+
     return redirect('ver_carrito')

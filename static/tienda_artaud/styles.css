@@ -154,7 +154,7 @@ body.dark-mode h3 {
 
 /* CONTADOR del Carrito */
 .badge {
-    background-color: var(--color-acento);
+    background-color: var(--color-fondo);
     color: var(--color-navbar);
     border-radius: 50%;
     padding: 2px 6px;
@@ -188,8 +188,6 @@ body.dark-mode h3 {
     overflow: hidden;
     z-index: 1001;
 }
-
-/* Ajuste para Dark Mode */
 body.dark-mode .dropdown-content {
     background-color: var(--color-navbar);
     border: 1px solid #444;
@@ -402,6 +400,53 @@ body.dark-mode .dropdown-logout-btn {
     animation: pulse 1.5s infinite;
 }
 
+/* Menú desplegable */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    /* Permite que el elemento sea parte de la línea */
+}
+
+.dropdown-content {
+    display: none;
+    /* Oculto por defecto */
+    position: absolute;
+    background-color: var(--color-navbar);
+    /* Fondo del navbar */
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    /* Asegura que esté sobre el contenido */
+    padding-top: 5px;
+    border-radius: 0 0 4px 4px;
+    border-top: 3px solid var(--color-acento);
+    /* Línea de acento */
+}
+
+.dropdown-content a {
+    color: var(--color-texto-nav);
+    padding: 10px 14px !important;
+    font-size: 1em;
+    /* Mantenemos tamaño normal dentro del desplegable */
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    /* Sobrescribe el margin del navbar */
+}
+
+.dropdown-content a:hover {
+    background-color: var(--color-acento);
+    /* Acento al pasar el ratón */
+    color: var(--color-navbar);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    /* Muestra el menú al pasar el ratón */
+}
+
 
 /* ============== */
 /* --- FOOTER --- */
@@ -566,6 +611,40 @@ body.dark-mode .carousel-item-card {
     }
 }
 
+/* Botones de Acción en la Home */
+.btn-action-home {
+    display: inline-block;
+    width: auto; /* El ancho se adapta al texto */
+    min-width: 200px;
+    padding: 12px 30px;
+    margin: 10px; /* Espacio alrededor para separarlos */
+    
+    background-color: var(--color-acento);
+    color: var(--color-navbar);
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none; /* Quitar subrayado de enlaces */
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-action-home:hover {
+    transform: translateY(-2px); /* Pequeño efecto de elevación */
+    background-color: var(--color-hover-nav);
+}
+
+/* Botón secundario 'Publicar' - Sobrescribe el color de fondo */
+.btn-action-home.secondary {
+    background-color: #555;
+    color: white;
+}
+.btn-action-home.secondary:hover {
+    background-color: #333;
+}
+
 
 /* ======================== */
 /* --- ACORDEÓN 'ABOUT' --- */
@@ -642,6 +721,7 @@ body.dark-mode .accordion-item {
 /* ========================= */
 /* --- CATÁLOGO COMPLETO --- */
 /* ========================= */
+
 .catalogo-main-container {
     display: flex;
     max-width: 1200px;
@@ -683,6 +763,20 @@ body.dark-mode .accordion-item {
     flex-grow: 1; 
 }
 
+/* Encabezado de Resultados de Búsqueda */
+.search-results-header {
+    /* Aseguramos que tenga espacio y se vea limpio */
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+}
+body.dark-mode .search-results-header {
+    border-bottom-color: #444 !important;
+}
+
+body.dark-mode .search-results-header h2 span {
+    color: var(--color-acento) !important; /* El término buscado en verde claro */
+}
+
 
 /* --- SELECTOR DE VISTA (CUADRÍCULA/LISTA) --- */
 .view-switcher {
@@ -716,7 +810,7 @@ body.dark-mode .accordion-item {
     padding: 20px 40px;
 }
 
-/* --- VISTA DE CUADRÍCULA (GRID VIEW) - Estilos existentes --- */
+/* --- CATÁLOGO : Vista CUADRÍCULA --- */
 .productos-listado-container.grid-view {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -733,87 +827,10 @@ body.dark-mode .accordion-item {
     margin-top: 20px;
 }
 
-/* --- VISTA DE LISTA --- */
-.productos-listado-container.list-view {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.list-item-producto {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: white;
-    transition: box-shadow 0.2s;
-}
-
-.list-item-producto a {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    text-decoration: none;
-    color: #333;
-}
-
-.list-item-producto:hover {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.list-image-container {
-    flex-shrink: 0;
-    width: 100px;
-    height: 100px;
-    margin-right: 15px;
-}
-
-.list-image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
-.list-details {
-    flex-grow: 1;
-}
-
-.list-price-action {
-    flex-shrink: 0;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    margin-left: 20px;
-}
-
-.list-price-action .producto-precio {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: var(--color-acento);
-    margin-bottom: 10px;
-}
-
-/* --- ESTILOS DE PAGINACIÓN --- */
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 30px;
-}
-
-/* (Añadir o modificar otros estilos de paginación si es necesario, 
-   usando .page-link, .current-page-info, etc.) */
-
-/* --- DARK MODE OVERRIDES --- */
-body.dark-mode .list-item-producto {
-    background-color: var(--color-fondo);
-    border-color: #444;
-}
-
-
-/* Estilo de los productos/tarjetas para acentuación */
+/* --- VISTA DE CUADRÍCULA ---  */
 .card-producto {
-    display: block;
+    display: flex;
+    flex-direction: column;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 0px;
@@ -833,6 +850,28 @@ body.dark-mode .card-producto {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
+/* Estilo para la imagen de portada */
+.card-image-container {
+    width: 100%;
+    height: 250px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    overflow: hidden;
+    display: flex; /* Para centrar la imagen */
+    position: relative;
+    /* Fondo para el espacio vacío que deja 'contain' */
+    justify-content: center;
+    align-items: center;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    /* MOSTRAR LA RELACIÓN DE ASPECTO CORRECTA */
+    object-fit: contain;
+    display: block;
+}
+
 .card-producto h3 {
     color: var(--color-navbar);
     margin-top: 0;
@@ -841,13 +880,12 @@ body.dark-mode .card-producto {
 /* Contenido de texto de la tarjeta */
 .card-content {
     padding: 10px;
-    padding-bottom: 35px;
-    /* Aumentar el padding inferior para asegurar espacio para el texto posicionado */
-    flex-grow: 1;
+    padding-bottom: 10px;
+    flex-grow: 1; /* Ocupa el espacio disponible */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    /* CRUCIAL: Distribuye el contenido verticalmente */
+    /* Distribuye el contenido verticalmente */
     position: relative;
     /* Contenedor de referencia para los elementos inferiores */
     min-height: 120px;
@@ -877,163 +915,225 @@ body.dark-mode .card-producto {
     height: calc(1.3em * 2);
 }
 
-/* Limitar el artista y el título a dos líneas (CSS Truncation) */
-.producto-info h4 {
-    /* Estilo original de título/artista/álbum */
-    font-size: 1em;
-    font-weight: 600;
-    line-height: 1.3;
-    /* Implementación de limitación a 2 líneas */
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    /* Limitar a dos líneas */
-    line-clamp: 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: calc(1.3em * 2);
-    /* Altura fija para evitar saltos de diseño */
-    margin-bottom: 5px;
+.card-footer {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between; /* Vendedor a la izq, Precio a la der */
+    align-items: flex-end; /* Alineados a la base del texto */
+    border-top: 1px solid #f0f0f0; /* Separador sutil opcional */
+    background-color: white; /* Fondo sólido */
+}
+body.dark-mode .card-footer {
+    background-color: #2D3E2D; /* Mismo fondo que la tarjeta */
+    border-top-color: #444;
 }
 
-/* Ajuste necesario para que la posición absoluta del vendedor funcione */
-.producto-info {
-    position: relative;
-    /* Contenedor de referencia para el vendedor */
-    padding: 10px;
-    padding-bottom: 30px;
-    /* Aumentamos el padding inferior para hacer espacio al vendedor */
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+/* Detalles (Formato | Condición | País | Sello) */
+.card-metadata {
+    font-size: 0.85em;
+    color: var(--color-texto-principal);
+    margin-bottom: 2px;
+    /* padding-right: 70px; */
+}
+body.dark-mode .card-metadata {
+    color: #ccc;
 }
 
 /* Estilo del Vendedor (Izquierda, Abajo) */
 .producto-vendedor {
     font-size: 0.8em;
-    color: #444;
-    text-align: left;
-    /* Posicionamiento: Abajo a la izquierda */
-    position: absolute;
-    left: 15px;
-    bottom: 10px;
-    z-index: 10;
-    /* Asegurar que esté por encima de otros elementos */
+    color: var(--color-texto-principal);
+    line-height: 1.2; /* Espaciado entre "Publicado por" y Usuario */
+}
+body.dark-mode .producto-vendedor {
+    color: #ccc;
 }
 
-.producto-precio-label {
-    font-size: 0.8em;
-    font-weight: normal ;
-    color: var(--color-texto-principal);
+.producto-vendedor a {
+    color: var(--color-navbar);
+    text-decoration: none;
+    font-weight: bold;
+}
+body.dark-mode .producto-vendedor a {
+    color: var(--color-acento); /* Verde claro para el nombre en modo oscuro */
+}
+
+.price-wrapper {
     text-align: right;
+}
+
+/* Estilo del Precio (Derecha, Abajo) */
+.producto-precio-label {
     display: block;
-    margin-bottom: -5px;
-    /* Acerca la etiqueta al precio */
-    position: absolute;
-    right: 15px;
-    bottom: 45px;
-    /* Posiciona la etiqueta justo encima del precio */
-    z-index: 10;
+    
+    font-size: 0.75em;
+    font-weight: normal;
+
+    color: var(--color-navbar);
+    
+    text-align: right;
+    margin-bottom: 0px;
+}
+body.dark-mode .producto-precio-label {
+    color: #ccc; /* Claro en modo oscuro */
 }
 
 /* Estilo del Precio (Grande, Derecha, Abajo) */
 .producto-precio {
-    font-size: 1.5em;
-    /* Agrandamos el precio */
+    display: block;
+    font-size: 1.4em;
+    
     font-weight: bold;
     color: var(--color-acento);
-    /* Color de acento */
-    /* Posicionamiento: Abajo a la derecha */
-    position: absolute;
-    right: 15px;
-    bottom: 10px;
-    z-index: 10;
-    margin-top: auto; /* Empuja el precio hacia abajo si hay espacio */
+    line-height: 1;
 }
 
 
-/* Estilo para la imagen de portada */
-.card-image-container {
-    width: 100%;
-    height: 250px;
-    background-color: #f0f0f0;
-    padding: 10px;
+/* --- VISTA DE LISTA --- */
+
+.productos-listado-container.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.list-item-producto {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    transition: transform 0.2s, box-shadow 0.2s;
     overflow: hidden;
-    display: flex; /* Para centrar la imagen */
-    position: relative;
-    /* Fondo para el espacio vacío que deja 'contain' */
+}
+body.dark-mode .list-item-producto {
+    background-color: #2D3E2D;
+    border-color: #444;
+}
+body.dark-mode .list-item-producto h3 { color: var(--color-acento); }
+body.dark-mode .list-item-producto h4 { color: #eee; }
+body.dark-mode .list-item-producto p { color: #ccc !important; }
+
+.list-item-producto a {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    text-decoration: none;
+    color: #333;
+}
+
+.list-item-producto:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-acento); /* Borde verde al pasar el mouse */
+}
+
+.list-image-container {
+    flex-shrink: 0;
+    width: 120px; 
+    height: 120px;
+    margin-right: 0; /* El padding del enlace lo maneja */
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.card-image {
+.list-image-container img {
     width: 100%;
     height: 100%;
-    /* MOSTRAR LA RELACIÓN DE ASPECTO CORRECTA */
-    object-fit: contain;
-    display: block;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
-/* Estilo de la Metainformación para evitar que el texto de metainfo caiga en el espacio del vendedor/precio */
-.card-metadata {
-    font-size: 0.85em;
-    color: #ffffff;
-    margin-bottom: 30px;
-    /* Separación extra para que el texto de "País" no toque el vendedor */
-    padding-right: 70px;
-    /* Añadir padding derecho para que el texto no toque el precio */
+.list-details {
+    flex-grow: 1;
 }
 
-/* Menú desplegable */
-.dropdown {
-    position: relative;
-    display: inline-block;
-    /* Permite que el elemento sea parte de la línea */
+.list-price-action {
+    flex-shrink: 0;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: 20px;
+    margin-right: 30px;
 }
 
-.dropdown-content {
-    display: none;
-    /* Oculto por defecto */
-    position: absolute;
-    background-color: var(--color-navbar);
-    /* Fondo del navbar */
-    min-width: 180px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
-    /* Asegura que esté sobre el contenido */
-    padding-top: 5px;
-    border-radius: 0 0 4px 4px;
-    border-top: 3px solid var(--color-acento);
-    /* Línea de acento */
+.list-price-action .producto-precio {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--color-acento);
+    margin-bottom: 10px;
 }
 
-.dropdown-content a {
-    color: var(--color-texto-nav);
-    padding: 10px 14px !important;
-    font-size: 1em;
-    /* Mantenemos tamaño normal dentro del desplegable */
+/* --- ESTILOS DE PAGINACIÓN --- */
+
+.pagination-container {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+body.dark-mode .pagination-container {
+    border-top-color: #333;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.page-link {
+    padding: 8px 15px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     text-decoration: none;
-    display: block;
-    text-align: left;
-    margin: 0 !important;
-    margin-left: 0 !important;
-    /* Sobrescribe el margin del navbar */
+    color: var(--color-navbar);
+    font-weight: bold;
+    transition: all 0.2s;
+}
+body.dark-mode .page-link {
+    background-color: #2D3E2D;
+    border-color: #444;
+    color: #ccc;
 }
 
-.dropdown-content a:hover {
+.page-link:hover {
     background-color: var(--color-acento);
-    /* Acento al pasar el ratón */
+    color: var(--color-navbar);
+    border-color: var(--color-acento);
+}
+body.dark-mode .page-link:hover {
+    background-color: var(--color-acento);
     color: var(--color-navbar);
 }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-    /* Muestra el menú al pasar el ratón */
+.page-link.disabled {
+    color: #ccc;
+    border-color: #eee;
+    cursor: default;
+    background-color: #f9f9f9;
+}
+body.dark-mode .page-link.disabled {
+    background-color: #1a1a1a;
+    color: #444;
+    border-color: #333;
 }
 
+.current-page-info {
+    font-size: 1em;
+    color: #555;
+}
+body.dark-mode .current-page-info {
+    color: #ccc;
+}
+
+
 /* ============================ */
-/* --- DETALLE DEL PRODUCTO --- */
+/* --- PRODUCTO EN DETALLE--- */
 /* ============================ */
 
 /* Contenedor principal de la info (info + imagen) */
@@ -1058,8 +1158,8 @@ body.dark-mode .card-producto {
     width: 300px;
     /* ⚠️ Tamaño fijo de la columna de imagen */
     min-width: 300px;
-    /* Asegura que no se achique más allá */
-    height: 300px;
+
+    height: auto;
     /* Altura igual al ancho para un aspecto cuadrado */
     border-radius: 8px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
@@ -1071,36 +1171,102 @@ body.dark-mode .card-producto {
     /* Fondo para el 'contain' */
     cursor: pointer;
     /* Indica que la imagen es clickeable */
+
+    display: flex;
+    flex-direction: column;
+}
+body.dark-mode .detalle-imagen-col {
+    background-color: #2D3E2D;
+    /* Fondo verde oscuro para el contain */
 }
 
 .detalle-imagen {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    /* Mostrar imagen completa, no recortar */
-    border-radius: 8px;
-    /* Hereda el borde redondeado */
+    object-fit: cover;
+    border-radius: 8px 8px 0 0; /* Solo redondeado arriba */
+    display: block; /* Elimina espacios fantasma debajo de la imagen */
 }
 
-/* Botón de Zoom */
-.zoom-button {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background-color: rgba(0, 0, 0, 0.7);
-    /* Fondo semi-transparente */
+/* Barra de ZOOM */
+.zoom-bar-trigger {
+    background-color: #333; /* Color oscuro para la barra */
     color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.8em;
+    text-align: center;
+    padding: 10px 0;
+    font-weight: bold;
+    font-size: 0.9em;
     cursor: pointer;
-    z-index: 10;
     transition: background-color 0.2s;
+    /* Sin bordes redondeados para que sea un bloque sólido entre imagen y links */
+    border-radius: 0; 
+}
+body.dark-mode .zoom-bar-trigger {
+    background-color: #1a1a1a; /* Un poco más oscuro que el fondo en modo dark */
+    color: #ccc;
 }
 
-.zoom-button:hover {
-    background-color: rgba(0, 0, 0, 0.9);
+.zoom-bar-trigger:hover {
+    background-color: var(--color-acento); /* Color acento al pasar el mouse */
+    color: var(--color-navbar);
 }
+body.dark-mode .zoom-bar-trigger:hover {
+    background-color: var(--color-acento);
+    color: var(--color-navbar);
+}
+
+/* Contenedor de links externos */
+.external-links-container {
+    padding: 15px;
+    border-top: none; /*Chau borde superior porque la barra de zoom ya separa */
+    background-color: white; /* Fondo blanco para separar de la imagen gris */
+    border-radius: 0 0 8px 8px; /* Redondear solo abajo */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sutil sombra final */
+}
+body.dark-mode .external-links-container {
+    background-color: #2D3E2D; /* Mismo fondo que la columna de imagen */
+    border-top-color: #444;
+}
+
+/* Estilo Base de Botones Externos */
+.btn-external {
+    flex: 1;
+    display: inline-block;
+    padding: 8px 5px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.85em;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-external:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* (Gris/Neutro) */
+.btn-external.wiki {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+body.dark-mode .btn-external.wiki {
+    background-color: #444;
+    color: #eee;
+    border-color: #555;
+}
+
+/* (Negro/Amarillo o Amarillo/Negro - Oscuro para contraste) */
+.btn-external.discogs {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #222;
+}
+/* El de Discogs se ve bien en oscuro tal cual está */
+
+
 
 /* Columna de Información (Permite que crezca y ocupe el espacio restante) */
 .detalle-info-col {
@@ -1603,10 +1769,7 @@ body.dark-mode .metadata-tabla td:first-child {
     color: #bbb;
 }
 
-body.dark-mode .detalle-imagen-col {
-    background-color: #2D3E2D;
-    /* Fondo verde oscuro para el contain */
-}
+
 
 body.dark-mode .descripcion-larga p {
     color: #ccc;
@@ -1818,8 +1981,6 @@ body.dark-mode .cart-qty-form input[type="number"] {
     margin-bottom: 20px;
     padding: 20px;
     background-color: white;
-    justify-content: space-between;
-    align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.3s ease;
 }
@@ -1947,4 +2108,195 @@ body.dark-mode .order-card {
     border: 1px dashed #ccc;
     border-radius: 8px;
     margin-top: 30px;
+}
+
+
+/* =================== */
+/* --- STYLES BLOG --- */
+/* =================== */
+
+.blog-header {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+body.dark-mode .blog-header { background-color: #1a1a1a; border-bottom-color: #333; }
+
+.blog-header h1 { margin: 0; color: var(--color-navbar); font-size: 2.5em; }
+
+.blog-header p { color: #666; font-size: 1.1em; margin-top: 10px; }
+body.dark-mode .blog-header p { color: #aaa; }
+
+.btn-blog-create {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: var(--color-acento);
+    color: var(--color-texto-nav);
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+.btn-blog-create:hover { background-color: var(--color-hover-nav); }
+
+/* Layout Principal */
+.blog-container {
+    display: flex;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    gap: 40px;
+}
+
+.blog-main { flex: 3; } /* Ocupa más espacio */
+.blog-sidebar { flex: 1; min-width: 250px; } /* Barra lateral derecha */
+
+/* Tarjeta de Artículo */
+.blog-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    transition: transform 0.2s;
+}
+body.dark-mode .blog-card { background-color: #2D3E2D; border-color: #444; }
+
+.blog-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+
+.blog-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.85em;
+}
+
+.blog-date { color: #999; }
+
+/* Etiquetas de Categoría */
+.blog-category {
+    background-color: #eee;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #555;
+    font-size: 0.8em;
+}
+/* Colores por categoría (opcional) */
+.tag-RESEÑA { background-color: #e3f2fd; color: #1565c0; }
+.tag-OPINION { background-color: #fce4ec; color: #c2185b; }
+.tag-NOTICIA { background-color: #fff3e0; color: #e65100; }
+
+.blog-title-link { text-decoration: none; color: inherit; }
+
+.blog-title-link h2 { margin: 10px 0; font-size: 1.8em; transition: color 0.2s; }
+body.dark-mode .blog-title-link h2 { color: #fff; }
+
+.blog-title-link h2:hover { color: var(--color-acento); }
+
+.blog-author { font-size: 0.9em; color: #777; margin-bottom: 15px; }
+
+/* Texto Truncado (3 líneas) */
+.blog-preview {
+    color: #444;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; /* ⚠️ Límite de 3 líneas */
+    line-clamp: 3;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+body.dark-mode .blog-preview { color: #ccc; }
+
+.read-more {
+    color: var(--color-navbar);
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid var(--color-acento);
+}
+
+/* Sidebar */
+.sidebar-widget { margin-bottom: 40px; }
+
+.sidebar-widget h3 { 
+    border-bottom: 2px solid var(--color-acento); 
+    padding-bottom: 10px; 
+    margin-bottom: 15px; 
+    color: var(--color-navbar);
+}
+
+.sidebar-widget ul { list-style: none; padding: 0; }
+.sidebar-widget li { margin-bottom: 10px; }
+.sidebar-widget a {
+    text-decoration: none;
+    color: #555;
+    display: block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+body.dark-mode .sidebar-widget a { color: #bbb; }
+
+.sidebar-widget a:hover, .sidebar-widget a.active {
+    background-color: var(--color-navbar);
+    color: white;
+}
+body.dark-mode .sidebar-widget a:hover, body.dark-mode .sidebar-widget a.active { background-color: var(--color-acento); color: var(--color-navbar); }
+
+.blog-search-form { display: flex; gap: 5px; }
+.blog-search-form input { flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+.blog-search-form button { background: var(--color-navbar); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+
+
+/* --------------- */
+/* --- ESCÁNER --- */
+/* --------------- */
+
+/* Modal del Escáner */
+.scanner-modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    z-index: 2000; /* Muy arriba */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+}
+
+.scanner-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px; /* Ancho máximo del video */
+    position: relative;
+}
+body.dark-mode .scanner-content {
+    background-color: #222;
+}
+body.dark-mode .scanner-content h3 {
+    color: white !important;
+}
+
+.close-scanner {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    z-index: 10;
+}
+body.dark-mode .close-scanner {
+    color: white;
 }

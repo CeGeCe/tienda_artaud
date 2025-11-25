@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Opciones de Presupuesto{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto; padding: 30px; border: 1px solid #ccc; border-radius: 8px; background-color: var(--color-fondo, white);">
+    
+    <h2 style="text-align: center; color: var(--color-navbar); margin-bottom: 30px;">Generar Presupuesto 📄</h2>
+    
+    <form method="POST" action="{% url 'procesar_presupuesto' %}">
+        {% csrf_token %}
+
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h3 style="margin: 0; font-size: 1.1em;">📥 Descargar PDF</h3>
+                <p style="margin: 5px 0 0 0; color: #777; font-size: 0.9em;">Guardar el archivo en tu dispositivo.</p>
+            </div>
+            <button type="submit" name="accion" value="descargar" class="btn-add-to-cart" style="width: auto; margin: 0; padding: 10px 20px; font-size: 1em;">
+                Descargar
+            </button>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 6px;">
+            <div style="margin-bottom: 15px;">
+                <h3 style="margin: 0; font-size: 1.1em;">📧 Enviar por Email</h3>
+                <p style="margin: 5px 0 0 0; color: #777; font-size: 0.9em;">Te lo enviamos a tu correo o a quien elijas.</p>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <input type="email" name="email_destino" value="{{ email_usuario }}" placeholder="nombre@email.com" 
+                    style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                
+                <button type="submit" name="accion" value="email" class="btn-add-to-cart" style="width: auto; margin: 0; padding: 10px 20px; font-size: 1em;">
+                    Enviar
+                </button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center; color: #777; font-size: 0.9em;">
+            <p>ℹ️ El envío por Telegram requiere iniciar un chat con nuestro Bot (Próximamente).</p>
+        </div>
+
+    </form>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'ver_carrito' %}" style="color: #555; text-decoration: none;">Cancelar y Volver</a>
+    </div>
+
+</div>
+{% endblock %}

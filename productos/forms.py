@@ -30,5 +30,6 @@ class ProductoForm(forms.ModelForm):
             'condicion': 'Nuevo: Sellado de fábrica. Usado: Abierto. Sencillo, ¿no?',
             'estado': 'Sé honesto. Aclará en la descripción para evitar reclamos.',
             'imagen_portada': 'Se recomienda una imagen clara de al menos 500x500px.',
-            'cantidad_discos': 'O cassettes'
+            'cantidad_discos': 'O cassettes',
+            'codigo_barras': 'Introducir manualmente o escanear'
         }

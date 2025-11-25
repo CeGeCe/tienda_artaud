@@ -12,4 +12,9 @@ urlpatterns = [
 
     # Actualizar la cantidad de un ítem
     path('actualizar/<int:item_id>/', views.actualizar_carrito, name='actualizar_carrito'),
+
+    path('presupuesto/pdf/', views.generar_presupuesto_pdf, name='generar_presupuesto'),
+
+    path('presupuesto/opciones/', views.opciones_presupuesto, name='opciones_presupuesto'),
+    path('presupuesto/procesar/', views.procesar_presupuesto, name='procesar_presupuesto'),
 ]

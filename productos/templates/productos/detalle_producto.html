@@ -12,21 +12,47 @@
 <div class="detalle-grid">
     
     <div class="detalle-imagen-col">
-        {% if producto.imagen_portada %}
-            <img src="{{ producto.imagen_portada.url }}" alt="Portada de {{ producto.album }}" 
-                class="detalle-imagen" id="detalle-main-image">
-        {% else %}
-            <img src="{% static 'tienda_artaud/sin_imagen.png' %}" alt="Sin imagen de portada" 
-                class="detalle-imagen" id="detalle-main-image" style="object-fit: contain; background-color: #f0f0f0;">
-        {% endif %}
-        <span class="zoom-button" id="zoom-button">Clic para hacer zoom</span>
-    </div>
+    
+        <div class="main-image-container">
+            {% if producto.imagen_portada %}
+                <img id="detalle-main-image" src="{{ producto.imagen_portada.url }}" alt="{{ producto.album }}" class="detalle-imagen">
+            {% else %}
+                <img src="{% static 'tienda_artaud/sin_imagen.png' %}" alt="Sin imagen" class="detalle-imagen sin-imagen-detalle">
+            {% endif %}
+        </div>
+
+        <div id="zoom-button" class="zoom-bar-trigger">
+            Clic para hacer zoom 🔍
+        </div>
+
+        <div class="external-links-container">
+            <p style="margin-bottom: 10px; font-size: 0.9em; color: #777; text-align: center;">Más información en:</p>
+            
+            <div style="display: flex; gap: 10px;">
+                <a href="https://es.wikipedia.org/w/index.php?search={{ producto.artista|urlencode }}+{{ producto.album|urlencode }}" 
+                target="_blank" class="btn-external wiki">
+                    Wikipedia 📖
+                </a>
+                <a href="https://www.discogs.com/search/?q={{ producto.artista|urlencode }}+{{ producto.album|urlencode }}&type=release" 
+                target="_blank" class="btn-external discogs">
+                    Discogs 💿
+                </a>
+            </div>
+        </div>
+
+</div>
 
     <div class="detalle-info-col">
         
         <h1>{{ producto.artista }}</h1>
         <h1>{{ producto.album }}</h1>
-        <p class="vendedor-info">Vendido por: <strong>{{ producto.vendedor.username }}</strong></p>
+        <p class="vendedor-info">
+            Publicado por: 
+            <a href="{% url 'ver_vendedor' username=producto.vendedor.username %}" 
+            style="color: var(--color-acento); font-weight: bold; text-decoration: none;">
+            {{ producto.vendedor.username }}
+            </a>
+        </p>
 
         <span class="precio-detalle">${{ producto.precio|floatformat:2 }}</span>
 

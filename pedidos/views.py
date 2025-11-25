@@ -13,7 +13,8 @@ from django.urls import reverse
 
 from .models import Pedido, ItemPedido
 from carrito.models import Carrito, ItemCarrito
-from productos.models import Producto
+from django.db.models import Sum, Count, F
+from django.db.models.functions import ExtractHour
 
 # Create your views here.
 
@@ -338,3 +339,62 @@ def admin_resumen_ventas(request):
         })
         
     return render(request, 'pedidos/admin_ventas.html', {'ventas_globales': ventas_globales})
+
+
+def calcular_estadisticas(items_queryset):
+    """
+    Función auxiliar que recibe un QuerySet de ItemPedido 
+    y devuelve un diccionario con KPIs y datos para gráficos.
+    """
+    # 1. KPIs
+    kpis = items_queryset.aggregate(
+        total_plata=Sum(F('precio_unitario') * F('cantidad')),
+        total_items=Sum('cantidad')
+    )
+
+    # 2. Gráfico Formatos
+    formatos_stats = items_queryset.values('producto__formato').annotate(total=Sum('cantidad')).order_by('-total')
+    formatos_data = {
+        'labels': [item['producto__formato'] for item in formatos_stats],
+        'data': [item['total'] for item in formatos_stats]
+    }
+
+    # 3. Gráfico Horas
+    horas_stats = items_queryset.annotate(hora=ExtractHour('pedido__fecha_pedido')).values('hora').annotate(total=Count('id')).order_by('hora')
+    horas_array = [0] * 24
+    for h in horas_stats:
+        if h['hora'] is not None:
+            horas_array[h['hora']] = h['total']
+    
+    horas_data = {
+        'labels': [f"{i}:00" for i in range(24)],
+        'data': horas_array
+    }
+
+    return {
+        'kpis': kpis,
+        'formatos': formatos_data,
+        'horas': horas_data,
+    }
+
+@login_required
+def dashboard_analytics(request):
+    context = {}
+
+    # --- DATOS PERSONALES (Siempre se calculan) ---
+    items_personal = ItemPedido.objects.filter(vendedor=request.user)
+    context['stats_personal'] = calcular_estadisticas(items_personal)
+    
+    # --- DATOS GLOBALES (Solo si es Admin) ---
+    if request.user.is_staff:
+        items_global = ItemPedido.objects.all()
+        context['stats_global'] = calcular_estadisticas(items_global)
+        
+        # Gráfico Extra solo para Global: Top Vendedores
+        vendedores_stats = items_global.values('vendedor__username').annotate(total=Sum('cantidad')).order_by('-total')[:5]
+        context['top_vendedores'] = {
+            'labels': [item['vendedor__username'] for item in vendedores_stats],
+            'data': [item['total'] for item in vendedores_stats]
+        }
+
+    return render(request, 'pedidos/dashboard.html', context)

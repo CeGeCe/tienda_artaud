@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Presupuesto - Tienda Artaud</title>
+    <style>
+        /* Definición de la página (A4) y márgenes */
+        @page {
+            size: A4;
+            margin: 2.5cm;
+        }
+
+        body { 
+            font-family: Helvetica, Arial, sans-serif; 
+            color: #333; 
+            font-size: 14pt;
+            line-height: 1.5;
+        }
+
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+            border-bottom: 3px solid #38761D; 
+            padding-bottom: 20px; 
+        }
+        
+        .header h1 { 
+            margin: 0; 
+            color: #38761D; 
+            font-size: 28pt;
+        }
+        
+        .header p {
+            font-size: 16pt;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .info-cliente { 
+            margin-bottom: 40px; 
+            font-size: 14pt;
+        }
+        
+        .info-cliente p {
+            margin: 5px 0;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 30px; 
+        }
+        
+        th { 
+            background-color: #f2f2f2; 
+            font-weight: bold;
+            font-size: 14pt;
+            padding: 12px;
+            border-bottom: 2px solid #ccc;
+            text-align: left;
+        }
+        
+        td { 
+            padding: 12px; 
+            border-bottom: 1px solid #ddd; 
+            font-size: 13pt; /* Contenido de tabla */
+            vertical-align: top;
+        }
+        
+        .text-right { text-align: right; }
+        
+        .total-section { 
+            text-align: right; 
+            margin-top: 30px; 
+            font-size: 16pt; 
+            padding-top: 10px;
+        }
+        
+        .total-price { 
+            color: #38761D; 
+            font-weight: bold; 
+            font-size: 22pt; /* Precio final muy destacado */
+            margin-left: 10px;
+        }
+        
+        .footer { 
+            margin-top: 80px; 
+            text-align: center; 
+            font-size: 10pt; /* La letra chica se mantiene chica pero legible */
+            color: #777; 
+            border-top: 1px solid #eee; 
+            padding-top: 20px; 
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Tienda Artaud</h1>
+        <p>Presupuesto de Compra</p>
+    </div>
+
+    <div class="info-cliente">
+        <p><strong>Fecha:</strong> {% now "d/m/Y" %}</p>
+        <p><strong>Cliente:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cant.</th>
+                <th>Precio Unit.</th>
+                <th class="text-right">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in carrito.items.all %}
+            <tr>
+                <td>
+                    {{ item.producto.artista }} - {{ item.producto.album }}<br>
+                    <small style="color: #666;">{{ item.producto.get_formato_display }}</small>
+                </td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.precio_item|floatformat:2 }}</td>
+                <td class="text-right">${{ item.get_total|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total-section">
+        <p>Total Estimado: <span class="total-price">${{ carrito.get_total|floatformat:2 }}</span></p>
+    </div>
+
+    <div class="footer">
+        <p>Este documento es un presupuesto preliminar y no representa una factura fiscal.</p>
+        <p>Los precios y el stock de cada producto pueden variar.</p>
+        <p>www.tienda-artaud.com</p>
+    </div>
+
+</body>
+</html>

@@ -62,4 +62,38 @@
         }
     </style>
 
+
+<input type="file" id="form-barcode-input" accept="image/*" style="display: none;">
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputCodigo = document.getElementById('id_codigo_barras');
+
+        if (inputCodigo) {
+            // Crear el botón dinámicamente
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.innerHTML = '📷 Escanear con Cámara';
+            btn.className = 'btn-add-to-cart'; 
+            btn.style.padding = '5px 10px';
+            btn.style.fontSize = '0.9em';
+            btn.style.marginLeft = '10px';
+            btn.style.width = 'auto';
+            btn.style.backgroundColor = '#EEEEEE'; // Color distinto para diferenciar
+            
+            // Insertar botón
+            inputCodigo.parentNode.insertBefore(btn, inputCodigo.nextSibling);
+            
+            // Lógica del clic: Llamar a la función global de la cámara
+            btn.addEventListener('click', () => {
+                if (window.iniciarEscaneoFormulario) {
+                    window.iniciarEscaneoFormulario(inputCodigo);
+                } else {
+                    alert("El sistema de escaneo no está cargado.");
+                }
+            });
+        }
+    });
+</script>
+
 {% endblock content %}

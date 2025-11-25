@@ -8,7 +8,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin # Proteger las vistas
 from .models import Producto, FORMATO_CHOICES, CONDICION_CHOICES, EDICION_CHOICES, GENERO_1_CHOICES
 from .forms import ProductoForm
 from django.views.decorators.http import require_POST
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .utils import decodificar_imagen
 
 # Create your views here.
 
@@ -90,6 +92,7 @@ def catalogo(request):
     condicion_filtro = request.GET.getlist('condicion')
     edicion_filtro = request.GET.getlist('edicion')
     genero_filtro = request.GET.getlist('genero')
+    origen_filtro = request.GET.getlist('origen') # Nacional / Importado
 
     if is_valid_filter(formato_filtro):
         productos = productos.filter(formato__in=formato_filtro)
@@ -102,6 +105,22 @@ def catalogo(request):
 
     if is_valid_filter(genero_filtro):
         productos = productos.filter(genero_1__in=genero_filtro)
+
+    if is_valid_filter(origen_filtro):
+        # Si el usuario seleccionó AMBOS (Nacional e Importado), no filtramos nada.
+        if 'NACIONAL' in origen_filtro and 'IMPORTADO' in origen_filtro:
+            pass 
+        
+        # Si solo seleccionó NACIONAL
+        elif 'NACIONAL' in origen_filtro:
+            # Filtra por país 'Argentina' (insensible a mayúsculas)
+            productos = productos.filter(pais__icontains='Argentina')
+            
+        # Si solo seleccionó IMPORTADO
+        elif 'IMPORTADO' in origen_filtro:
+            # Excluye los que son de Argentina
+            productos = productos.exclude(pais__icontains='Argentina')
+
 
     # ORDEN / SORT
     # Por defecto, los más nuevos (descendente por ID)
@@ -162,6 +181,7 @@ def catalogo(request):
         'formato_seleccionado': formato_filtro,
         'condicion_seleccionada': condicion_filtro,
         'edicion_seleccionada': edicion_filtro,
+        'origen_seleccionado': origen_filtro,
         'genero_seleccionado': genero_filtro,
 
 
@@ -282,3 +302,18 @@ def ver_favoritos(request):
 def reproductor_popup(request):
     """Reproductor de música en una ventana aparte."""
     return render(request, 'reproductor.html')
+
+
+@login_required
+def escanear_codigo(request):
+    """Recibe una imagen vía POST y devuelve el código de barras detectado."""
+    if request.method == 'POST' and request.FILES.get('imagen'):
+        imagen = request.FILES['imagen']
+        codigo = decodificar_imagen(imagen)
+        
+        if codigo:
+            return JsonResponse({'status': 'ok', 'codigo': codigo})
+        else:
+            return JsonResponse({'status': 'error', 'mensaje': 'No se detectó ningún código.'})
+            
+    return JsonResponse({'status': 'error', 'mensaje': 'Petición inválida.'})

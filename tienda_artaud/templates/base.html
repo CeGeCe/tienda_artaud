@@ -8,6 +8,8 @@
     <title>{% block title %}Tienda Artaud{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'tienda_artaud/styles.css' %}">
+
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 
 <body>
@@ -22,18 +24,18 @@
 
             <div class="nav-links-simple">
                 <a href="{% url 'about' %}">Nosotros</a>
-                <a href="#">Blog</a>
+                <a href="{% url 'blog_lista' %}">Blog</a>
                 <a href="{% url 'catalogo' %}">Catálogo</a>
             </div>
 
             <button id="dark-mode-toggle" onclick="toggleDarkMode()" 
-                    style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2em; margin-right: 15px;" 
+                    style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2em; margin-right: 5px;" 
                     aria-label="Alternar modo oscuro">
                 ☀️
             </button>
 
             <button onclick="abrirRadio()" class="icon-btn" title="Abrir Radio Artaud 📻" style="margin-right: 10px;">
-            ▶️
+                📻
             </button>
 
             <script>
@@ -56,12 +58,17 @@
                     🎤
                 </button>
 
-                <input type="text" name="q" placeholder="Buscar..." 
+                <button type="button" id="barcode-search-btn" class="nav-voice-btn" aria-label="Escanear código" style="border-right: 1px solid rgba(255,255,255,0.3);">
+                    |||
+                </button>
+                <input type="file" id="barcode-search-input" accept="image/*" style="display: none;">
+
+                <input type="text" name="q" placeholder="Buscar por Artista, Álbum, Sello, País, etc..." 
                     value="{{ request.GET.q|default:'' }}" 
-                    class="nav-search-field search-input">
+                    class="nav-search-field search-input" id="main-search-input">
                 
                 {% if request.GET.q %}
-                    <a href="{% url 'catalogo' %}" class="nav-search-clear" aria-label="Borrar">✕</a>
+                    <a href="{% url 'catalogo' %}" class="nav-search-clear" aria-label="Borrar"></a>
                 {% endif %}
 
                 <button type="submit" class="nav-search-btn" aria-label="Buscar">
@@ -78,12 +85,18 @@
                         👤 {{ user.username|truncatechars:10 }}
                     </a>
                     <div class="dropdown-content">
-                        <a href="#">Dashboard 📊</a> {% if user.is_staff %}
+                        <a href="{% url 'ver_vendedor' username=user.username %}">Mi Perfil</a>
+                        <a href="{% url 'mi_perfil' %}">Mis Datos</a>
+                        <a href="{% url 'dashboard_analytics' %}">Dashboard 📊</a>
+                        {% if user.is_staff %}
                             <hr style="margin: 0; border-top: 1px solid #ddd;">
+
+                            <a href="{% url 'admin_ventas_globales' %}">Ventas Globales</a>
                             <a href="{% url 'admin:index' %}">Acceso Admin 👮‍♂️</a>
                         {% endif %}
                         
-                        <hr style="margin: 0; border-top: 1px solid #ddd;">
+                        <hr style="margin: 0; border-top: 1px solid #eee;">
+
                         <form method="post" action="{% url 'account_logout' %}" style="padding: 0;">
                             {% csrf_token %}
                             <button type="submit" class="dropdown-logout-btn">Cerrar Sesión</button>
@@ -178,15 +191,16 @@
 <script src="{% static 'tienda_artaud/scripts/busq_voz.js' %}"></script>
 <script src="{% static 'tienda_artaud/scripts/catalogo_sort.js' %}"></script>
 <script src="{% static 'tienda_artaud/scripts/zoom.js' %}"></script>
+<script src="{% static 'tienda_artaud/scripts/barcode.js' %}"></script>
 
 <footer class="main-footer">
     <div class="footer-container">
         <div class="footer-col">
             <h4>Navegación</h4>
             <a href="{% url 'home' %}">Inicio</a>
-            <a href="{% url 'catalogo' %}">Catálogo</a>
             <a href="{% url 'about' %}">Sobre Nosotros</a>
-            Blog
+            <a href="{% url 'blog_lista' %}">Blog</a>
+            <a href="{% url 'radio_artaud' %}">Radio online</a>
         </div>
         <div class="footer-col">
             <h4>Mi Cuenta</h4>
@@ -208,10 +222,11 @@
         <div class="footer-col">
             <h4>Redes Sociales</h4>
             <div>
+                <a href="https://rateyourmusic.com/" aria-label="Rate Your Music">Rate Your Music</a>
+                <a href="https://www.last.fm/" aria-label="Last.fm">Last.fm</a>
                 <a href="https://facebook.com" aria-label="Facebook">Facebook</a>
                 <a href="https://instagram.com" aria-label="Instagram">Instagram</a>
                 <a href="https://twitter.com" aria-label="Twitter">X (Twitter)</a>
-                <a href="https://tiktok.com" aria-label="TikTok">TikTok</a>
             </div>
         </div>
     </div>
@@ -219,6 +234,20 @@
         &copy; 2025 Tienda Artaud. Todos los derechos reservados.
     </div>
 </footer>
+
+
+    <div id="scanner-modal" class="scanner-modal">
+        <div class="scanner-content">
+            <span class="close-scanner">&times;</span>
+            <h3 style="text-align: center; color: #333; margin-bottom: 10px;">Escanear Código</h3>
+
+            <div id="reader" style="width: 100%;"></div>
+
+            <p style="text-align: center; font-size: 0.9em; color: #777; margin-top: 10px;">
+                Apunta la cámara al código de barras
+            </p>
+        </div>
+    </div>
 
 </body>
 </html>

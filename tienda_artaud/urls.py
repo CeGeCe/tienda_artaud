@@ -38,6 +38,8 @@ urlpatterns = [
     path('carrito/', include('carrito.urls')),
 
     path('pedidos/', include('pedidos.urls')),
+
+    path('blog/', include('blog.urls')),
 ]
 
 # **ÚNICAMENTE para desarrollo local**
