@@ -30,7 +30,12 @@ if not SECRET_KEY:
     SECRET_KEY = 'django-insecure-1i2jpu6sd*#9@$d+j8%&bwbtl9&bp#b4z$ygxbyx36c!gtn2b5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+
+RENDER = 'RENDER' in os.environ
+
+# Si estamos en Render, Debug es Falso. Si no, es Verdadero.
+DEBUG = not RENDER
 
 # Permitir que Render sirva el sitio
 ALLOWED_HOSTS = ['*']
@@ -228,8 +233,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 if not DEBUG:
-    # Configuración para producción
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # Compresión y almacenamiento eficiente
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 else:
