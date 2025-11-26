@@ -232,14 +232,16 @@ STATIC_URL = '/static/'
 # Define dónde Django pondrá los archivos al hacer deploy
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Dónde buscar los archivos del proyecto (Origen)
+# ESTO DEBE ESTAR SIEMPRE VISIBLE, FUERA DEL IF/ELSE
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    ]
+
 if not DEBUG:
-    # Configuración para producción
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # Configuración extra solo para producción
     # Usar esta versión es más seguro para evitar errores de 500 en statics
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-else:
-    # Configuración local [Buscar archivos estáticos]
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 # Default primary key field type
