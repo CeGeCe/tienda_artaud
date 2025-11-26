@@ -233,8 +233,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 if not DEBUG:
-    # Compresión y almacenamiento eficiente
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Configuración para producción
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # Usar esta versión es más seguro para evitar errores de 500 en statics
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 else:
     # Configuración local [Buscar archivos estáticos]
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
