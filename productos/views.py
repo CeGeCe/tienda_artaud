@@ -5,12 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView, UpdateView, DeleteView # CRUD
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin # Proteger las vistas
-from .models import Producto, FORMATO_CHOICES, CONDICION_CHOICES, EDICION_CHOICES, GENERO_1_CHOICES
+from .models import Producto, Favorito, FORMATO_CHOICES, CONDICION_CHOICES, EDICION_CHOICES, GENERO_1_CHOICES
 from .forms import ProductoForm
 from django.views.decorators.http import require_POST
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .utils import decodificar_imagen
+import operator
+from functools import reduce
 
 # Create your views here.
 
@@ -76,16 +78,46 @@ def catalogo(request):
     query = request.GET.get('q') # Búsqueda por texto
 
     if query:
-        # Búsqueda en varios campos con el operador Q para combinar con OR
-        productos = productos.filter(
-            Q(artista__icontains=query) |
-            Q(album__icontains=query) |
-            Q(codigo_barras__icontains=query) |
-            Q(sello__icontains=query) |
-            Q(pais__icontains=query) |
-            Q(genero_1__icontains=query) |
-            Q(genero_2__icontains=query) 
-        ).distinct() # distinct() evitar duplicados si un producto coincide varias veces
+        # Dividir la búsqueda en palabras individuales
+        # Ej: "Metallica Master Puppets" -> ["Metallica', 'Master', 'Puppets'])
+        palabras = query.split()
+        
+        # Crear una consulta compleja: (Q(artista) | Q(album)) AND (Q(artista) | Q(album))...
+        # Cada palabra debe estar presente en ALGÚN campo del producto.
+        filtro_total = []
+
+        for palabra in palabras:
+            # Para cada palabra, busca si aparece en ALGUNO de estos campos
+            # Artista TIENE palabra OR Album TIENE palabra OR etc.
+            filtro_por_palabra = (
+                Q(artista__icontains=palabra) |
+                Q(album__icontains=palabra) |
+                Q(codigo_barras__icontains=palabra) |
+                Q(sello__icontains=palabra) |
+                Q(pais__icontains=palabra) |
+                Q(genero_1__icontains=palabra) |
+                Q(genero_2__icontains=palabra)
+            )
+            filtro_total.append(filtro_por_palabra)
+        
+        # Combinar con AND: Palabra1 Y Palabra2 Y Palabra3...
+        if filtro_total:
+            query_final = reduce(operator.and_, filtro_total)
+            productos = productos.filter(query_final).distinct()
+
+
+    # MODO DE BÚSQUEDA ANTERIOR
+    # if query:
+    #     # Búsqueda en varios campos con el operador Q para combinar con OR
+    #     productos = productos.filter(
+    #         Q(artista__icontains=query) |
+    #         Q(album__icontains=query) |
+    #         Q(codigo_barras__icontains=query) |
+    #         Q(sello__icontains=query) |
+    #         Q(pais__icontains=query) |
+    #         Q(genero_1__icontains=query) |
+    #         Q(genero_2__icontains=query) 
+    #     ).distinct() # distinct() evitar duplicados si un producto coincide varias veces
 
     # Filtros de BÚSQUEDA
     formato_filtro = request.GET.getlist('formato')
@@ -190,7 +222,7 @@ def catalogo(request):
             ('id', 'Más Antiguos'),
             ('precio', 'Precio (Menor a Mayor)'),
             ('-precio', 'Precio (Mayor a Menor)'),
-            ('artista', 'Artista (A-Z)'),
+            ('artista', 'Alfabético (A-Z)'),
         ],
             
         'opciones_por_pagina': [12, 24, 36],
@@ -204,8 +236,14 @@ def detalle_producto(request, pk):
     # get_object_or_404 = Devuelve una página de NO ENCONTRADO si coso
     producto = get_object_or_404(Producto, pk=pk)
 
+    # Detecta si el producto está en Favs
+    es_favorito = False
+    if request.user.is_authenticated:
+        es_favorito = Favorito.objects.filter(usuario=request.user, producto=producto).exists()
+
     contexto = {
         'producto': producto,
+        'es_favorito': es_favorito,
         'titulo_pagina': f'{producto.artista} - {producto.album}',
     }
 
@@ -268,32 +306,46 @@ class ProductoDeleteView(LoginRequiredMixin, DeleteView):
 @login_required
 @require_POST # Asegura que la vista solo acepte peticiones POST
 def toggle_favorito(request, producto_id):
-    """
-    Añade o quita un producto de la lista de favoritos del usuario.
-    """
+    """ Agregar o quitar un producto de la lista de favoritos del usuario."""
+
     producto = get_object_or_404(Producto, id=producto_id)
     
+    # Buscar si ya existe la relación en la nueva tabla
+    fav_existente = Favorito.objects.filter(usuario=request.user, producto=producto)
+
     # Usa la lista de favoritos
-    if producto.favoritos.filter(id=request.user.id).exists():
-        # Si el producto ya está en favoritos, se quita
-        producto.favoritos.remove(request.user)
+    if fav_existente.exists():
+        fav_existente.delete() # Eliminar si ya existe
     else:
-        # Si no está en favoritos, se agrega
-        producto.favoritos.add(request.user)
-        
-    # Redirige al usuario a la página de donde vino
-    # (Catálogo || Detalle)
+        Favorito.objects.create(usuario=request.user, producto=producto) # Crear si no existe
+    
+    # Redirige al usuario a la página de donde vino (Catálogo/Detalle)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('home')))
 
 
 @login_required
 def ver_favoritos(request):
     """ Muestra una página con todos los productos marcados como Favoritos """
-    productos_favoritos = request.user.productos_favoritos.all()
+    favoritos = Favorito.objects.filter(usuario=request.user)
+
+    # 2. Ordenar
+    orden = request.GET.get('orden', '-fecha_agregado') # Default: Recientes agregados
+
+    if orden == 'fecha_asc':
+        favoritos = favoritos.order_by('fecha_agregado')
+    elif orden == 'precio_desc':
+        favoritos = favoritos.order_by('-producto__precio')
+    elif orden == 'precio_asc':
+        favoritos = favoritos.order_by('producto__precio')
+    elif orden == 'alfabetico':
+        favoritos = favoritos.order_by('producto__artista', 'producto__album')  
+    else:
+        favoritos = favoritos.order_by('-fecha_agregado')
     
     contexto = {
-        'productos': productos_favoritos,
-        'titulo_pagina': 'Mis Favoritos ❤️'
+        'favoritos': favoritos, # Pasa el objeto Favorito, NO un Producto
+        'orden_actual': orden,
+        'titulo_pagina': 'Mi Lista de Favoritos ❤️'
     }
     
     return render(request, 'productos/favoritos.html', contexto)

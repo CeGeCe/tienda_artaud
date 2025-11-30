@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,14 +30,14 @@
 
         /* Disco giratorio */
         .album-art {
-            width: 180px;
-            height: 180px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             background-image: url("{% static 'tienda_artaud/cd_icon.jpg' %}");
             background-size: cover;
             background-position: center;
             margin: 0 auto 20px auto;
-            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            box-shadow: 0 0 25px rgba(0,0,0,0.6);
             border: 4px solid #333;
             animation: spin 10s linear infinite;
             animation-play-state: paused; /* Pausado por defecto */
@@ -46,36 +47,37 @@
 
         .running { animation-play-state: running; }
 
-        h2 { margin: 0; font-size: 1.1em; color: #A4E58E; }
-        p { margin: 0px 0 20px 0; font-size: 0.9em; color: #999; }
+        /* Textos */
+        h2 { margin: 0; font-size: 1.1em; color: #A4E58E; margin-bottom: 2px }
 
-        /* Controles */
-        .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-            margin-bottom: 20px 0;
-        }
+        .artist-name { margin-bottom: 2px; font-size: 1.1em; font-weight: bold; color: #ABADAA }
 
-        .btn-control {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.8em;
+        .album-name { margin: 2px 0 15px 0; font-size: 0.85em; color: #ABADAA; font-style: italic; }
+
+
+        /* Botón Buscar en Tienda */
+        .btn-search-store {
+            background-color: transparent;
+            border: 1px solid #A4E58E;
+            color: #A4E58E;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
             cursor: pointer;
-            transition: transform 0.1s, color 0.2s;
-            padding: 0;
+            margin-bottom: 25px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
-        .btn-control:hover { color: #A4E58E; transform: scale(1.1); }
-        .btn-control:active { transform: scale(0.9); }
-        .btn-play { font-size: 3.5wem; }
+        .btn-search-store:hover {
+            background-color: #A4E58E;
+            color: #1E281E;
+        }
 
         /* Barra de progreso */
-
         .progress-area {
             width: 100%;
-            padding: 10px 0;
+            padding: 10px 110;
             cursor: pointer;
         }
 
@@ -95,6 +97,28 @@
             transition: width 0.1s linear;
         }
 
+        /* Controles */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin: 7px 0 10px 0;
+        }
+
+        .btn-control {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: transform 0.1s, color 0.2s;
+            padding: 0;
+        }
+        .btn-control:hover { color: #A4E58E; transform: scale(1.1); }
+        .btn-control:active { transform: scale(0.9); }
+        .btn-play { font-size: 3.5em; }
+
         .volume-container {
             display: flex;
             align-items: center;
@@ -112,19 +136,17 @@
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 20px; /* Thumb más grande */
-            width: 20px;
+            height: 16px; /* Thumb más grande */
+            width: 16px;
             border-radius: 50%;
             background: #A4E58E;
             cursor: pointer;
-            margin-top: -8px; /* Centrar verticalmente */
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            margin-top: -6px; /* Centrar verticalmente */
         }
 
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
-            height: 5px;
-            cursor: pointer;
+            height: 4px;
             background: #555;
             border-radius: 5px;
         }
@@ -134,27 +156,25 @@
             list-style: none;
             padding: 0;
             text-align: left;
-            max-height: 120px;
+            height: 100px; /* Para que entre 'album' */
             overflow-y: auto;
             border-top: 1px solid #333;
             border-bottom: 1px solid #333;
             margin-top: 10px;
         }
         .playlist li {
-            padding: 12px 10px;
+            padding: 10px;
             border-bottom: 1px solid #2a2a2a;;
             cursor: pointer;
             font-size: 0.85em;
             color: #aaa;
-            transition: background 0.2s;
         }
         .playlist li:hover { background-color: #2a3a2a; color: white; }
         .playlist li.active { color: #A4E58E; font-weight: bold; background-color: #222; border-left: 3px solid #A4E58E;}
 
         /* Scrollbar bonita */
-        .playlist::-webkit-scrollbar { width: 6px; }
+        .playlist::-webkit-scrollbar { width: 5px; }
         .playlist::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        .playlist::-webkit-scrollbar-track { background: #1E281E; }
 
     </style>
 </head>
@@ -165,7 +185,13 @@
         <div class="album-art" id="albumArt"></div>
         
         <h2 id="songTitle">Cargando...</h2>
-        <p id="artistName">Radio Artaud</p>
+
+        <p id="artistName">Artista</p>
+        <p id="albumName" class="album-name">Álbum</p>
+
+        <button onclick="searchInStore()" class="btn-search-store" title="Buscar este álbum en la tienda">
+            Buscar en Tienda 🔍
+        </button>
 
         <div class="progress-area" id="progressArea">
             <div class="progress-container">
@@ -194,23 +220,104 @@
     <script>
         // CONFIGURACIÓN DE LA PLAYLIST (NO LEE METADATA)
         const songs = [
-            { title: "Neverender", artist: "Justice", src: "{% static 'tienda_artaud/audio/tema_01.mp3' %}" },
-            { title: "Post-Crucifixión", artist: "Pescado Rabioso", src: "{% static 'tienda_artaud/audio/tema_02.mp3' %}" },
-            { title: "I Sat By The Ocean", artist: "Queens of the Stone Age", src: "{% static 'tienda_artaud/audio/tema_03.mp3' %}" },
-            { title: "Rock DJ", artist: "Robbie Williams", src: "{% static 'tienda_artaud/audio/tema_04.mp3' %}" },
-            { title: "IRIS OUT", artist: "Kenshi Yonezu", src: "{% static 'tienda_artaud/audio/tema_05.mp3' %}" },
-            { title: "iPod Touch", artist: "Ninajirachi", src: "{% static 'tienda_artaud/audio/tema_06.mp3' %}" },
-            { title: "As Alive As You Need Me To Be", artist: "Nine Inch Nails", src: "{% static 'tienda_artaud/audio/tema_07.mp3' %}" },
+            {
+                title: "Neverender",
+                artist: "Justice",
+                album: "Hyperdrama",
+                src: "{% static 'tienda_artaud/audio/tema_01.mp3' %}" 
+            },
+            {
+                title: "Post-Crucifixión", 
+                artist: "Pescado Rabioso", 
+                album: "Obras Cumbres",
+                src: "{% static 'tienda_artaud/audio/tema_02.mp3' %}" 
+            },
+
+            {
+                title: "I Sat By The Ocean", 
+                artist: "Queens of the Stone Age",
+                album: "...Like Clockwork",
+                src: "{% static 'tienda_artaud/audio/tema_03.mp3' %}" 
+            },
+
+            {
+                title: "Rock DJ", 
+                artist: "Robbie Williams", 
+                album: "Better Man",
+                src: "{% static 'tienda_artaud/audio/tema_04.mp3' %}" 
+            },
+            {
+                title: "IRIS OUT", 
+                artist: "Kenshi Yonezu", 
+                album: "IRIS OUT",
+                src: "{% static 'tienda_artaud/audio/tema_05.mp3' %}" 
+            },
+
+            {
+                title: "iPod Touch", 
+                artist: "Ninajirachi", 
+                album: "I Love My Computer",
+                src: "{% static 'tienda_artaud/audio/tema_06.mp3' %}"
+            },
+
+            {
+                title: "As Alive As You Need Me To Be", 
+                artist: "Nine Inch Nails", 
+                album: "Tron: Ares",
+                src: "{% static 'tienda_artaud/audio/tema_07.mp3' %}" 
+            },
         ];
 
         let currentIndex = 0;
         const audio = document.getElementById('audioPlayer');
         const playBtn = document.getElementById('playBtn');
         const albumArt = document.getElementById('albumArt');
+
+        // Info Canción
         const title = document.getElementById('songTitle');
         const artist = document.getElementById('artistName');
+        const album = document.getElementById('albumName');
+        
         const progressBar = document.getElementById('progressBar');
         const playlistElement = document.getElementById('playlistElement');
+
+
+        // BUSCAR EN TIENDA
+        function searchInStore() {
+            const currentSong = songs[currentIndex];
+            
+            // 1. Unir Artista y Álbum
+            let rawTerm = `${currentSong.artist} ${currentSong.album}`;
+
+            // 2. LIMPIEZA DE CARACTERES ESPECIALES
+            // Bbusca: puntos, dos puntos, comas, guiones, paréntesis
+            // y los reemplaza por un espacio en blanco.
+            // /[.:,;()\-]/g  <-- Esto es el "Regex"
+            let cleanTerm = rawTerm.replace(/[.:,;()\-]/g, " ");
+
+            // 3. Limpiar espacios dobles que hayan quedado
+            // (Ej: si se borra "..." quedan 3 espacios, luego se convierte en 1)
+            cleanTerm = cleanTerm.replace(/\s+/g, " ").trim();
+            
+            // Codificar para la URL
+            const query = encodeURIComponent(cleanTerm);
+            
+            // URL del Catálogo
+            const searchUrl = `/catalogo/?q=${query}`;
+
+
+            // Lógica para controlar la ventana padre (opener)
+            // PUEDE NO FUNCIONAR
+            if (window.opener && !window.opener.closed) {
+                // Si la tienda sigue abierta, cambiar la URL
+                window.opener.location.href = searchUrl;
+                window.opener.focus(); // Trae la ventana al frente
+            } else {
+                // Si la tienda se cerró, abre una nueva pestaña
+                window.open(searchUrl, '_blank');
+            }
+        }
+
 
         // Cargar lista
         function loadPlaylist() {
@@ -232,6 +339,7 @@
             currentIndex = index;
             title.innerText = songs[index].title;
             artist.innerText = songs[index].artist;
+            album.innerText = songs[index].album;
             
             // Solo cambia el src si es diferente para evitar recargas innecesarias
             if (audio.getAttribute('src') !== songs[index].src) {
@@ -299,6 +407,7 @@
         // Carga inicial (sin autoplay para evitar bloqueo de navegador)
         title.innerText = songs[0].title;
         artist.innerText = songs[0].artist;
+        artist.innerText = songs[0].album;
         audio.src = songs[0].src;
         audio.volume = 0.35; // Volumen inicial
         loadPlaylist();

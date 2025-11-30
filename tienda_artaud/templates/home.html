@@ -8,8 +8,8 @@
 <h1 style="text-align: center; margin-bottom: 40px;">¡Bienvenido a la Tienda Artaud!</h1>
 
 <div class="carousel-wrapper">
-    <h2 class="carousel-title" style="text-align: center; color: var(--color-navbar);">
-        💿 Últimos Ingresos
+    <h2 class="carousel-title" style="text-align: center;">
+        💿 Últimos Ingresos 💿
     </h2>
 
     <div class="carousel-content" id="product-carousel">
@@ -20,21 +20,20 @@
                     {% if producto.imagen_portada %}
                     <img src="{{ producto.imagen_portada.url }}" alt="{{ producto.album }}" class="card-image">
                     {% else %}
-                    <img src="{% static 'tienda_artaud/sin_imagen.png' %}" alt="Sin imagen" class="card-image"
+                    <img src="{% static 'tienda_artaud/icons/sin_imagen.png' %}" alt="Sin imagen" class="card-image"
                         style="object-fit: contain;">
                     {% endif %}
                 </div>
 
                 <div class="card-content" style="padding: 10px;">
-                    <h3 style="color: var(--color-navbar); font-size: 1em; height: auto;">
-                        {{ producto.artista }} - {{ producto.album|truncatechars:30 }}
+                    <h3 style="font-size: 1.25em; height: auto;">
+                        {{ producto.artista }} - '{{ producto.album|truncatechars:30 }}'
                     </h3>
                     <p class="card-metadata" style="margin-top: 5px;">
                         {{ producto.get_formato_display }} | {{ producto.get_condicion_display }}
                     </p>
-                    <span class="producto-precio" style="font-size: 1.3em; margin-top: auto;">
-                        ${{ producto.precio|floatformat:2 }} 
-                        {# ⬆️ Asegúrate de que esto esté así. Si se veía `{{ producto.precio|floatformat:2 }}` en la imagen, es un error de sintaxis. #}
+                    <span class="producto-precio" style="font-size: 1.45em; margin-top: auto;">
+                        ${{ producto.precio|floatformat:2 }}
                     </span>
                 </div>
             </a>

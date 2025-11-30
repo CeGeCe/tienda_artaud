@@ -18,7 +18,7 @@
     <nav class="navbar">
         <div class="nav-left">
             <a href="{% url 'home' %}" class="navbar-brand-link">
-                <img src="{% static 'tienda_artaud/artaud_logo.png' %}" alt="Logo" class="brand-icon"> 
+                <img src="{% static 'tienda_artaud/icons/artaud_logo.png' %}" alt="Logo" class="brand-icon"> 
                 <span class="brand-text">Tienda Artaud</span>
             </a>
 
@@ -29,8 +29,8 @@
             </div>
 
             <button id="dark-mode-toggle" onclick="toggleDarkMode()" 
-                    style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2em; margin-right: 5px;" 
-                    aria-label="Alternar modo oscuro">
+                    style="background: none; border: none; color: white; cursor: pointer; font-size: 1.2em;" 
+                    title="Alternar modo oscuro">
                 ☀️
             </button>
 
@@ -43,7 +43,7 @@
                     // Abre una ventana de 350x600 px
                     const url = "{% url 'radio_artaud' %}";
                     const nombre = "RadioArtaud";
-                    const opciones = "width=380,height=600,resizable=no,scrollbars=no,status=no,toolbar=no";
+                    const opciones = "width=400,height=700,resizable=no,scrollbars=no,status=no,toolbar=no";
                     
                     // Si ya existe la ventana, la enfoca. Si no, la crea.
                     window.open(url, nombre, opciones);
@@ -54,11 +54,11 @@
         <div class="nav-search-wrapper">
             <form action="{% url 'catalogo' %}" method="get" class="nav-search-form">
                 
-                <button type="button" id="voice-search-button" class="nav-voice-btn" aria-label="Buscar por voz">
+                <button type="button" id="voice-search-button" class="nav-voice-btn" title="Búsqueda por voz">
                     🎤
                 </button>
 
-                <button type="button" id="barcode-search-btn" class="nav-voice-btn" aria-label="Escanear código" style="border-right: 1px solid rgba(255,255,255,0.3);">
+                <button type="button" id="barcode-search-btn" class="nav-voice-btn" title="Escanear código" style="border-right: 1px solid rgba(255,255,255,0.3);">
                     |||
                 </button>
                 <input type="file" id="barcode-search-input" accept="image/*" style="display: none;">
@@ -68,7 +68,7 @@
                     class="nav-search-field search-input" id="main-search-input">
                 
                 {% if request.GET.q %}
-                    <a href="{% url 'catalogo' %}" class="nav-search-clear" aria-label="Borrar"></a>
+                    <a href="{% url 'catalogo' %}" class="nav-search-clear" aria-label="Borrar búsqueda">✕</a>
                 {% endif %}
 
                 <button type="submit" class="nav-search-btn" aria-label="Buscar">
@@ -115,53 +115,11 @@
 
                 <a href="{% url 'ver_pedidos' %}" class="nav-link-icon">Mis Compras</a>
                 
-                <div class="dropdown rich-dropdown">
-                    <a href="{% url 'ver_favoritos' %}" class="nav-link-icon">Favoritos</a>
-                    <div class="dropdown-content preview-list">
-                        <div class="preview-header">Últimos Favoritos</div>
-                        {% if navbar_favs %}
-                            {% for prod in navbar_favs %}
-                                <a href="{% url 'detalle_producto' pk=prod.pk %}" class="preview-item">
-                                    {% if prod.imagen_portada %}
-                                        <img src="{{ prod.imagen_portada.url }}" class="preview-img">
-                                    {% endif %}
-                                    <div class="preview-info">
-                                        <span class="preview-title">{{ prod.album|truncatechars:15 }}</span>
-                                        <span class="preview-price">${{ prod.precio|floatformat:0 }}</span>
-                                    </div>
-                                </a>
-                            {% endfor %}
-                        {% else %}
-                            <div style="padding: 10px; color: #777; font-size: 0.9em;">Sin favoritos aún.</div>
-                        {% endif %}
-                        <a href="{% url 'ver_favoritos' %}" class="preview-footer-link">Ver Todos los Favoritos →</a>
-                    </div>
-                </div>
+                <a href="{% url 'ver_favoritos' %}" class="nav-link-icon">❤ Favoritos</a>
 
-                <div class="dropdown rich-dropdown">
-                    <a href="{% url 'ver_carrito' %}" class="nav-link-icon">
-                        🛒 <span class="badge">{{ navbar_cart_count }}</span>
-                    </a>
-                    <div class="dropdown-content preview-list">
-                        <div class="preview-header">Tu Carrito</div>
-                        {% if navbar_cart_items %}
-                            {% for item in navbar_cart_items %}
-                                <a href="{% url 'detalle_producto' pk=item.producto.pk %}" class="preview-item">
-                                    {% if item.producto.imagen_portada %}
-                                        <img src="{{ item.producto.imagen_portada.url }}" class="preview-img">
-                                    {% endif %}
-                                    <div class="preview-info">
-                                        <span class="preview-title">{{ item.producto.album|truncatechars:15 }}</span>
-                                        <span class="preview-qty">x{{ item.cantidad }}</span>
-                                    </div>
-                                </a>
-                            {% endfor %}
-                        {% else %}
-                            <div style="padding: 10px; color: #777; font-size: 0.9em;">Carrito vacío.</div>
-                        {% endif %}
-                        <a href="{% url 'ver_carrito' %}" class="preview-footer-link">Ir al Carrito →</a>
-                    </div>
-                </div>
+                <a href="{% url 'ver_carrito' %}" class="nav-link-icon">
+                    🛒 Carrito <span class="badge">{{ navbar_cart_count }}</span>
+                </a>
 
             {% else %}
                 <a href="{% url 'account_login' %}" style="color: white; text-decoration: none; font-weight: bold;">Ingresar / Registrarse</a>

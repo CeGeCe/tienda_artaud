@@ -9,6 +9,9 @@
     --color-hover-nav: #BDC224;
 
     --color-acento: #84AF3B;
+
+    --color-fondo-oscuro: #1C1A1B; 
+    --color-card-oscuro: #2D3E2D; /* Verde musgo */
 }
 
 /* ESTILO GENERAL */
@@ -24,18 +27,14 @@ body {
 
 /* Colores DARKS */
 body.dark-mode {
-    background-color: #1C1A1B;
-    color: #FFFFFF;
-}
-
-body.dark-mode a {
-    color: var(--color-acento);
+    background-color: var(--color-fondo-oscuro);
+    color: var(--color-texto-nav);
 }
 
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3 {
-    color: #FFFFFF;
+    color: var(--color-texto-nav);
 }
 
 /* ============== */
@@ -64,6 +63,7 @@ body.dark-mode h3 {
     padding-left: 50px;
 }
 
+/* 'Tienda Artaud' dentro del brand */
 .navbar-brand {
     font-size: 1.6em;
     font-weight: bold;
@@ -73,17 +73,6 @@ body.dark-mode h3 {
     text-decoration: none;
     display: flex;
     align-items: center;
-}
-
-/* Enlace principal (home) dentro del brand */
-.navbar-brand a {
-    color: white;
-    /* Color blanco para el hover en el título */
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0;
-    /* Elimina el gap interno para controlar el espaciado manualmente */
 }
 
 .navbar-brand-link {
@@ -102,7 +91,7 @@ body.dark-mode h3 {
 
 .nav-links-simple {
     display: flex;
-    gap: 5px; 
+    gap: 1px; 
     align-items: center;
 }
 
@@ -132,7 +121,7 @@ body.dark-mode h3 {
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 10px; /* Separación entre íconos */
+    gap: 1px; /* Separación entre íconos */
     padding-right: 20px;
 }
 
@@ -152,6 +141,13 @@ body.dark-mode h3 {
     background-color: var(--color-hover-nav);
 }
 
+/* Estilo "Pildora" para el Usuario */
+.user-pill {
+    background-color:var(--color-acento);
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
 /* CONTADOR del Carrito */
 .badge {
     background-color: var(--color-fondo);
@@ -164,100 +160,60 @@ body.dark-mode h3 {
     margin-right: 30px;
 }
 
-/* Estilo "Pill" para el Usuario */
-.user-pill {
-    background-color:var(--color-acento);
-    border-radius: 20px;
-    padding: 5px 15px;
-}
+/* --- DROPDOWNS --- */
 
-/* --- DROPDOWNS RICOS (Favoritos y Carrito) --- */
+/* Menú desplegable */
 .dropdown {
     position: relative;
+    display: inline-block;
+    /* Permite que el elemento sea parte de la línea */
 }
 
 .dropdown-content {
     display: none;
+    /* Oculto por defecto */
     position: absolute;
-    right: 0; /* Alinear a la derecha del botón padre */
-    top: 100%;
-    background-color: white;
-    min-width: 220px;
-    box-shadow: 0 8px 20px rgb(55, 197, 149);
-    border-radius: 6px;
-    overflow: hidden;
+    background-color: var(--color-navbar);
+    /* Fondo del navbar */
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1001;
+    /* Asegura que esté sobre el contenido */
+    padding-top: 5px;
+    border-radius: 0 0 4px 4px;
+    border-top: 3px solid var(--color-acento);
+    /* Línea de acento */
 }
 body.dark-mode .dropdown-content {
     background-color: var(--color-navbar);
     border: 1px solid #444;
 }
 
+.dropdown-content a {
+    color: var(--color-texto-nav);
+    padding: 10px 14px !important;
+    font-size: 1em;
+    /* Mantenemos tamaño normal dentro del desplegable */
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    /* Sobrescribe el margin del navbar */
+}
+
+.dropdown-content a:hover {
+    background-color: var(--color-acento);
+    /* Acento al pasar el ratón */
+    color: var(--color-navbar);
+}
+
 .dropdown:hover .dropdown-content {
     display: block;
+    /* Muestra el menú al pasar el ratón */
 }
 
-/* Estilos internos del Dropdown Rico */
-.preview-header {
-    padding: 10px;
-    background-color: var(--color-acento);
-    font-weight: bold;
-    font-size: 0.85em;
-    color: var(--color-texto-nav);
-    border-bottom: 1px solid var(--color-fondo);
-}
-body.dark-mode .preview-header {
-    background-color: #b51a1a;
-    color: #aaa;
-    border-bottom-color: #2bbda2;
-}
-
-.preview-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #f9f9f9;
-    text-decoration: none;
-    color: #333;
-    transition: background-color 0.2s;
-}
-body.dark-mode .preview-item {
-    border-bottom-color: #444;
-    color: #eee;
-}
-
-.preview-item:hover {
-    background-color: #f9f9f9;
-}
-body.dark-mode .preview-item:hover {
-    background-color: #3a3a3a;
-}
-
-.preview-img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-right: 10px;
-}
-
-.preview-info {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.85em;
-}
-
-.preview-footer-link {
-    display: block;
-    text-align: center;
-    padding: 10px;
-    background-color: var(--color-acento);
-    color: var(--color-navbar);
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9em;
-}
-
+/* Botón 'Cerrar Sesión' */
 .dropdown-logout-btn {
     width: 100%;
     text-align: left;
@@ -287,7 +243,7 @@ body.dark-mode .dropdown-logout-btn {
     position: relative;
 }
 
-/* TODO EL FORMULARIO con forma de Píldora */
+/* EL FORMULARIO con forma de Píldora */
 .nav-search-form {
     display: flex;
     align-items: center;
@@ -400,53 +356,6 @@ body.dark-mode .dropdown-logout-btn {
     animation: pulse 1.5s infinite;
 }
 
-/* Menú desplegable */
-.dropdown {
-    position: relative;
-    display: inline-block;
-    /* Permite que el elemento sea parte de la línea */
-}
-
-.dropdown-content {
-    display: none;
-    /* Oculto por defecto */
-    position: absolute;
-    background-color: var(--color-navbar);
-    /* Fondo del navbar */
-    min-width: 180px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
-    /* Asegura que esté sobre el contenido */
-    padding-top: 5px;
-    border-radius: 0 0 4px 4px;
-    border-top: 3px solid var(--color-acento);
-    /* Línea de acento */
-}
-
-.dropdown-content a {
-    color: var(--color-texto-nav);
-    padding: 10px 14px !important;
-    font-size: 1em;
-    /* Mantenemos tamaño normal dentro del desplegable */
-    text-decoration: none;
-    display: block;
-    text-align: left;
-    margin: 0 !important;
-    margin-left: 0 !important;
-    /* Sobrescribe el margin del navbar */
-}
-
-.dropdown-content a:hover {
-    background-color: var(--color-acento);
-    /* Acento al pasar el ratón */
-    color: var(--color-navbar);
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-    /* Muestra el menú al pasar el ratón */
-}
-
 
 /* ============== */
 /* --- FOOTER --- */
@@ -458,11 +367,6 @@ body.dark-mode .dropdown-logout-btn {
     padding: 40px 0;
     margin-top: 50px;
     font-size: 0.9em;
-}
-
-body.dark-mode .main-footer {
-    background-color: var(--color-navbar);
-    color: #FFFFFF;
 }
 
 .footer-container {
@@ -482,7 +386,7 @@ body.dark-mode .main-footer {
 }
 
 .footer-col h4 {
-    color: var(--color-acento);
+    color: var(--color-hover-nav);
     font-size: 1.1em;
     border-bottom: 1px solid var(--color-texto-nav);
     padding-bottom: 8px;
@@ -519,10 +423,14 @@ body.dark-mode .main-footer {
     padding: 0 50px; /* Espacio para los botones de navegación */
 }
 
+/* "Últimos Ingresos" en la HOME */
 .carousel-title {
     margin-bottom: 25px;
     font-size: 1.8em;
     color: var(--color-navbar);
+}
+body.dark-mode .carousel-title {
+    color: var(--color-acento) !important;
 }
 
 .carousel-content {
@@ -548,22 +456,20 @@ body.dark-mode .main-footer {
     height: auto; /* Altura automática basada en el contenido */
     display: flex; 
     flex-direction: column;
-    border: 1px solid #FFFFFF;
+    border: 1px solid var(--color-fondo);
     border-radius: 8px;
     overflow: hidden;
     background-color: #FFFFFF;
     scroll-snap-align: start; /* Para el scroll-snap-type */
     transition: transform 0.2s ease-in-out;
 }
+body.dark-mode .carousel-item-card {
+    background-color: var(--color-fondo-oscuro);
+    border-color: var(--color-fondo-oscuro);
+}
 
 .carousel-item-card:hover {
     transform: translateY(-5px); /* Efecto al pasar el mouse */
-}
-
-/* Modo Oscuro para las tarjetas del carrusel */
-body.dark-mode .carousel-item-card {
-    background-color: var(--color-fondo);
-    border-color: #444;
 }
 
 .carousel-nav-btn {
@@ -620,7 +526,7 @@ body.dark-mode .carousel-item-card {
     margin: 10px; /* Espacio alrededor para separarlos */
     
     background-color: var(--color-acento);
-    color: var(--color-navbar);
+    color: var(--color-texto-nav);
     border: none;
     border-radius: 6px;
     font-size: 1.1em;
@@ -629,6 +535,9 @@ body.dark-mode .carousel-item-card {
     text-align: center;
     text-decoration: none; /* Quitar subrayado de enlaces */
     transition: transform 0.2s, background-color 0.2s;
+}
+body.dark-mode .btn-action-home {
+    color: var(--color-texto-nav);
 }
 
 .btn-action-home:hover {
@@ -661,7 +570,6 @@ body.dark-mode .carousel-item-card {
     justify-content: space-between;
     align-items: center;
 }
-
 body.dark-mode .accordion-header {
     background-color: var(--color-acento);
 }
@@ -669,7 +577,6 @@ body.dark-mode .accordion-header {
 .accordion-header:hover {
     background-color: var(--color-hover-nav);
 }
-
 body.dark-mode .accordion-header:hover {
     background-color: var(--color-hover-nav);
 }
@@ -681,7 +588,6 @@ body.dark-mode .accordion-header:hover {
     overflow: hidden;
     transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
 }
-
 body.dark-mode .accordion-content {
     background-color: #1C1A1B;
 }
@@ -712,7 +618,6 @@ body.dark-mode .accordion-content {
     overflow: hidden;
     transition: background-color 0.3s;
 }
-
 body.dark-mode .accordion-item {
     border-color: var(--color-texto-secundario);
 }
@@ -772,7 +677,6 @@ body.dark-mode .accordion-item {
 body.dark-mode .search-results-header {
     border-bottom-color: #444 !important;
 }
-
 body.dark-mode .search-results-header h2 span {
     color: var(--color-acento) !important; /* El término buscado en verde claro */
 }
@@ -781,28 +685,40 @@ body.dark-mode .search-results-header h2 span {
 /* --- SELECTOR DE VISTA (CUADRÍCULA/LISTA) --- */
 .view-switcher {
     display: flex;
-    border: 1px solid var(--color-acento);
+    border: 1px solid var(--color-navbar);
     border-radius: 4px;
     overflow: hidden;
     margin: 0 auto; /* Centrado dentro de su contenedor (si no hay justify-content) */
+}
+body-dark-mode .view-switcher {
+    border: 1px solid var(--color-card-oscuro)
 }
 
 .view-btn {
     padding: 8px 15px;
     text-decoration: none;
-    color: var(--color-acento);
+    color: var(--color-navbar);
     background-color: white;
     transition: background-color 0.2s;
 }
+body-dark-mode .view-btn {
+    color: var(--color-card-oscuro);
+    background-color: white;
+}
 
 .view-btn.active {
-    background-color: var(--color-acento);
+    background-color: var(--color-navbar);
     color: white;
+    font-weight: bold;
+}
+body-dark-mode view-btn.active {
+    background-color: var(--color-card-oscuro) !important;
+    color: rgb(202, 62, 184) !important;
     font-weight: bold;
 }
 
 .view-btn:hover:not(.active) {
-    background-color: #f0f0f0;
+    background-color: var(--color-texto-nav);
 }
 
 /* Contenedor principal de contenido */
@@ -840,9 +756,8 @@ body.dark-mode .search-results-header h2 span {
     position: relative;
     /* Necesario para el overlay */
     height: auto;
-    /* Permitimos que la altura se ajuste al contenido */
+    /* Permite que la altura se ajuste al contenido */
 }
-
 body.dark-mode .card-producto {
     background-color: #2D3E2D;
     /* Fondo oscuro para tarjetas */
@@ -870,11 +785,6 @@ body.dark-mode .card-producto {
     /* MOSTRAR LA RELACIÓN DE ASPECTO CORRECTA */
     object-fit: contain;
     display: block;
-}
-
-.card-producto h3 {
-    color: var(--color-navbar);
-    margin-top: 0;
 }
 
 /* Contenido de texto de la tarjeta */
@@ -914,6 +824,20 @@ body.dark-mode .card-producto {
     text-overflow: ellipsis;
     height: calc(1.3em * 2);
 }
+body.dark-mode .card-content h3 {
+    color: var(--color-acento);
+}
+
+/* Detalles (Formato | Condición | País | Sello) */
+.card-metadata {
+    font-size: 0.9em;
+    color: var(--color-texto-principal);
+    margin-bottom: 2px;
+    /* padding-right: 70px; */
+}
+body.dark-mode .card-metadata {
+    color: #FFFFFF;
+}
 
 .card-footer {
     padding: 10px 15px;
@@ -928,17 +852,6 @@ body.dark-mode .card-footer {
     border-top-color: #444;
 }
 
-/* Detalles (Formato | Condición | País | Sello) */
-.card-metadata {
-    font-size: 0.85em;
-    color: var(--color-texto-principal);
-    margin-bottom: 2px;
-    /* padding-right: 70px; */
-}
-body.dark-mode .card-metadata {
-    color: #ccc;
-}
-
 /* Estilo del Vendedor (Izquierda, Abajo) */
 .producto-vendedor {
     font-size: 0.8em;
@@ -946,16 +859,14 @@ body.dark-mode .card-metadata {
     line-height: 1.2; /* Espaciado entre "Publicado por" y Usuario */
 }
 body.dark-mode .producto-vendedor {
-    color: #ccc;
+    color: var(--color-texto-nav);
 }
 
 .producto-vendedor a {
     color: var(--color-navbar);
-    text-decoration: none;
-    font-weight: bold;
 }
 body.dark-mode .producto-vendedor a {
-    color: var(--color-acento); /* Verde claro para el nombre en modo oscuro */
+    color: var(--color-acento);
 }
 
 .price-wrapper {
@@ -969,7 +880,7 @@ body.dark-mode .producto-vendedor a {
     font-size: 0.75em;
     font-weight: normal;
 
-    color: var(--color-navbar);
+    color: var(--color-texto-principal);
     
     text-align: right;
     margin-bottom: 0px;
@@ -987,9 +898,12 @@ body.dark-mode .producto-precio-label {
     color: var(--color-acento);
     line-height: 1;
 }
+body.dark-mode .producto-precio {
+    color: var(--color-acento);
+}
 
 
-/* --- VISTA DE LISTA --- */
+/* --- CATÁLOGO : Vista LISTA --- */
 
 .productos-listado-container.list-view {
     display: flex;
@@ -1017,7 +931,7 @@ body.dark-mode .list-item-producto p { color: #ccc !important; }
     align-items: center;
     padding: 15px;
     text-decoration: none;
-    color: #333;
+    color: #993737;
 }
 
 .list-item-producto:hover {
@@ -1132,6 +1046,34 @@ body.dark-mode .current-page-info {
 }
 
 
+/* Botón de Favoritos (Corazón) en el Catálogo */
+.favorite-btn-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 22px;
+    z-index: 20; /* Por encima de la imagen */
+}
+
+.favorite-btn {
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    padding: 5px 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
+
+.favorite-btn.favorited {
+    color: red; /* Corazón relleno */
+}
+
+
 /* ============================ */
 /* --- PRODUCTO EN DETALLE--- */
 /* ============================ */
@@ -1190,7 +1132,7 @@ body.dark-mode .detalle-imagen-col {
 
 /* Barra de ZOOM */
 .zoom-bar-trigger {
-    background-color: #333; /* Color oscuro para la barra */
+    background-color: var(--color-acento); /* Color oscuro para la barra */
     color: white;
     text-align: center;
     padding: 10px 0;
@@ -1200,10 +1142,6 @@ body.dark-mode .detalle-imagen-col {
     transition: background-color 0.2s;
     /* Sin bordes redondeados para que sea un bloque sólido entre imagen y links */
     border-radius: 0; 
-}
-body.dark-mode .zoom-bar-trigger {
-    background-color: #1a1a1a; /* Un poco más oscuro que el fondo en modo dark */
-    color: #ccc;
 }
 
 .zoom-bar-trigger:hover {
@@ -1222,10 +1160,12 @@ body.dark-mode .zoom-bar-trigger:hover {
     background-color: white; /* Fondo blanco para separar de la imagen gris */
     border-radius: 0 0 8px 8px; /* Redondear solo abajo */
     box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sutil sombra final */
+    color: var(--color-texto-principal);
 }
 body.dark-mode .external-links-container {
-    background-color: #2D3E2D; /* Mismo fondo que la columna de imagen */
+    background-color: var(--color-card-oscuro); /* Mismo fondo que la columna de imagen */
     border-top-color: #444;
+    color: var(--color-texto-nav);
 }
 
 /* Estilo Base de Botones Externos */
@@ -1246,16 +1186,10 @@ body.dark-mode .external-links-container {
     opacity: 0.9;
 }
 
-/* (Gris/Neutro) */
 .btn-external.wiki {
     background-color: #f0f0f0;
     color: #333;
     border: 1px solid #ccc;
-}
-body.dark-mode .btn-external.wiki {
-    background-color: #444;
-    color: #eee;
-    border-color: #555;
 }
 
 /* (Negro/Amarillo o Amarillo/Negro - Oscuro para contraste) */
@@ -1264,9 +1198,6 @@ body.dark-mode .btn-external.wiki {
     color: #fff;
     border: 1px solid #222;
 }
-/* El de Discogs se ve bien en oscuro tal cual está */
-
-
 
 /* Columna de Información (Permite que crezca y ocupe el espacio restante) */
 .detalle-info-col {
@@ -1326,7 +1257,7 @@ body.dark-mode .btn-external.wiki {
     justify-content: center;
 
     background-color: var(--color-acento);
-    color: var(--color-navbar);
+    color: var(--color-texto-nav);
 
     border: none;
     border-radius: 6px;
@@ -1339,7 +1270,7 @@ body.dark-mode .btn-external.wiki {
 
 .btn-add-to-cart:hover {
     background-color: var(--color-hover-nav);
-    /* Un verde acento más oscuro */
+    color: var(--color-navbar)
 }
 
 /* Botón de favorito en la PÁGINA DE DETALLE */
@@ -1365,7 +1296,6 @@ body.dark-mode .btn-external.wiki {
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
-
 body.dark-mode .btn-favorito-detalle {
     background-color: #444;
     color: #eee;
@@ -1376,22 +1306,19 @@ body.dark-mode .btn-favorito-detalle {
     background-color: #e0e0e0;
 }
 
-/* Cuando está 'favorited' (rojo) */
+/* Cuando está 'favorited' (Rojo) */
 .btn-favorito-detalle.favorited {
-    background-color: #FADBD8;
-    /* Rojo pálido */
-    color: #C0392B;
-    /* Rojo oscuro */
+    background-color: #FADBD8; /* Rojo pálido */
+    color: #C0392B; /* Rojo oscuro */
     border-color: #C0392B;
 }
-
 body.dark-mode .btn-favorito-detalle.favorited {
     background-color: #573a3a;
     color: #f7aaaa;
     border-color: #f7aaaa;
 }
 
-/* Tabla de Metadatos (Diseño más limpio) */
+/* Tabla de Metadatos */
 .metadata-tabla {
     width: 100%;
     border-collapse: collapse;
@@ -1411,8 +1338,11 @@ body.dark-mode .btn-favorito-detalle.favorited {
 
 .metadata-tabla td:first-child {
     font-weight: bold;
-    color: #555;
+    color: var(--color-fondo-oscuro);
     width: 30%;
+}
+body.dark-mode .metadata-tabla td:first-child {
+    color: var(--color-texto-secundario)
 }
 
 /* Estilos de Stock */
@@ -1457,6 +1387,9 @@ body.dark-mode .btn-favorito-detalle.favorited {
     color: var(--color-texto-principal);
     text-align: justify;
     /* Justifica el texto para mejor lectura */
+}
+body.dark-mode .descripcion-larga p {
+    color: white;
 }
 
 /* --- MODAL DE ZOOM DE LA IMAGEN --- */
@@ -1527,35 +1460,6 @@ body.dark-mode .btn-favorito-detalle.favorited {
     color: var(--color-texto-secundario);
     text-decoration: none;
     cursor: pointer;
-}
-
-
-/* Botón de Favoritos (Corazón) en el Catálogo */
-.favorite-btn-wrapper {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 20; /* Por encima de la imagen */
-}
-
-.favorite-btn {
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    border-radius: 50%;
-    padding: 8px 10px;
-    cursor: pointer;
-    font-size: 1.2em;
-    line-height: 1;
-    transition: transform 0.2s ease;
-}
-
-.favorite-btn:hover {
-    transform: scale(1.1);
-}
-
-.favorite-btn.favorited {
-    color: red;
-    /* Corazón relleno */
 }
 
 
@@ -1712,7 +1616,6 @@ body.dark-mode .alert-success {
     background-color: #fff3cd;
     border-color: #ffeeba;
 }
-
 body.dark-mode .alert-warning {
     color: #ffc107;
     background-color: #a87e00;
@@ -1725,63 +1628,10 @@ body.dark-mode .alert-warning {
     background-color: #cce5ff;
     border-color: #b8daff;
 }
-
 body.dark-mode .alert-info {
     color: #90c2ff;
     background-color: #004085;
     border-color: #1a569b;
-}
-
-
-/* Precio y acentos */
-body.dark-mode .precio {
-    color: var(--color-acento);
-    /* Usa el acento del tema oscuro */
-}
-
-body.dark-mode .producto-precio {
-    color: var(--color-acento);
-}
-
-
-/* ⚠️ "Publicado por x" blanco */
-body.dark-mode .producto-vendedor {
-    color: var(--color-texto-principal);
-    /* Blanco/Gris claro */
-}
-
-/* ⚠️ Etiqueta "Precio:" (para que combine) */
-body.dark-mode .producto-precio-etiqueta {
-    color: #ccc;
-}
-
-
-/* --- Modo Oscuro: Detalle --- */
-body.dark-mode .detalle-grid {
-    border-bottom-color: #333;
-}
-
-body.dark-mode .metadata-tabla tr {
-    border-bottom-color: #333;
-}
-
-body.dark-mode .metadata-tabla td:first-child {
-    color: #bbb;
-}
-
-
-
-body.dark-mode .descripcion-larga p {
-    color: #ccc;
-    /* Texto claro */
-}
-
-body.dark-mode .descripcion-larga h2 {
-    border-bottom-color: var(--color-acento);
-}
-
-body.dark-mode .vendedor-info {
-    color: #888;
 }
 
 
@@ -1821,29 +1671,9 @@ body.dark-mode input:-webkit-autofill:active {
 }
 
 
-/* Estilo Base del Botón de Publicar (Gris Oscuro) */
-.btn-publicar-dark {
-    /* Clase que usas para el botón de Publicar (asumido del home.html) */
-    background-color: #555 !important;
-    color: white !important;
-    transition: background-color 0.2s ease;
-}
-
-/* Hover del botón de Publicar (Modo Claro) */
-.btn-publicar-dark:hover {
-    background-color: var(--color-acento) !important; /* Verde claro al pasar el mouse */
-    color: var(--color-navbar) !important; /* Texto oscuro */
-}
-
-/* Hover del botón de Publicar (Modo Oscuro) */
-body.dark-mode .btn-publicar-dark {
-    background-color: #444 !important;
-    color: white !important;
-}
-
-body.dark-mode .btn-publicar-dark:hover {
-    background-color: #777 !important; /* Gris más claro al pasar el mouse */
-}
+/* ====================== */
+/* --- PÁGINA CARRITO --- */
+/* ====================== */
 
 /* Contenedor principal de la página del carrito */
 .carrito-container {
@@ -1863,7 +1693,6 @@ body.dark-mode .btn-publicar-dark:hover {
     background-color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
-
 body.dark-mode .item-card {
     background-color: var(--color-fondo);
     border-color: #444;
@@ -1936,7 +1765,6 @@ body.dark-mode .sales-item-line {
     padding: 5px;
     border: 1px solid #ccc;
 }
-
 body.dark-mode .cart-qty-form input[type="number"] {
     background-color: #444;
     color: white;
@@ -1984,7 +1812,6 @@ body.dark-mode .cart-qty-form input[type="number"] {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: box-shadow 0.3s ease;
 }
-
 body.dark-mode .order-card {
     background-color: var(--color-fondo);
     border-color: #444;
@@ -2221,7 +2048,7 @@ body.dark-mode .blog-preview { color: #ccc; }
     border-bottom: 2px solid var(--color-acento);
 }
 
-/* Sidebar */
+/* Barra lateral (Derecha) */
 .sidebar-widget { margin-bottom: 40px; }
 
 .sidebar-widget h3 { 
@@ -2254,9 +2081,9 @@ body.dark-mode .sidebar-widget a:hover, body.dark-mode .sidebar-widget a.active 
 .blog-search-form button { background: var(--color-navbar); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
 
 
-/* --------------- */
+/* =============== */
 /* --- ESCÁNER --- */
-/* --------------- */
+/* =============== */
 
 /* Modal del Escáner */
 .scanner-modal {
@@ -2299,4 +2126,46 @@ body.dark-mode .scanner-content h3 {
 }
 body.dark-mode .close-scanner {
     color: white;
+}
+
+/* ============================ */
+/* --- ANIMACIÓN DE ERROR --- */
+/* ============================ */
+
+/* Animar el contenedor si hay error */
+.shake-animation {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    border-color: #d32f2f !important;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Mejorar el estilo de la alerta de error */
+.alert-error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+}
+body.dark-mode .alert-error {
+    background-color: #451b1b;
+    color: #ff9999;
+    border-color: #802020;
+}
+
+/* Icono de alerta antes del texto */
+.alert-error::before {
+    content: "⚠️";
+    margin-right: 10px;
+    font-size: 1.2em;
 }

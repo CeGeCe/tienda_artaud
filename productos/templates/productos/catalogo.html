@@ -18,6 +18,8 @@
                 <input type="hidden" name="orden" value="{{ orden_actual }}">
                 <input type="hidden" name="por_pagina" value="{{ por_pagina_actual }}">
                 <input type="hidden" name="vista" value="{{ vista_actual }}">
+                
+                <input type="hidden" name="q" value="{{ query_actual|default:'' }}">
 
                 <label style="font-weight: bold; display: block; margin-top: 15px;"><u>Formato:</u></label>
                     <div style="margin-top: 5px;">
@@ -167,12 +169,12 @@
                                     {% if producto.imagen_portada %}
                                         <img src="{{ producto.imagen_portada.url }}" alt="{{ producto.album }}" class="card-image">
                                     {% else %}
-                                        <img src="{% static 'tienda_artaud/sin_imagen.png' %}" alt="Sin imagen" class="card-image" style="object-fit: contain;">
+                                        <img src="{% static 'tienda_artaud/icons/sin_imagen.png' %}" alt="Sin imagen" class="card-image" style="object-fit: contain;">
                                     {% endif %}
                                 </div>
 
                                 <div class="card-content">
-                                    <h3>{{ producto.artista }} - {{ producto.album }}</h3>
+                                    <h3>{{ producto.artista }} - '{{ producto.album }}'</h3>
                                     
                                     <p class="card-metadata">
                                         {{ producto.get_formato_display }} | {{ producto.get_condicion_display }}
@@ -188,7 +190,7 @@
                                     <div class="producto-vendedor">
                                         Publicado por:<br>
                                         <a href="{% url 'ver_vendedor' username=producto.vendedor.username %}" 
-                                        style="color: var(--color-navbar); font-weight: bold; text-decoration: none;">
+                                        style="font-weight: bold; text-decoration: none;">
                                         {{ producto.vendedor.username }}
                                         </a>
                                     </div>
@@ -211,7 +213,7 @@
                                     {% if producto.imagen_portada %}
                                         <img src="{{ producto.imagen_portada.url }}" alt="{{ producto.album }}" class="card-image">
                                     {% else %}
-                                        <img src="{% static 'tienda_artaud/sin_imagen.png' %}" alt="Sin imagen" class="card-image" style="object-fit: contain;">
+                                        <img src="{% static 'tienda_artaud/icons/sin_imagen.png' %}" alt="Sin imagen" class="card-image" style="object-fit: contain;">
                                     {% endif %}
                                 </div>
 
@@ -220,7 +222,7 @@
                                         {{ producto.artista }}
                                     </h3>
                                     <h4 style="margin: 0 0 10px 0; font-size: 1.2em; font-weight: normal;">
-                                        {{ producto.album }}
+                                        '{{ producto.album }}'
                                     </h4>
 
                                     <p style="margin: 0; font-size: 0.9em; color: #777;">

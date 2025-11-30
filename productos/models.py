@@ -140,7 +140,19 @@ class Producto(models.Model):
     # default=False : al crearse, NO es visible hasta que se apruebe
     aprobado = models.BooleanField(default=False, verbose_name="Aprobado por Admin")
 
-    favoritos = models.ManyToManyField(User, related_name='productos_favoritos', blank=True)
+
+class Favorito(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mis_favoritos')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='favorited_by')
+    fecha_agregado = models.DateTimeField(auto_now_add=True) # Ordenar por fecha
+
+    class Meta:
+        unique_together = ('usuario', 'producto') # Evita duplicados
+        ordering = ['-fecha_agregado']
+
+    def __str__(self):
+        return f"{self.usuario.username} -> {self.producto.album}"
+    
 
     # MÉTODO PARA REPRESENTACIÓN EN EL ADMIN
     def __str__(self):
