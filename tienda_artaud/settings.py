@@ -61,6 +61,7 @@ APPS_PROPIAS = [
     'carrito',
     'pedidos',
     'blog',
+    'scraper',
 ]
 
 APPS_TERCEROS = [

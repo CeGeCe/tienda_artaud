@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Scraping Jedbangers{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    
+    <h1 style="text-align: center; color: var(--color-navbar);">💿 Buscador de Discos</h1>
+    <p style="text-align: center; margin-bottom: 30px; color: #666;">
+        Busca en el catálogo de <strong>Tienda Jedbangers</strong> (Ej: "Slayer", "Agalloch", "Overkill").
+    </p>
+
+    <form method="POST" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+        {% csrf_token %}
+        <input type="text" name="termino" value="{{ busqueda }}" placeholder="Ingresa una palabra clave..." 
+                style="padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px;">
+        <button type="submit" name="buscar" class="btn-add-to-cart" style="width: auto; margin: 0; padding: 10px 20px;">
+            Buscar 🔎
+        </button>
+    </form>
+
+    {% if resultados %}
+
+        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead style="background-color: var(--color-acento); color: var(--color-navbar);">
+                    <tr>
+                        <th style="padding: 12px; text-align: left;">Tapa</th>
+                        <th style="padding: 12px; text-align: left;">Título</th>
+                        <th style="padding: 12px; text-align: right;">Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in resultados %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 10px; width: 60px;">
+                            {% if item.imagen %}
+                                <img src="{{ item.imagen }}" alt="tapa" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                            {% else %}
+                                <span>📷</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td style="padding: 12px;">
+                            <a href="{{ item.link }}" target="_blank" style="text-decoration: none; color: #333; font-weight: bold;">
+                                {{ item.titulo }} ↗
+                            </a>
+                        </td>
+                        
+                        <td style="padding: 12px; text-align: right; font-weight: bold; color: var(--color-navbar);">
+                            {{ item.precio }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px dashed #ccc;">
+            <form method="POST" style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+                {% csrf_token %}
+                <input type="hidden" name="termino_hidden" value="{{ busqueda }}">
+                <input type="email" name="email_destino" placeholder="tu@email.com" required style="padding: 10px; width: 250px; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" name="enviar_email" class="btn-details" style="cursor: pointer; font-size: 1em;">
+                    Enviar Lista por Email 📧
+                </button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

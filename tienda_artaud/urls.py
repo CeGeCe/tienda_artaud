@@ -40,6 +40,8 @@ urlpatterns = [
     path('pedidos/', include('pedidos.urls')),
 
     path('blog/', include('blog.urls')),
+
+    path('scraper/', include('scraper.urls')),
 ]
 
 # **ÚNICAMENTE para desarrollo local**
