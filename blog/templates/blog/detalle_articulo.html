@@ -6,7 +6,7 @@
 {% block content %}
 <div style="max-width: 800px; margin: 40px auto; padding: 20px;">
     
-    <a href="{% url 'blog_lista' %}" style="color: var(--color-navbar); text-decoration: none; font-weight: bold;">
+    <a href="{% url 'blog_lista' %}" style="color: var(--color-acento); text-decoration: none; font-weight: bold;">
         ← Volver al Blog
     </a>
 
@@ -15,7 +15,7 @@
             {{ articulo.get_categoria_display }}
         </span>
         
-        <h1 style="font-size: 2.5em; margin: 10px 0; color: var(--color-texto-principal);">
+        <h1 style="font-size: 2.5em; margin: 10px 0;">
             {{ articulo.titulo }}
         </h1>
         
@@ -38,7 +38,7 @@
         </div>
     </header>
 
-    <div class="blog-body" style="margin-top: 30px; line-height: 1.8; font-size: 1.1em; color: var(--color-texto-principal);">
+    <div class="blog-body" style="margin-top: 30px; line-height: 1.8; font-size: 1.1em;">
         {{ articulo.cuerpo|linebreaksbr }}
     </div>
 
@@ -46,7 +46,7 @@
 
 <style>
     .blog-body p { margin-bottom: 20px; }
-    /* Ajuste modo oscuro */
+    
     body.dark-mode .blog-body { color: #ddd; }
 </style>
 

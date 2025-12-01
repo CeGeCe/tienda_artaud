@@ -5,10 +5,8 @@ from . import views
 urlpatterns = [
     path('checkout/', views.checkout_proceso, name='checkout'),
     
-    # Lista de Pedidos
+    # Lista de Pedidos realizados
     path('mis-pedidos/', views.ver_pedidos, name='ver_pedidos'),
-
-    path('panel-ventas/', views.panel_ventas, name='panel_ventas'),
 
     # ACTUALIZAR el estado de un ItemPedido (venta individual)
     path('actualizar-estado/<int:item_id>/', views.actualizar_estado_venta, name='actualizar_estado_venta'),
@@ -20,7 +18,8 @@ urlpatterns = [
 
     path('pagar-pendiente/<int:pedido_id>/', views.pagar_pedido_pendiente, name='pagar_pedido_pendiente'),
 
-    path('admin/ventas-globales/', views.admin_resumen_ventas, name='admin_ventas_globales'),
+    path('panel-ventas/', views.panel_ventas, name='panel_ventas'),
 
-    path('dashboard/', views.dashboard_analytics, name='dashboard_analytics'),
+    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin/lista-completa/', views.admin_lista_ventas, name='admin_lista_ventas'),
 ]

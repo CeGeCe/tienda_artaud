@@ -46,7 +46,7 @@
             </button>
         </form>
         
-        <p style="margin-top: 20px;"><a href="{% url 'mis_productos' %}" style="color: #555;">← Volver al Panel</a></p>
+        <p style="margin-top: 20px;"><a href="{% url 'mis_productos' %}" style="color: var(--color-acento);">← Volver al Panel</a></p>
     </div>
 
     <form method="post" enctype="multipart/form-data"> 
@@ -79,7 +79,7 @@
             btn.style.fontSize = '0.9em';
             btn.style.marginLeft = '10px';
             btn.style.width = 'auto';
-            btn.style.backgroundColor = '#EEEEEE'; // Color distinto para diferenciar
+            btn.style.backgroundColor = '#CCCCCC'; // Color distinto para diferenciar
             
             // Insertar botón
             inputCodigo.parentNode.insertBefore(btn, inputCodigo.nextSibling);

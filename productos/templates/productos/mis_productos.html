@@ -1,65 +1,90 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Panel de Vendedor{% endblock %}
+{% block title %}Mis Productos{% endblock %}
 
 {% block content %}
-    <h1>{{ titulo_pagina }}</h1>
-    <p>Ver y editar todos tus productos publicados en Tienda Artaud.</p>
+
+<div style="max-width: 1000px; margin: 40px auto; padding: 20px;">
     
-    <div style="margin-bottom: 20px;">
-        <a href="{% url 'publicar_producto' %}" 
-            style="padding: 10px 15px; background-color: var(--color-navbar); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
-            + Publicar un Artículo Nuevo
-        </a>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--color-acento); padding-bottom: 10px;">
+        <h1 style="margin: 0; color: var(--color-navbar);">📦 Mis Productos</h1>
+        
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'publicar_producto' %}" class="btn-add-to-cart" style="width: auto; margin: 0; padding: 8px 15px; text-decoration: none;">
+                + Publicar Nuevo
+            </a>
+        </div>
     </div>
 
-    <div style="margin-top: 30px;">
-        {% if page_obj %}
+    {% if page_obj %}
+        <div class="productos-listado-container list-view">
             {% for producto in page_obj %}
-            <div class="card-producto">
-                <h3>
-                        <a href="{% url 'detalle_producto' pk=producto.pk %}" style="color: var(--color-navbar); text-decoration: none;">
-                            {{ producto.artista }} - {{ producto.album }} 
+                
+                <div class="list-item-producto" style="align-items: flex-start;">
+                    
+                    <a href="{% url 'detalle_producto' pk=producto.pk %}" style="display: flex; text-decoration: none; color: inherit; width: 100%; padding: 15px; align-items: flex-start;">
+                        
+                        <div class="list-image-container" style="width: 100px; height: 100px; flex-shrink: 0;">
+                            {% if producto.imagen_portada %}
+                                <img src="{{ producto.imagen_portada.url }}" alt="{{ producto.album }}" class="card-image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                            {% else %}
+                                <img src="{% static 'tienda_artaud/icons/sin_imagen.png' %}" alt="Sin imagen" class="card-image" style="width: 100%; height: 100%; object-fit: contain; opacity: 0.5;">
+                            {% endif %}
+                        </div>
+
+                        <div class="list-details" style="flex-grow: 1; padding: 0 20px;">
+                            <div style="margin-bottom: 5px;">
+                                {% if producto.aprobado %}
+                                    <span style="background-color: #d4edda; color: #155724; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; border: 1px solid #c3e6cb; font-weight: bold;">
+                                        ✅ Publicado
+                                    </span>
+                                {% else %}
+                                    <span style="background-color: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; border: 1px solid #ffeeba; font-weight: bold;">
+                                        ⏳ Pendiente
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <h3 style="margin: 0 0 5px 0; font-size: 1.2em; color: var(--color-acento);">{{ producto.artista }}</h3>
+                            <h4 style="margin: 0 0 8px 0; font-size: 1em; font-weight: normal;">{{ producto.album }}</h4>
+                            
+                            <p style="font-size: 0.85em; color: #777; margin: 0;">
+                                {{ producto.get_formato_display }} | {{ producto.get_condicion_display }} | Stock: <strong>{{ producto.stock }}</strong>
+                            </p>
+                        </div>
+                    </a>
+
+                    <div class="list-price-action" style="padding: 15px; min-width: 160px; display: flex; flex-direction: column; justify-content: flex-start; border-left: 1px solid #eee; gap: 8px;">
+                        
+                        <div style="text-align: right; margin-bottom: 5px;">
+                            <span style="font-size: 1.4em; font-weight: bold; color: var(--color-navbar);">${{ producto.precio|floatformat:2 }}</span>
+                        </div>
+
+                        <a href="{% url 'editar_producto' pk=producto.pk %}" class="btn-add-to-cart" style="width: 100%; font-size: 0.85em; padding: 8px; text-decoration: none; display: block; background-color: var(--color-navbar); color: white;">
+                            Editar ✏️
                         </a>
-                        <span class="precio">${{ producto.precio|floatformat:2 }}</span>
-                    </h3>
-                
-                <div style="margin-bottom: 10px;">
-                    {% if producto.aprobado %}
-                        <span style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 4px; font-size: 0.9em; border: 1px solid #c3e6cb;">
-                            ✅ Publicado
-                        </span>
-                    {% else %}
-                        <span style="background-color: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 4px; font-size: 0.9em; border: 1px solid #ffeeba;">
-                            ⏳ Pendiente de Aprobación
-                        </span>
-                    {% endif %}
-                </div>
-                
-                <div style="font-size: 0.9em; margin-top: 5px;">
-                    <p>
-                        Formato: <strong>{{ producto.get_formato_display }}</strong> 
-                        | Condición: <strong>{{ producto.get_condicion_display }}</strong> 
-                        | Estado Físico: <strong>{{ producto.get_estado_display }}</strong>
-                    </p>
 
-                    <a href="{% url 'editar_producto' pk=producto.pk %}" 
-                        style="color: var(--color-acento); font-weight: bold; margin-right: 15px;">
-                        Editar
-                    </a>
-            
-                    <a href="{% url 'eliminar_producto' pk=producto.pk %}" 
-                        style="color: red; font-weight: bold;">
-                        Eliminar
-                    </a>
+                        <a href="{% url 'eliminar_producto' pk=producto.pk %}" style="display: block; text-align: center; background: white; border: 1px solid #d9534f; color: #d9534f; width: 100%; padding: 8px; border-radius: 4px; font-weight: bold; transition: background 0.2s; font-size: 0.85em; text-decoration: none; box-sizing: border-box;">
+                            Eliminar 🗑️
+                        </a>
+
+                    </div>
                 </div>
-            </div>
             {% endfor %}
+        </div>
 
-        {% else %}
-            <p>Todavía no publicaste ningún producto.</p>
-        {% endif %}
+        <div class="pagination-container">
+            {% include 'productos/pagination.html' with page_obj=page_obj %}
+        </div>
 
-    </div>
+    {% else %}
+        <div class="empty-message" style="text-align: center; padding: 50px; background: white; border-radius: 8px; border: 1px dashed #ccc;">
+            <h2 style="color: var(--color-navbar);">Aún no has publicado productos.</h2>
+            <p style="color: #777; margin: 10px 0 20px 0;">¡Empieza a vender tu colección hoy mismo!</p>
+            <a href="{% url 'publicar_producto' %}" class="btn-add-to-cart" style="display: inline-block; width: auto; text-decoration: none;">Publicar Ahora</a>
+        </div>
+    {% endif %}
 
+</div>
 {% endblock content %}

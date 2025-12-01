@@ -44,6 +44,6 @@ urlpatterns = [
     path('scraper/', include('scraper.urls')),
 ]
 
-# **ÚNICAMENTE para desarrollo local**
+# **SOLO para desarrollo local**
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

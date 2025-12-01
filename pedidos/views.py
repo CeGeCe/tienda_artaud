@@ -141,36 +141,6 @@ def ver_pedidos(request):
     return render(request, 'pedidos/pedidos_lista.html', {'pedidos': pedidos})
 
 
-@login_required
-def panel_ventas(request):
-    """Muestra un panel con todas las ventas que el usuario logueado ha realizado."""
-    
-    # Obtener todos los ItemPedido donde el usuario actual es el vendedor
-    # Ordenar por ID del pedido para que agarre 'groupby'
-    ventas_items = ItemPedido.objects.filter(vendedor=request.user).order_by('pedido__id')
-    
-    # Lista para almacenar los pedidos agrupados por venta
-    pedidos_del_vendedor = []
-    
-    # Agrupar los ItemPedido por el Pedido (Order) al que pertenecen.
-    # La clave de agrupación es el ID del pedido: x.pedido.id
-    for pedido_id, group in groupby(ventas_items, key=lambda x: x.pedido.id):
-        items_del_pedido = list(group)
-        # Encabezado del pedido principal
-        pedido = items_del_pedido[0].pedido 
-        
-        # Calcular el total que le corresponde al vendedor dentro de este pedido
-        total_venta = sum(item.get_subtotal() for item in items_del_pedido)
-        
-        pedidos_del_vendedor.append({
-            'encabezado': pedido,       # Objeto Pedido principal
-            'items': items_del_pedido,  # Lista de ItemPedido de este vendedor
-            'total_venta': total_venta, # El total que vendió en esta transacción individual
-        })
-        
-    return render(request, 'pedidos/panel_ventas.html', {'pedidos_del_vendedor': pedidos_del_vendedor})
-
-
 @require_POST
 @login_required
 def actualizar_estado_venta(request, item_id):
@@ -310,43 +280,12 @@ def pagar_pedido_pendiente(request, pedido_id):
     return redirect(preference["init_point"])
 
 
-@login_required
-def admin_resumen_ventas(request):
-    """Vista exclusiva para administradores: Ve todas las ventas de la plataforma."""
-    
-    # Verificar permiso STAFF
-    if not request.user.is_staff:
-        messages.error(request, "Acceso denegado. Área exclusiva de administración.")
-        return redirect('home')
-    
-    # Obtener TODOS los items vendidos (sin filtrar por usuario)
-    # Ordenamos por fecha de pedido (descendente)
-    ventas_items = ItemPedido.objects.all().order_by('-pedido__fecha_pedido')
-    
-    # Agrupar (Igual que en el panel de vendedor)
-    from itertools import groupby
-    ventas_globales = []
-    
-    for pedido_id, group in groupby(ventas_items, key=lambda x: x.pedido.id):
-        items_del_pedido = list(group)
-        pedido = items_del_pedido[0].pedido 
-        total_venta = sum(item.get_subtotal() for item in items_del_pedido)
-        
-        ventas_globales.append({
-            'encabezado': pedido,
-            'items': items_del_pedido,
-            'total_venta': total_venta,
-        })
-        
-    return render(request, 'pedidos/admin_ventas.html', {'ventas_globales': ventas_globales})
-
-
 def calcular_estadisticas(items_queryset):
     """
-    Función auxiliar que recibe un QuerySet de ItemPedido 
+    Función auxiliar que recibe un QuerySet de ItemPedido   
     y devuelve un diccionario con KPIs y datos para gráficos.
     """
-    # 1. KPIs
+    # 1. KPIs (Key Performance Indicators)
     kpis = items_queryset.aggregate(
         total_plata=Sum(F('precio_unitario') * F('cantidad')),
         total_items=Sum('cantidad')
@@ -377,24 +316,82 @@ def calcular_estadisticas(items_queryset):
         'horas': horas_data,
     }
 
+
 @login_required
-def dashboard_analytics(request):
-    context = {}
-
-    # --- DATOS PERSONALES (Siempre se calculan) ---
-    items_personal = ItemPedido.objects.filter(vendedor=request.user)
-    context['stats_personal'] = calcular_estadisticas(items_personal)
+def panel_ventas(request):
+    """Muestra un panel con Las 3 ventas más reciente; y un Dashboard personal """
     
-    # --- DATOS GLOBALES (Solo si es Admin) ---
-    if request.user.is_staff:
-        items_global = ItemPedido.objects.all()
-        context['stats_global'] = calcular_estadisticas(items_global)
+    # Obtener los Items del Vendedor y ordenar por Fecha
+    ventas_items = ItemPedido.objects.filter(vendedor=request.user).order_by('-pedido__fecha_pedido')
+    
+    # Calcular Estadísticas (Para la parte inferior)
+    stats = calcular_estadisticas(ventas_items)
+    
+    # Agrupar Ventas (Para la parte superior)
+    pedidos_agrupados = []
+    # Agrupar por ID de pedido
+    for pedido_id, group in groupby(ventas_items, key=lambda x: x.pedido.id):
+        items_del_pedido = list(group)
+        pedido = items_del_pedido[0].pedido 
+        total_venta = sum(item.get_subtotal() for item in items_del_pedido)
         
-        # Gráfico Extra solo para Global: Top Vendedores
-        vendedores_stats = items_global.values('vendedor__username').annotate(total=Sum('cantidad')).order_by('-total')[:5]
-        context['top_vendedores'] = {
-            'labels': [item['vendedor__username'] for item in vendedores_stats],
-            'data': [item['total'] for item in vendedores_stats]
-        }
+        pedidos_agrupados.append({
+            'encabezado': pedido,
+            'items': items_del_pedido,
+            'total_venta': total_venta,
+        })
+    
+    # LIMITAR A LOS 3 MÁS RECIENTES
+    ultimas_ventas = pedidos_agrupados[:3]
+    
+    context = {
+        'ultimas_ventas': ultimas_ventas,
+        'stats': stats,
+        'titulo_pagina': 'Mi Panel de Ventas',
+    }
+    return render(request, 'pedidos/panel_ventas.html', context)
 
-    return render(request, 'pedidos/dashboard.html', context)
+
+# --- DASHBOARD GLOBAL (ADMIN) ---
+@login_required
+def admin_dashboard(request):
+    """Vista principal para Admins: KPIs Globales y acceso al listado."""
+    if not request.user.is_staff:
+        return redirect('home')
+
+    items_global = ItemPedido.objects.all()
+    stats = calcular_estadisticas(items_global)
+    
+    # Top Vendedores
+    vendedores_stats = items_global.values('vendedor__username').annotate(total=Sum('cantidad')).order_by('-total')[:5]
+    top_vendedores = {
+        'labels': [item['vendedor__username'] for item in vendedores_stats],
+        'data': [item['total'] for item in vendedores_stats]
+    }
+
+    context = {
+        'stats': stats,
+        'top_vendedores': top_vendedores,
+        'titulo_pagina': 'Dashboard Global'
+    }
+    return render(request, 'pedidos/admin_dashboard.html', context)
+
+
+# --- LISTADO COMPLETO (ADMIN - previously RESUMEN)
+@login_required
+def admin_lista_ventas(request):
+    """Listado detallado de todas las ventas (accedido desde el Dashboard)."""
+    if not request.user.is_staff: return redirect('home')
+    
+    ventas_items = ItemPedido.objects.all().order_by('-pedido__fecha_pedido')
+    ventas_globales = []
+    
+    for pedido_id, group in groupby(ventas_items, key=lambda x: x.pedido.id):
+        items_del_pedido = list(group)
+        ventas_globales.append({
+            'encabezado': items_del_pedido[0].pedido,
+            'items': items_del_pedido,
+            'total_venta': sum(i.get_subtotal() for i in items_del_pedido),
+        })
+        
+    return render(request, 'pedidos/admin_ventas.html', {'ventas_globales': ventas_globales})

@@ -40,10 +40,9 @@
 
             <script>
                 function abrirRadio() {
-                    // Abre una ventana de 350x600 px
                     const url = "{% url 'radio_artaud' %}";
                     const nombre = "RadioArtaud";
-                    const opciones = "width=400,height=700,resizable=no,scrollbars=no,status=no,toolbar=no";
+                    const opciones = "width=420,height=700,resizable=yes,scrollbars=no,status=no,toolbar=no";
                     
                     // Si ya existe la ventana, la enfoca. Si no, la crea.
                     window.open(url, nombre, opciones);
@@ -87,12 +86,11 @@
                     <div class="dropdown-content">
                         <a href="{% url 'ver_vendedor' username=user.username %}">Mi Perfil</a>
                         <a href="{% url 'mi_perfil' %}">Mis Datos</a>
-                        <a href="{% url 'dashboard_analytics' %}">Dashboard 📊</a>
                         {% if user.is_staff %}
                             <hr style="margin: 0; border-top: 1px solid #ddd;">
 
-                            <a href="{% url 'admin_ventas_globales' %}">Ventas Globales</a>
-                            <a href="{% url 'admin:index' %}">Acceso Admin 👮‍♂️</a>
+                            <a href="{% url 'admin_dashboard' %}">🌐 Ventas Globales</a>
+                            <a href="{% url 'admin:index' %}">👮‍♂️ Acceso Admin</a>
                         {% endif %}
                         
                         <hr style="margin: 0; border-top: 1px solid #eee;">
@@ -115,7 +113,9 @@
 
                 <a href="{% url 'ver_pedidos' %}" class="nav-link-icon">Mis Compras</a>
                 
-                <a href="{% url 'ver_favoritos' %}" class="nav-link-icon">❤ Favoritos</a>
+                <a href="{% url 'ver_favoritos' %}" class="nav-link-icon">
+                    ❤ Favoritos <span class="fav-count">{{ navbar_favs_count }}</span>
+                </a>
 
                 <a href="{% url 'ver_carrito' %}" class="nav-link-icon">
                     🛒 Carrito <span class="badge">{{ navbar_cart_count }}</span>
@@ -158,7 +158,6 @@
             <a href="{% url 'home' %}">Inicio</a>
             <a href="{% url 'about' %}">Sobre Nosotros</a>
             <a href="{% url 'blog_lista' %}">Blog</a>
-            <a href="{% url 'radio_artaud' %}">Radio online</a>
             <a href="{% url 'scraper_libros' %}">Scraper_TEST</a>
             <a href="{% url 'scraper_jeds' %}">Scraper Jeds</a>
         </div>

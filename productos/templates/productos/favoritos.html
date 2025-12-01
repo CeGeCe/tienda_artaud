@@ -10,7 +10,7 @@
         <h1 style="margin: 0; color: var(--color-navbar);">❤️ Mis Favoritos</h1>
         
         <form method="GET" action="." style="display: flex; align-items: center; gap: 10px;">
-            <label for="orden-favs" style="font-weight: bold; color: #555;">Ordenar por:</label>
+            <label for="orden-favs" style="font-weight: bold;">Ordenar por:</label>
             <select name="orden" id="orden-favs" onchange="this.form.submit()" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
                 <option value="-fecha_agregado" {% if orden_actual == '-fecha_agregado' %}selected{% endif %}>Agregado (Más Reciente)</option>
                 <option value="fecha_asc" {% if orden_actual == 'fecha_asc' %}selected{% endif %}>Agregado (Más Antiguo)</option>

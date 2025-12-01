@@ -1,80 +1,129 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Panel de Ventas{% endblock %}
+{% block title %}Mi Panel de Ventas{% endblock %}
 
 {% block content %}
-<div class="orders-container" style="max-width: 900px; margin: 40px auto; padding: 20px;">
-    <h1 style="color: var(--color-navbar);">Panel de Ventas 💸</h1>
-    <p>Acá podés ver y gestionar los pedidos de productos que vendiste.</p>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    {% if pedidos_del_vendedor %}
-    {% for venta in pedidos_del_vendedor %}
-    <div class="order-card" style="border-left: 5px solid #28B463; padding: 25px; margin-bottom: 30px;">
-
-        <h2 style="color: var(--color-navbar); margin-top: 0;">Venta en Pedido Global #{{ venta.encabezado.id }}</h2>
-
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-            <div>
-                <p>Comprado por: <strong>{{ venta.encabezado.comprador.username }}</strong></p>
-                <p class="order-date">Fecha: {{ venta.encabezado.fecha_pedido|date:"d M Y, H:i" }}</p>
-            </div>
-            <div style="text-align: right;">
-                <p style="font-size: 1.1em; margin-bottom: 5px;">Total de Tu Venta:</p>
-                <p style="font-size: 1.6em; font-weight: bold; color: #28B463;">
-                    ${{ venta.total_venta|floatformat:2 }}
-                </p>
-            </div>
-        </div>
-
-        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px;">Artículos Vendidos:</h3>
-            <ul style="list-style: none; padding: 0;">
-                {% for item in venta.items %}
-                    <li class="sales-item-line">
-                        
-                        <div class="item-details-panel">
-                            <strong>{{ item.cantidad }}x 
-                                {% if item.producto %}
-                                    <a href="{% url 'detalle_producto' pk=item.producto.pk %}" style="color: var(--color-navbar); text-decoration: none;">
-                                        {{ item.album_comprado }}
-                                    </a>
-                                {% else %}
-                                    {{ item.album_comprado }} (Producto Eliminado)
-                                {% endif %}
-                            </strong> 
-                            ({{ item.artista_comprado }})
-                            <br><small style="color: #777;">Precio Unitario: ${{ item.precio_unitario|floatformat:2 }}</small>
-                        </div>
-                        
-                        <form method="POST" action="{% url 'actualizar_estado_venta' item_id=item.id %}" style="margin: 0; display: flex; align-items: center;">
-                            {% csrf_token %}
-                            
-                            <label for="estado_{{ item.id }}" style="margin-right: 10px; font-size: 0.9em;">Estado:</label>
-                            <select name="nuevo_estado" id="estado_{{ item.id }}" style="padding: 5px; border-radius: 4px;">
-                                {% for value, display in item.ESTADO_CHOICES %}
-                                    <option value="{{ value }}" {% if item.estado == value %}selected{% endif %}>
-                                        {{ display }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            
-                            <button type="submit" class="btn-status-update">
-                                Actualizar
-                            </button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-
-        <p style="margin-top: 20px; font-size: 0.9em; color: #555;">
-            *El estado global del pedido ({{ venta.encabezado.get_estado_display }}) puede variar.
-        </p>
+<div class="orders-container" style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="color: var(--color-navbar); margin: 0;">💸 Panel de Ventas</h1>
+        <a href="{% url 'publicar_producto' %}" class="btn-add-to-cart" style="width: auto; margin: 0; padding: 8px 15px; text-decoration: none;">
+            + Nuevo Producto
+        </a>
     </div>
-    {% endfor %}
-    {% else %}
-    <p>Todavía no vendiste ningún artículo. Pero no desesperes; como decía Brian:</p>
-    <h2><strong>ALWAYS LOOK ON THE BRIGHT SIDE OF LIFE</strong></h2>
+
+    <h2 style="border-bottom: 2px solid var(--color-acento); padding-bottom: 5px; margin-bottom: 20px; font-size: 1.4em;">
+        Últimas Ventas
+    </h2>
+
+    {% if ultimas_ventas %}
+        {% for venta in ultimas_ventas %}
+            <div class="order-card" style="border-left: 5px solid #28B463; padding: 25px; margin-bottom: 30px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <div>
+                        <p>Comprador: <strong>{{ venta.encabezado.comprador.username }}</strong></p>
+                        <p class="order-date">Fecha: {{ venta.encabezado.fecha_pedido|date:"d M Y, H:i" }}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="font-size: 1.6em; font-weight: bold; color: #28B463;">
+                            ${{ venta.total_venta|floatformat:2 }}
+                        </p>
+                    </div>
+                </div>
+                
+                <ul style="list-style: none; padding: 0;">
+                    {% for item in venta.items %}
+                        <li class="sales-item-line">
+                            <div class="item-details-panel">
+                                <strong>{{ item.cantidad }}x {{ item.album_comprado }}</strong>
+                                <br><small style="color: #777;">${{ item.precio_unitario|floatformat:2 }}</small>
+                            </div>
+                            <form method="POST" action="{% url 'actualizar_estado_venta' item_id=item.id %}" style="margin: 0; display: flex; align-items: center;">
+                                {% csrf_token %}
+                                <select name="nuevo_estado" style="padding: 5px; border-radius: 4px; margin-right: 10px;">
+                                    {% for value, display in item.ESTADO_CHOICES %}
+                                        <option value="{{ value }}" {% if item.estado == value %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn-status-update">Actualizar</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+        
+        {% else %}
+        <p style="margin-bottom: 40px;">Aún no tienes ventas registradas.</p>
     {% endif %}
+
+
+    <h2 style="border-bottom: 2px solid var(--color-acento); padding-bottom: 5px; margin-top: 50px; margin-bottom: 20px; font-size: 1.4em;">
+        📊 Tus Estadísticas
+    </h2>
+
+    <div class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px;">
+        <div class="kpi-card">
+            <h3>Ingresos Totales</h3>
+            <p class="kpi-value">${{ stats.kpis.total_plata|default:"0"|floatformat:2 }}</p>
+        </div>
+        <div class="kpi-card">
+            <h3>Unidades Vendidas</h3>
+            <p class="kpi-value" style="color: #2D9CDB;">{{ stats.kpis.total_items|default:"0" }}</p>
+        </div>
+    </div>
+
+    <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+        <div class="chart-card">
+            <h3 style="text-align: center;">Formatos</h3>
+            <canvas id="chartFormatos"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3 style="text-align: center;">Ventas por Hora</h3>
+            <canvas id="chartHoras"></canvas>
+        </div>
+    </div>
+
 </div>
 
-{% endblock content %}
+{{ stats.formatos.labels|json_script:"fmt-labels" }}
+{{ stats.formatos.data|json_script:"fmt-data" }}
+{{ stats.horas.labels|json_script:"hrs-labels" }}
+{{ stats.horas.data|json_script:"hrs-data" }}
+
+<script>
+    function getDjangoData(id) { return JSON.parse(document.getElementById(id).textContent); }
+    
+    const coloresTorta = ['#84AF3B', '#38761D', '#FFCE56', '#36A2EB', '#FF6384'];
+    
+    // Gráfico Formatos
+    new Chart(document.getElementById('chartFormatos'), {
+        type: 'doughnut',
+        data: {
+            labels: getDjangoData('fmt-labels'),
+            datasets: [{ data: getDjangoData('fmt-data'), backgroundColor: coloresTorta }]
+        }
+    });
+
+    // Gráfico Horas
+    new Chart(document.getElementById('chartHoras'), {
+        type: 'bar',
+        data: {
+            labels: getDjangoData('hrs-labels'),
+            datasets: [{ label: 'Ventas', data: getDjangoData('hrs-data'), backgroundColor: '#38761D' }]
+        }
+    });
+</script>
+
+<style>
+    /* Reutilizar estilos de dashboard */
+    .kpi-card, .chart-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 4px solid var(--color-acento); }
+    .kpi-value { font-size: 2em; font-weight: bold; color: var(--color-navbar); margin: 10px 0; text-align: center; }
+    body.dark-mode .kpi-card, body.dark-mode .chart-card { background-color: #2D3E2D; border-color: #444; }
+    body.dark-mode .kpi-card h3, body.dark-mode .chart-card h3 { color: #ccc; }
+</style>
+
+{% endblock %}
