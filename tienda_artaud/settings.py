@@ -265,20 +265,22 @@ MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-6973532859148559-112313-90998e1af493223f0045
 # --- CONFIGURACIÓN PARA EMAILS ---
 # =================================
 
-# Imprime los correos en la terminal en lugar de intentar enviarlos por internet.
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if 'RENDER' in os.environ:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+    # Dirección de correo real para el sitio
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'cristiangcabral@gmail.com')
 
-# Dirección de correo real para el sitio
-EMAIL_HOST_USER = 'cristiangcabral@gmail.com' 
+    # La contraseña de aplicación (LA QUE SALE DE 'Seguridad' de GOOGLE)
+    # Se lee desde las variables de entorno por seguridad
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-# La contraseña de aplicación (LA QUE SALE DE 'Seguridad' de GOOGLE)
-# La leemos de las variables de entorno por seguridad
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    # Dirección predeterminada para los envíos automáticos
+    DEFAULT_FROM_EMAIL = 'Tienda Artaud <cristiangcabral@gmail.com>'
 
-# Dirección predeterminada para los envíos automáticos
-DEFAULT_FROM_EMAIL = 'Tienda Artaud <cristiangcabral@gmail.com>'
+else:
+    # Imprime los correos en la terminal en lugar de intentar enviarlos por internet
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
