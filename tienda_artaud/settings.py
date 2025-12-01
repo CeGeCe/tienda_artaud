@@ -40,7 +40,7 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # Application definition
 
-APPS_PREINSTALADAS = [
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,9 +49,13 @@ APPS_PREINSTALADAS = [
     'cloudinary_storage',
     'django.contrib.staticfiles',
     'cloudinary',
-]
 
-APPS_PROPIAS = [
+    'django.contrib.sites', # Para el 'allauth'
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     'productos',
     'usuarios',
     'carrito',
@@ -59,16 +63,6 @@ APPS_PROPIAS = [
     'blog',
     'scraper',
 ]
-
-APPS_TERCEROS = [
-    'django.contrib.sites', # Para el 'allauth'
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-]
-
-INSTALLED_APPS = APPS_PREINSTALADAS + APPS_PROPIAS + APPS_TERCEROS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
