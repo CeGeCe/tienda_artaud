@@ -210,9 +210,11 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -241,11 +243,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
-# Configuración de WhiteNoise para producción
-# Solo activar la compresión y caché si no se está en modo DEBUG
-if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Default primary key field type
@@ -293,8 +290,18 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Decirle a Django que use Cloudinary para los archivos MEDIA (imágenes subidas)
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
 # (Opcional) Para usar también con archivos estáticos (CSS/JS), descomentar esto:
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
+# CONFIGURACIÓN UNIFICADA (Django 4.2+)
+# Esto separa claramente quién maneja qué.
+STORAGES = {
+    "default": {
+        # Cloudinary maneja las subidas de archivos (imágenes de productos)
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        # WhiteNoise maneja los archivos del sistema (CSS, JS)
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
