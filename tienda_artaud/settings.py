@@ -211,11 +211,6 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -226,23 +221,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-# Donde están todos los archivos 'static'
-STATIC_URL = '/static/'
-
-# Carpeta donde Django JUNTARÁ todo para producción (Destino)
-# Render busca acá para servir los archivos.
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Carpeta de Origen
-# Debe estar SIEMPRE visible, fuera de cualquier if DEBUG.
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
 
 # Default primary key field type
@@ -277,6 +255,26 @@ if 'RENDER' in os.environ:
 else:
     # Imprime los correos en la terminal en lugar de intentar enviarlos por internet
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+# Donde están todos los archivos 'static'
+STATIC_URL = '/static/'
+
+# Carpeta donde Django JUNTARÁ todo para producción (Destino)
+# Render busca acá para servir los archivos.
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Carpeta de Origen
+# Debe estar SIEMPRE visible, fuera de cualquier if DEBUG.
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # ================================
