@@ -105,6 +105,12 @@ WSGI_APPLICATION = 'tienda_artaud.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# (COMENTAR Y DESCOMENTAR CON LA OTRA)
+# Configuración para escribir en la BB.DD online desde VSCode
+# DATABASES = {
+#     'default': dj_database_url.parse('postgresql://tienda_artaud_db_user:WIutZrTz5f43Z8f16BEXnzcRxNrtC07x@dpg-d4iqpiggjchc73esjai0-a.ohio-postgres.render.com/tienda_artaud_db')
+# }
+
 DATABASES = {
     'default': dj_database_url.config(
         # En local usa SQLite, en Render usa la URL de PostgreSQL automáticamente
@@ -112,7 +118,9 @@ DATABASES = {
         conn_max_age=600
     )
 }
-#  'ENGINE': 'django.db.backends.postgresql',
+
+# # ???
+# 'ENGINE': 'django.db.backends.postgresql'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -144,18 +152,12 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# ===============================================
-# CONFIGURACIÓN DE EMAIL (PARA DESARROLLO)
-# ===============================================
-
-# Esto imprime los correos en la terminal en lugar de intentar enviarlos por internet.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ===============================================
 # CONFIGURACIÓN DE LOGIN/LOGOUT
 # ===============================================
 
-# El usuario logueado va a la HOME.
+# El usuario logueado (y deslogueado) va a la HOME.
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -169,11 +171,9 @@ ACCOUNT_LOGIN_BY_CODE_ENABLED = False
 # Permite loguearse con usuario ó email
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 
-# Pide email al registrarse
+# Campos que pide al registrarse
 ACCOUNT_EMAIL_REQUIRED = True
-
 ACCOUNT_USERNAME_REQUIRED = True
-
 ACCOUNT_PASSWORD_REQUIRED = True
 
 ACCOUNT_SIGNUP_FIELDS = ['email', 'username']
@@ -248,3 +248,26 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-6973532859148559-112313-90998e1af493223f0045d212e8d8cf45-3008632151'
+
+
+# =================================
+# --- CONFIGURACIÓN PARA EMAILS ---
+# =================================
+
+# Imprime los correos en la terminal en lugar de intentar enviarlos por internet.
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Dirección de correo real para el sitio
+EMAIL_HOST_USER = 'cristiangcabral@gmail.com' 
+
+# La contraseña de aplicación (LA QUE SALE DE 'Seguridad' de GOOGLE)
+# La leemos de las variables de entorno por seguridad
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+# Dirección predeterminada para los envíos automáticos
+DEFAULT_FROM_EMAIL = 'Tienda Artaud <cristiangcabral@gmail.com>'
