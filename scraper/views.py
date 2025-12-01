@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from .utils import scrapear_libros, scrapear_jedbangers
+import threading
 
 # Create your views here.
 
@@ -75,14 +76,25 @@ def buscar_discos(request):
                 for item in resultados:
                     cuerpo_mensaje += f"- {item['titulo']}: {item['precio']}\n"
                 
-                send_mail(
-                    f'Resultados de Scraping: {busqueda}',
-                    cuerpo_mensaje,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email_destino],
-                    fail_silently=False,
+                # Definir el envío como una función interna o usar lambda
+                # Pero lo más limpio es usar threading directo con la función send_mail
+
+                email_thread = threading.Thread(
+                    target=send_mail,
+                    args=(
+                        f'Resultados de Scraping: {busqueda}', # Asunto
+                        cuerpo_mensaje,                         # Mensaje
+                        settings.DEFAULT_FROM_EMAIL,            # De
+                        [email_destino],                        # Para
+                    ),
+                    kwargs={'fail_silently': True} # Importante: Si falla en el hilo, que no rompa nada
                 )
-                messages.success(request, f"Resultados enviados a {email_destino}")
+
+                # Iniciar el envío en paralelo
+                email_thread.start()
+
+                # Responder al usuario INMEDIATAMENTE, sin esperar a Gmail
+                messages.success(request, f"El envío está en proceso hacia {email_destino}")
                 return redirect('scraper_jeds')
 
     return render(request, 'scraper/scraper_jeds.html', {'resultados': resultados, 'busqueda': busqueda})
