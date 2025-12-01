@@ -46,7 +46,9 @@ APPS_PREINSTALADAS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
 ]
 
 APPS_PROPIAS = [
@@ -284,3 +286,21 @@ if 'RENDER' in os.environ:
 else:
     # Imprime los correos en la terminal en lugar de intentar enviarlos por internet
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# ================================
+# --- CONFIGURACIÓN CLOUDINARY ---
+# ================================
+
+# Credenciales (para que Render lea)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
+
+# Decirle a Django que use Cloudinary para los archivos MEDIA (imágenes subidas)
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# (Opcional) Para usar también con archivos estáticos (CSS/JS), descomentar esto:
+# STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
