@@ -222,15 +222,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+# Donde están todos los archivos 'static'
 STATIC_URL = '/static/'
 
+# Carpeta donde Django JUNTARÁ todo para producción (Destino)
+# Render busca acá para servir los archivos.
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Carpeta de Origen
+# Debe estar SIEMPRE visible, fuera de cualquier if DEBUG.
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+# Configuración de WhiteNoise para producción
+# Solo activar la compresión y caché si no se está en modo DEBUG
 if not DEBUG:
-    # Configuración de producción
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-else:
-    # Configuración local
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 # Default primary key field type
