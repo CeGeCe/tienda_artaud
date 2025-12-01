@@ -23,22 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Intenta obtener la clave del entorno
-SECRET_KEY = os.environ.get('SECRET_KEY')
-
-# Si por alguna razón es None o es una cadena vacía "", usar la de respaldo
-if not SECRET_KEY:
-    SECRET_KEY = 'django-insecure-1i2jpu6sd*#9@$d+j8%&bwbtl9&bp#b4z$ygxbyx36c!gtn2b5'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-1i2jpu6sd*#9@$d+j8%&bwbtl9&bp#b4z$ygxbyx36c!gtn2b5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 
-RENDER = 'RENDER' in os.environ
+# Si existe la variable RENDER, desactivar DEBUG
+DEBUG = 'RENDER' not in os.environ
 
-# Si estamos en Render, Debug es Falso. Si no, es Verdadero.
-DEBUG = not RENDER
-
-# Permitir que Render sirva el sitio
-ALLOWED_HOSTS = ['*']
+# Permitir el dominio de Render
+ALLOWED_HOSTS = []
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -113,8 +107,8 @@ WSGI_APPLICATION = 'tienda_artaud.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        # Si no hay variable DATABASE_URL (local), usar la configuración local de siempre:
-        default='postgresql://artaud_user:artaud_p455@localhost:5432/tienda_artaud_db',
+        # En local usa SQLite, en Render usa la URL de PostgreSQL automáticamente
+        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         conn_max_age=600
     )
 }
@@ -230,19 +224,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Define dónde Django pondrá los archivos al hacer deploy
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Dónde buscar los archivos del proyecto (Origen)
-# ESTO DEBE ESTAR SIEMPRE VISIBLE, FUERA DEL IF/ELSE
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-    ]
-
 if not DEBUG:
-    # Configuración extra solo para producción
-    # Usar esta versión es más seguro para evitar errores de 500 en statics
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+    # Configuración de producción
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    # Configuración local
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 # Default primary key field type

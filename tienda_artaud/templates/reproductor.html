@@ -388,7 +388,7 @@
 
 
             // Lógica para controlar la ventana padre (opener)
-            // PUEDE NO FUNCIONAR
+            // PUEDE FALLAR
             if (window.opener && !window.opener.closed) {
                 // Si la tienda sigue abierta, cambiar la URL
                 window.opener.location.href = searchUrl;
