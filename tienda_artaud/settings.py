@@ -108,16 +108,27 @@ WSGI_APPLICATION = 'tienda_artaud.wsgi.application'
 # (COMENTAR Y DESCOMENTAR CON LA OTRA)
 # Configuración para escribir en la BB.DD online desde VSCode
 # DATABASES = {
-#     'default': dj_database_url.parse('postgresql://tienda_artaud_db_user:WIutZrTz5f43Z8f16BEXnzcRxNrtC07x@dpg-d4iqpiggjchc73esjai0-a.ohio-postgres.render.com/tienda_artaud_db')
+#     'default': dj_database_url.parse('DATABASE_URL')
 # }
 
-DATABASES = {
-    'default': dj_database_url.config(
-        # En local usa SQLite, en Render usa la URL de PostgreSQL automáticamente
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
-        conn_max_age=600
-    )
-}
+# Detectar si estamos en Render (o producción)
+# (Asegúrate de que esta variable RENDER la definimos arriba con 'RENDER' in os.environ)
+if 'RENDER' in os.environ:
+    # --- CONFIGURACIÓN PARA RENDER (PostgreSQL) ---
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=600
+        )
+    }
+else:
+    # --- CONFIGURACIÓN LOCAL (Tu SQLite de siempre) ---
+    # Esto usa el método nativo de Django que no falla en Windows
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # # ???
 # 'ENGINE': 'django.db.backends.postgresql'
