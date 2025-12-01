@@ -277,6 +277,27 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
+# CONFIGURACIÓN UNIFICADA (Django 4.2+)
+# Esto separa claramente quién maneja qué.
+STORAGES = {
+    "default": {
+        # Cloudinary maneja las subidas de archivos (imágenes de productos)
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        # Usamos el almacenamiento estándar de Django.
+        # Esto evita que WhiteNoise intente comprimir archivos y falle el build.
+        # El Middleware de WhiteNoise se encargará de servirlos igual.
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+# Configuración Legacy (Para librerías que aún buscan las variables viejas)
+# Esto soluciona el AttributeError
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+
 # ================================
 # --- CONFIGURACIÓN CLOUDINARY ---
 # ================================
@@ -290,21 +311,3 @@ CLOUDINARY_STORAGE = {
 
 # (Opcional) Para usar también con archivos estáticos (CSS/JS), descomentar esto:
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-
-# CONFIGURACIÓN UNIFICADA (Django 4.2+)
-# Esto separa claramente quién maneja qué.
-STORAGES = {
-    "default": {
-        # Cloudinary maneja las subidas de archivos (imágenes de productos)
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        # WhiteNoise maneja los archivos del sistema (CSS, JS)
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
-# Configuración Legacy (Para librerías que aún buscan las variables viejas)
-# Esto soluciona el AttributeError
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
