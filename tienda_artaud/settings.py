@@ -285,10 +285,9 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # Usamos el almacenamiento estándar de Django.
-        # Esto evita que WhiteNoise intente comprimir archivos y falle el build.
-        # El Middleware de WhiteNoise se encargará de servirlos igual.
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        # WhiteNoise maneja los archivos del sitio (CSS/JS)
+        # Versión no-manifest para evitar errores de archivos faltantes
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
