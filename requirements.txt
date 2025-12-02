@@ -8,7 +8,6 @@ certifi==2025.10.5
 cffi==1.17.1
 charset-normalizer==3.4.3
 chromedriver-autoinstaller==0.6.4
-cloudinary==1.44.1
 colorama==0.4.6
 comm==0.2.3
 contourpy==1.3.3
@@ -22,7 +21,6 @@ distlib==0.4.0
 dj-database-url==3.0.1
 Django==5.2.5
 django-allauth==65.11.1
-django-cloudinary-storage==0.3.0
 django-environ==0.12.0
 executing==2.2.1
 filelock==3.19.1

@@ -46,16 +46,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
-    'cloudinary',
-
     'django.contrib.sites', # Para el 'allauth'
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
     'productos',
     'usuarios',
     'carrito',
@@ -277,47 +273,24 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-# Detectar si estamos en Render
-RENDER = 'RENDER' in os.environ
+STORAGES = {
+    "default": {
+        # Almacenamiento local estándar (se borra al reiniciar en Render)
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        # WhiteNoise para CSS/JS (¡Esto sí persiste!)
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
-if RENDER:
-    # ============================================
-    # CONFIGURACIÓN PRODUCCIÓN (RENDER)
-    # ============================================
-    
-    # 1. Cloudinary para subir imágenes (Media)
-    # 2. WhiteNoise para CSS/JS (Static)
-    STORAGES = {
-        "default": {
-            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-        },
-    }
 
-    # Credenciales (Solo necesarias en Render)
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-    }
-
-else:
-    # ============================================
-    # CONFIGURACIÓN LOCAL (TU PC)
-    # ============================================
-    
-    # 1. Sistema de archivos normal para imágenes (Media)
-    # 2. Sistema estándar para CSS/JS (Static)
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
+# Credenciales (Solo necesarias en Render)
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+#     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+#     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+# }
 
 
 # Configuración Legacy (Para librerías que aún buscan las variables viejas)
