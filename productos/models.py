@@ -83,7 +83,7 @@ class Producto(models.Model):
         choices = ESTADO_CHOICES
     )
     
-    descripcion = models.TextField(max_length=500, verbose_name="Condición")
+    descripcion = models.TextField(max_length=500, verbose_name="Descripción")
     
     # --- CAMPOS OPCIONALES ---
 

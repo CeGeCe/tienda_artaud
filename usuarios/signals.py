@@ -3,6 +3,29 @@ from django.dispatch import receiver
 from allauth.account.signals import user_signed_up
 from django.core.mail import send_mail
 from django.conf import settings
+import threading
+
+
+# Clase para encapsular la tarea del hilo (más limpio que usar lambdas)
+class EmailThread(threading.Thread):
+    def __init__(self, subject, message, recipient_list, from_email):
+        self.subject = subject
+        self.message = message
+        self.recipient_list = recipient_list
+        self.from_email = from_email
+        threading.Thread.__init__(self)
+
+    def run(self):
+        # La lógica de envío real
+        send_mail(
+            self.subject,
+            self.message,
+            self.from_email,
+            self.recipient_list,
+            # Importante: Si el hilo falla, que no rompa el hilo principal (fail_silently=True)
+            fail_silently=True, 
+        )
+
 
 @receiver(user_signed_up)
 def enviar_email_bienvenida(request, user, **kwargs):
@@ -34,15 +57,12 @@ def enviar_email_bienvenida(request, user, **kwargs):
     El equipo de Tienda Artaud.
     """
     
-    # Enviamos el correo
-    try:
-        send_mail(
-            asunto,
-            mensaje,
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
-        print(f"📧 Email de bienvenida enviado a {user.email}")
-    except Exception as e:
-        print(f"❌ Error enviando email de bienvenida: {e}")
+    # En lugar de enviar, iniciamos el hilo
+    EmailThread(
+        asunto,
+        mensaje,
+        [user.email],
+        settings.DEFAULT_FROM_EMAIL
+    ).start()
+    
+    print(f"📧 Tarea de Email de bienvenida para {user.email} enviada a hilo.")
