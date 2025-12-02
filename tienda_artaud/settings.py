@@ -302,3 +302,22 @@ STORAGES = {
 # Esto soluciona el AttributeError
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+
+# ======================================
+# CONFIGURACIÓN SEGURIDAD RENDER (HTTPS)
+# ======================================
+
+if 'RENDER' in os.environ:
+    # Forzar redirección a HTTPS
+    SECURE_SSL_REDIRECT = True
+    
+    # Cookies seguras (solo viajan por HTTPS)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
+    # Asegura que allauth use https en los callbacks
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+    
+    # Proxy headers (necesario para que Django sepa que está tras HTTPS en Render)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
