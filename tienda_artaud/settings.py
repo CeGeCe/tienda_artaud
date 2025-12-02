@@ -41,6 +41,7 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Application definition
 
 INSTALLED_APPS = [
+    # SISTEMA
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,10 +49,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites', # Para el 'allauth'
+    
+    # TERCEROS
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
+    # PROPIAS
     'productos',
     'usuarios',
     'carrito',
@@ -175,7 +180,7 @@ ACCOUNT_LOGIN_BY_CODE_ENABLED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 
 # Campos que pide al registrarse
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_PASSWORD_REQUIRED = True
 
