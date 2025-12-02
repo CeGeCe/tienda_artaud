@@ -277,36 +277,50 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-# CONFIGURACIÓN UNIFICADA (Django 4.2+)
-# Esto separa claramente quién maneja qué.
-STORAGES = {
-    "default": {
-        # Cloudinary maneja las subidas de archivos (imágenes de productos)
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        # WhiteNoise maneja los archivos del sitio (CSS/JS)
-        # Versión no-manifest para evitar errores de archivos faltantes
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-    },
-}
+# Detectar si estamos en Render
+RENDER = 'RENDER' in os.environ
+
+if RENDER:
+    # ============================================
+    # CONFIGURACIÓN PRODUCCIÓN (RENDER)
+    # ============================================
+    
+    # 1. Cloudinary para subir imágenes (Media)
+    # 2. WhiteNoise para CSS/JS (Static)
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
+
+    # Credenciales (Solo necesarias en Render)
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    }
+
+else:
+    # ============================================
+    # CONFIGURACIÓN LOCAL (TU PC)
+    # ============================================
+    
+    # 1. Sistema de archivos normal para imágenes (Media)
+    # 2. Sistema estándar para CSS/JS (Static)
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+
 
 # Configuración Legacy (Para librerías que aún buscan las variables viejas)
 # Esto soluciona el AttributeError
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
-
-# ================================
-# --- CONFIGURACIÓN CLOUDINARY ---
-# ================================
-
-# Credenciales (para que Render lea)
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-}
-
-# (Opcional) Para usar también con archivos estáticos (CSS/JS), descomentar esto:
-# STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
